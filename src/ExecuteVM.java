@@ -9,7 +9,7 @@ public class ExecuteVM {
     private int ip = 0; // instruction pointer
     private int sp = MEMSIZE; // stack pointer
     private int hp = 0; // heap pointer
-    private int fp = 0; // frame pointer
+    private int fp = MEMSIZE; // frame pointer
     private int ra; // return address
     private int rv; // return value
         
@@ -50,17 +50,24 @@ public class ExecuteVM {
         	  push (v2/v1);
         	  break;
           case SVMParser.STOREW:
-        	  //TODO
+        	  v1 = pop();
+        	  v2 = pop();
+        	  memory[v1] = v2;
         	  break;
           case SVMParser.LOADW:
-        	  //TODO
+        	  push(memory[pop()]);
         	  break;
           case SVMParser.BRANCH:
         	  address = code[ip];
         	  ip = address;
         	  break;
           case SVMParser.BRANCHEQ:
-        	  //TODO
+        	  address = code[ip++];
+        	  v1 = pop();
+        	  v2 = pop();
+        	  if(v2 == v1) {
+        		  ip = address;
+        	  }
         	  break;
           case SVMParser.BRANCHLESSEQ:
         	  address = code[ip++];
@@ -71,34 +78,36 @@ public class ExecuteVM {
         	  }
         	  break;
           case SVMParser.JS:
-        	  //TODO
+        	  v1 = pop();
+        	  ra = ip;
+        	  ip = v1;
         	  break;
           case SVMParser.LOADRA:
-        	  //TODO
+        	  push(ra);
         	  break;
           case SVMParser.STORERA:
-        	  //TODO
+        	  ra = pop();
         	  break;
           case SVMParser.LOADRV:
-        	  //TODO
+        	  push(rv);
         	  break;
           case SVMParser.STORERV:
-        	  //TODO
+        	  rv = pop();
         	  break;
           case SVMParser.LOADFP:
-        	  //TODO
+        	  push(fp);
         	  break;
           case SVMParser.STOREFP:
-        	  //TODO
+        	  fp = pop();
         	  break;
           case SVMParser.COPYFP:
-        	  //TODO
+        	  fp = sp;
         	  break;
           case SVMParser.LOADHP:
-        	  //TODO
+        	  push(hp);
         	  break;
           case SVMParser.STOREHP:
-        	  //TODO
+        	  hp = pop();
         	  break;
           case SVMParser.PRINT: // Controllare che lo stack non sia vuoto, altrimenti dà eccezione.
         	  System.out.println((sp<MEMSIZE) ? memory[sp] : "Empty stack!");
