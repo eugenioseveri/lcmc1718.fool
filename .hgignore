@@ -3,3 +3,5 @@ src/SVM.tokens
 src/SVMLexer.java
 src/SVMLexer.tokens
 src/SVMParser.java
+src/SVMBaseListener.java
+src/SVMListener.java
