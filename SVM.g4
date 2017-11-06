@@ -3,14 +3,14 @@ grammar SVM;
 @header {
 import java.util.HashMap;
 }
-
+//are per definire campi o metodi dentro la classe lexer
 @lexer::members {
-int lexicalErrors=0;
+int lexicalErrors=0; //tiene memoria del numero di errori lessicali
 }
 
 @parser::members {
       
-    int[] code = new int[ExecuteVM.CODESIZE];    
+    int[] code = new int[ExecuteVM.CODESIZE];   //Codice oggetto 
     private int i = 0;
 	
     private HashMap<String,Integer> labelAdd = new HashMap<String,Integer>(); /* Indirizzi delle etichette. */
@@ -19,7 +19,7 @@ int lexicalErrors=0;
 }
 
 /*------------------------------------------------------------------
- * PARSER RULES
+ * PARSER RULES (area della grammatica)
  *------------------------------------------------------------------*/
 
 assembly:
@@ -68,11 +68,11 @@ assembly:
  * LEXER RULES
  *------------------------------------------------------------------*/
 
-PUSH		: 'push' ; 	
+PUSH			: 'push' ; 	
 POP	 		: 'pop' ; 	
 ADD	 		: 'add' ;  	
 SUB	 		: 'sub' ;	
-MULT	 	: 'mult' ;  	
+MULT	 		: 'mult' ;  	
 DIV	 		: 'div' ;	
 STOREW	 	: 'sw' ; 	
 LOADW	 	: 'lw' ;	
@@ -90,12 +90,12 @@ COPYFP   	: 'cfp' ;
 LOADHP	 	: 'lhp' ;	
 STOREHP	 	: 'shp' ;	
 PRINT	 	: 'print' ;	
-HALT	 	: 'halt' ;	
+HALT	 		: 'halt' ;	
 
 COL	 		: ':' ;
 LABEL	 	: ('a'..'z'|'A'..'Z')('a'..'z' | 'A'..'Z' | '0'..'9')* ;
 NUMBER	 	: '0' | ('-')?(('1'..'9')('0'..'9')*) ;
 
-WHITESP  	: (' '|'\t'|'\n'|'\r')+ -> channel(HIDDEN) ;
+WHITESP  	: (' '|'\t'|'\n'|'\r')+ -> channel(HIDDEN) ; // HIDDEN -> fa si che il token non venga passato al parser
 
-ERR	     	: . { System.out.println("Invalid char: "+ getText()); lexicalErrors++; } -> channel(HIDDEN); 
+ERR	     	: . { System.out.println("Invalid char: "+ getText()); lexicalErrors++; } -> channel(HIDDEN); //Per gestire eventuali caratteri indesiderati, anche questo non viene passato al parser
