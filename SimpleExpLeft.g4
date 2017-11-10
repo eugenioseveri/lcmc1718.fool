@@ -6,14 +6,14 @@ grammar SimpleExpLeft;
 }
 
 // PARSER RULES
-prog	: exp { System.out.println("Parsing finished!"); };
+prog	: e=exp { System.out.println("Parsing finished! Result is: " + $e.trans); }; /* Qui "e" è il risultato dell'espressione. */
 //exp		: term exp2;
 //exp2	: PLUS term exp2 |; /* epsilon */
-exp		: term (PLUS term)*; /* Sostitutivo delle due righe prima ma in EBNF. */
+exp returns [int trans]	: t=term {$trans=$t.trans;} (PLUS t=term {$trans+=$t.trans;} )*; /* Sostitutivo delle due righe prima ma in EBNF. Restituisce un intero di nome "trans" (serve per calcolare il valore delle espressioni); "$trans" è il valore di ritorno. */
 //term	: value term2;
 //term2	: TIMES value term2 |; /* epsilon */
-term	: value (TIMES value)*; /* Sostitutivo delle due righe prima ma in EBNF. */
-value	: NUM | LPAR exp RPAR;
+term returns [int trans]	: v=value {$trans=$v.trans;} (TIMES v=value {$trans*=$v.trans;} )*; /* Sostitutivo delle due righe prima ma in EBNF. */
+value returns [int trans]	: n=NUM {$trans=Integer.parseInt($n.text);} | LPAR e=exp {$trans=$e.trans;} RPAR;
 
 // LEXER RULES
 PLUS	: '+'; /* Quali sono i token? Per i simboli fissi di lunghezza unitaria è immediato. */

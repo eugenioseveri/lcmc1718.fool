@@ -10,14 +10,14 @@ grammar SimpleExp;
  * Questa è la traduzione della grammatica nel testo dell'esercitazione.
  * Nota: in ANTLR "epsilon" si indica lasciando vuoto dopo "|".
  * "prog" è l'inizio. Inseriamo una stampa. */
-prog	: exp { System.out.println("Parsing finished!"); };
+prog returns [int trans]	: e=exp { System.out.println("Parsing finished! Result is: " + $e.trans); };
 //exp		: term exp2;
 //exp2	: PLUS exp | /* epsilon */;
-exp		: term (PLUS exp)?; /* Sostitutivo delle due righe prima ma in EBNF. */
+exp returns [int trans]	: t=term {$trans=$t.trans;} (PLUS e=exp {$trans+=$e.trans;} )?; /* Sostitutivo delle due righe prima ma in EBNF. */
 // term	: value term2;
 // term2	: TIMES term | /* epsilon */;
-term	: value (TIMES term)?; /* Sostitutivo delle due righe prima ma in EBNF. */
-value	: NUM | LPAR exp RPAR;
+term returns [int trans]	: v=value {$trans=$v.trans;} (TIMES t=term {$trans*=$t.trans;})?; /* Sostitutivo delle due righe prima ma in EBNF. */
+value returns [int trans]	: n=NUM {$trans=Integer.parseInt($n.text);} | LPAR e=exp {$trans=$e.trans;} RPAR;
 
 // LEXER RULES
 PLUS	: '+'; /* Quali sono i token? Per i simboli fissi di lunghezza unitaria è immediato. */
