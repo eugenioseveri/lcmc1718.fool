@@ -1,6 +1,6 @@
 import org.antlr.v4.runtime.*;
 
-public class Test {
+public class TestSVM {
 	public static void main(String[] args) throws Exception {
 
 		String fileName = "quicksort.fool.asm";
