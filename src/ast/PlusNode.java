@@ -11,12 +11,10 @@ public class PlusNode implements Node {
 		this.right = right;
 	}
 
-
-
 	@Override
 	public String toPrint(String indent) {
 		return indent + "Plus\n"
 				+ this.left.toPrint(indent + "  ")
-				+ right.toPrint(indent + "  ");
+				+ this.right.toPrint(indent + "  ");
 	}
 }

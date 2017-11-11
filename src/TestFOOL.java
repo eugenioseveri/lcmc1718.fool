@@ -1,5 +1,4 @@
 import org.antlr.v4.runtime.*;
-
 import ast.Node;
 
 public class TestFOOL {

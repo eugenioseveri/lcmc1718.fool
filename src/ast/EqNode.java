@@ -1,11 +1,11 @@
 package ast;
 
-public class TimesNode implements Node {
+public class EqNode implements Node {
 
-	public Node left;
-	public Node right;
+	private Node left;
+	private Node right;
 	
-	public TimesNode(Node left, Node right) {
+	public EqNode(Node left, Node right) {
 		super();
 		this.left = left;
 		this.right = right;
@@ -13,8 +13,9 @@ public class TimesNode implements Node {
 
 	@Override
 	public String toPrint(String indent) {
-		return indent + "Times\n"
+		return indent + "Equal\n"
 				+ this.left.toPrint(indent + "  ")
 				+ this.right.toPrint(indent + "  ");
 	}
+
 }
