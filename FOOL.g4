@@ -13,22 +13,23 @@ int lexicalErrors=0;
  * PARSER RULES
  *------------------------------------------------------------------*/
 
-prog returns [Node ast]	: e=exp {$ast=$e.ast;} SEMIC ;
+prog returns [Node ast]	: e=exp {$ast=new ProgNode($e.ast);} SEMIC ;
 
 exp	returns [Node ast]	: t=term {$ast=$t.ast;} (PLUS t=term {$ast=new PlusNode($ast,$t.ast);} )* ;
 
 term returns [Node ast]	: f=factor {$ast=$f.ast;} (TIMES f=factor {$ast=new TimesNode($ast,$f.ast);} )* ;
 
-factor returns [Node ast]	: v=value {$ast=$v.ast;} (EQ value)* ;
+factor returns [Node ast]	: v=value {$ast=$v.ast;} (EQ v=value {$ast=new EqNode($ast,$v.ast);} )* ;
 
 value returns [Node ast]	:
     i=INTEGER {$ast=new IntNode(Integer.parseInt($i.text));}
-	| TRUE
-	| FALSE
+	| TRUE {$ast=new BoolNode(true);}
+	| FALSE {$ast=new BoolNode(false);}
 	| LPAR e=exp RPAR {$ast=$e.ast;}
-	| IF exp THEN CLPAR exp CRPAR
-		   ELSE CLPAR exp CRPAR
-	| PRINT LPAR exp RPAR
+	| IF x=exp THEN CLPAR y=exp CRPAR
+		   ELSE CLPAR z=exp CRPAR
+		   {$ast=new IfNode($x.ast,$y.ast,$z.ast);}
+	| PRINT LPAR e=exp RPAR {$ast=new PrintNode($e.ast);}
  	;
 
 
