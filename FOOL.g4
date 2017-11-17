@@ -38,9 +38,10 @@ declist	returns [ArrayList<Node> astlist]:
 		(	VAR i=ID COLON t=type ASS e=exp
 			{	VarNode v = new VarNode($i.text,$t.ast,$e.ast);
 				$astlist.add(v);
-				HashMap<String,STEntry> hm = symTable.get(nestingLevel);
+				HashMap<String,STEntry> hm = symTable.get(nestingLevel); //tabella del livello corrente (detta tabella del fronte)
 				// Verificare che nello scope attuale (il fronte della tabella), la variabile sia già stata dichiarata. "put" sostituisce, ma se la chiave era già occupata restituisce la coppia vecchia, altrimenti null.
 				if(hm.put($i.text, new STEntry(nestingLevel)) != null) {
+					//Errore identificatore (variabile) già dichiarata
 					System.out.println("Var id" + $i.text + " at line " + $i.line + " already declared.");
 					System.exit(0);
 				};
@@ -56,13 +57,13 @@ declist	returns [ArrayList<Node> astlist]:
 					System.exit(0);
 				};
 				// Entro dentro un nuovo scope.
-				nestingLevel++;
+				nestingLevel++;  //aumento il livello perchè sono all'interno di una funzione (anche i parametri passati alla funzione rientrano nel livello interno)
 				HashMap<String,STEntry> hmn = new HashMap<String,STEntry>();
 				symTable.add(hmn);
 			}
 			LPAR
 				(i=ID COLON t=type
-					{
+					{//creare il ParNode, lo attacco al FunNode invocando addPar, aggiungo una STentry alla hashmap hmn
 						ParNode p1 = new ParNode($i.text,$t.ast);
 						f.addPar(p1);
 						if (hmn.put($i.text, new STEntry(nestingLevel)) != null) {
@@ -72,7 +73,7 @@ declist	returns [ArrayList<Node> astlist]:
 						}
 					}
 				(COMMA i=ID COLON t=type
-					{
+					{//creare il ParNode, lo attacco al FunNode invocando addPar, aggiungo una STentry alla hashmap hmn
 						ParNode p2 = new ParNode($i.text,$t.ast);
 						f.addPar(p2);
 						if (hmn.put($i.text, new STEntry(nestingLevel)) != null){
@@ -86,7 +87,7 @@ declist	returns [ArrayList<Node> astlist]:
 			RPAR
 			(LET d=declist IN {f.addDec($d.astlist);})? e=exp
 				{	f.addBody($e.ast);
-					symTable.remove(nestingLevel--);
+					symTable.remove(nestingLevel--); //diminuisco nestingLevel perchè esco dallo scope della funzione
 				}
 		) SEMIC 
 	)+;
@@ -111,13 +112,13 @@ value returns [Node ast]	:
 		ELSE CLPAR e3 = exp CRPAR {$ast = new IfNode($e1.ast,$e2.ast,$e3.ast);}
 	| PRINT LPAR e=exp RPAR	{$ast = new PrintNode($e.ast);}
 	| i=ID // Identificatore di una variabile.
-		{	// Cerco la dichiarazione dentro la symbol table
+		{	// Cerco la dichiarazione dentro la symbol table e il livello di scope corrente fino allo scope globale (level = 0)
 			int j = nestingLevel;
 			STEntry entry = null;
 			while(j>=0 && entry==null) {
 				entry = symTable.get(j--).get($i.text);
 			}
-			if(entry==null) {
+			if(entry==null) { //dichiarazione non presente nella symbol table quindi variabile non dichiarata
 				System.out.println("Id" + $i.text + " at line " + $i.line + " not declared.");
 				System.exit(0);
 			}
