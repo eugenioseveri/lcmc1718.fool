@@ -1,4 +1,11 @@
-print ( if ( ((5+3)*7) == 9 ) 
-  then { false }
-  else { true }
-) ;
+let
+  var x:int = 5+3;
+  fun f:bool(n:int, m:int)
+    let 
+      var x:bool = true;
+    in x==(n==m);   
+in  
+  print ( if x==2
+    then { false }
+    else { true }
+  ) ;
