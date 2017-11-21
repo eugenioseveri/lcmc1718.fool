@@ -19,6 +19,10 @@ public class STEntry {
 	public void addType(Node type) {
 		this.type = type;
 	}
+	
+	public Node getType() {
+		return this.type;
+	}
 
 	public String toPrint(String indent) { 
 		return indent + "STEntry: nestlev " + this.nestingLevel + "\n"

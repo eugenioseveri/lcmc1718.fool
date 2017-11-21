@@ -17,4 +17,10 @@ public class ParNode implements Node {
 				type.toPrint(indent + "  ");
 	}
 
+	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
+	@Override
+	public Node typeCheck() {
+		return null;
+	}
+
 }

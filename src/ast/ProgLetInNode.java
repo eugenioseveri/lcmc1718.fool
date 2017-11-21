@@ -16,10 +16,18 @@ public class ProgLetInNode implements Node {
 	@Override
 	public String toPrint(String indent) {
 		String declStr = "";
-		for(Node  dec:this.decList) {
+		for(Node dec:this.decList) {
 			declStr += dec.toPrint(indent + "  ");
 		}
 		return indent + "ProgLetIn\n" + declStr + this.exp.toPrint("  ");
+	}
+
+	@Override
+	public Node typeCheck() {
+		for(Node dec:decList) {
+			dec.typeCheck();
+		}
+		return this.exp.typeCheck();
 	}
 
 }

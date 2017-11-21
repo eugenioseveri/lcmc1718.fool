@@ -15,4 +15,14 @@ public class IdNode implements Node {
 	public String toPrint(String indent) {
 		return indent + "Id:" + this.id + "\n" + entry.toPrint(indent + "  ");
 	}
+
+	@Override
+	public Node typeCheck() {
+		// Controllare il caso in cui non è una variabile ma una funzione, erroneamente usata come variabile (senza parentesi tonde)
+		if(this.entry.getType() instanceof ArrowTypeNode) {
+			System.out.println("Wrong usage of function identifier!");
+			System.exit(0);
+		}
+		return this.entry.getType();
+	}
 }

@@ -13,4 +13,9 @@ public class IntNode implements Node {
 	public String toPrint(String indent) { // "indent" è una stringa di spazi corrispondenti all'indentazione corrente 
 		return indent + "Int:" + this.integer + "\n";
 	}
+
+	@Override
+	public Node typeCheck() {
+		return new IntTypeNode();
+	}
 }
