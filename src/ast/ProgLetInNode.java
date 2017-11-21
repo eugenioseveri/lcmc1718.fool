@@ -24,6 +24,8 @@ public class ProgLetInNode implements Node {
 
 	@Override
 	public Node typeCheck() {
+		//bisogna lanciare il type checking anche sui figli che sono le dichiarazioni (che possono essere funzioni o variabili). 
+		//Il loro valore di ritorno lo ignoro ma l'importante è controllare che internamente siano consistenti
 		for(Node dec:decList) {
 			dec.typeCheck();
 		}

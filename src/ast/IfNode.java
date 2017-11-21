@@ -30,10 +30,10 @@ public class IfNode implements Node {
 			System.out.println("Non boolean condition in 'if'!");
 			System.exit(0);
 		}
-		Node t = this.thenStatement.typeCheck();
-		Node e = this.elseStatement.typeCheck();
-		if(FOOLLib.isSubtype(t, e)) return e;
-		if(FOOLLib.isSubtype(e, t)) return t;
+		Node thenNode = this.thenStatement.typeCheck();
+		Node elseNode = this.elseStatement.typeCheck();
+		if(FOOLLib.isSubtype(thenNode, elseNode)) return elseNode;
+		if(FOOLLib.isSubtype(elseNode, thenNode)) return thenNode;
 		System.out.println("Incompatible types in then-else branches!");
 		System.exit(0);
 		return null; // Irraggiungibile, ma è un problema non decidibile
