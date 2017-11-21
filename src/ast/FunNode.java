@@ -2,6 +2,8 @@ package ast;
 
 import java.util.ArrayList;
 
+import lib.FOOLLib;
+
 public class FunNode implements Node {
 
 	private String id;
@@ -43,6 +45,18 @@ public class FunNode implements Node {
 				parStr +
 				declrStr +
 				this.exp.toPrint(indent + "  ");
+	}
+
+	@Override
+	public Node typeCheck() {
+		for(Node dec:decList) {
+			dec.typeCheck();
+		}
+		if(!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
+			System.out.println("Incompatible value for variable!");
+			System.exit(0);
+		}
+		return null; // Come VarNode è una dichiarazione, quindi non si ha valore di ritorno
 	}
 
 }

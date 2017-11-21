@@ -1,5 +1,7 @@
 package ast;
 
+import lib.FOOLLib;
+
 public class EqNode implements Node {
 
 	private Node left;
@@ -16,6 +18,18 @@ public class EqNode implements Node {
 		return indent + "Equal\n"
 				+ this.left.toPrint(indent + "  ")
 				+ this.right.toPrint(indent + "  ");
+	}
+
+	@Override
+	public Node typeCheck() {
+		// Serve tenere conto dell'ereditarietà (singola)
+		Node l = this.left.typeCheck();
+		Node r = this.right.typeCheck();
+		if(!(FOOLLib.isSubtype(l, r) || FOOLLib.isSubtype(r, l))) {
+			System.out.println("Incompatible types in equal!");
+			System.exit(0);
+		}
+		return new BoolTypeNode();
 	}
 
 }

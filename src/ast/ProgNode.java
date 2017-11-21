@@ -14,4 +14,9 @@ public class ProgNode implements Node {
 		return indent + "Prog\n" + this.exp.toPrint("  ");
 	}
 
+	@Override
+	public Node typeCheck() {
+		return this.exp.typeCheck();
+	}
+
 }

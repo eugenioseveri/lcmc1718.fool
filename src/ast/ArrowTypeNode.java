@@ -13,15 +13,29 @@ public class ArrowTypeNode implements Node {
 		this.ret = ret;
 	}
 
+	public ArrayList<Node> getParlist() {
+		return parlist;
+	}
+
+	public Node getRet() {
+		return ret;
+	}
+
 	@Override
 	public String toPrint(String indent) {
 		String parlStr = "";
 		for (Node par:parlist) {
 			parlStr += par.toPrint(indent + "  ");
 		}
-		return indent + "ArrowTypeNode\n"
+		return indent + "ArrowType\n"
 				+ parlStr
 				+ this.ret.toPrint(indent + "  ->");
+	}
+
+	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
+	@Override
+	public Node typeCheck() {
+		return null;
 	}
 
 }

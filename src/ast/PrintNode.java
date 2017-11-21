@@ -14,4 +14,9 @@ public class PrintNode implements Node {
 		return indent + "Print\n" + exp.toPrint(indent + "  ");
 	}
 
+	@Override
+	public Node typeCheck() {
+		return this.exp.typeCheck(); // Ritorna il tipo di se stesso
+	}
+
 }

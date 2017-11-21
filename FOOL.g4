@@ -25,7 +25,7 @@ prog returns [Node ast]:
 	{	HashMap<String,STEntry> hm = new HashMap<String,STEntry> ();
 		symTable.add(hm);
 	}
-	( e=exp {$ast = new ProgNode($e.ast);} SEMIC
+	( e=exp {$ast = new ProgNode($e.ast);}
 	| LET d=declist IN e=exp 
 		{ $ast = new ProgLetInNode($d.astlist,$e.ast); }
 	) {	symTable.remove(nestingLevel); } SEMIC ;

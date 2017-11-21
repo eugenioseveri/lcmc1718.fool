@@ -14,4 +14,9 @@ public class BoolNode implements Node {
 		return this.bool ? indent + "Bool:true\n" : indent + "Bool:false\n";
 	}
 
+	@Override
+	public Node typeCheck() {
+		return new BoolTypeNode();
+	}
+
 }

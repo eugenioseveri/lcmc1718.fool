@@ -1,5 +1,7 @@
 package ast;
 
+import lib.FOOLLib;
+
 public class VarNode implements Node {
 
 	private String id;
@@ -18,6 +20,15 @@ public class VarNode implements Node {
 		return indent + "Var:" + this.id + "\n" +
 				type.toPrint(indent + "  ") +
 				this.exp.toPrint(indent + "  ");
+	}
+
+	@Override
+	public Node typeCheck() {
+		if(!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
+			System.out.println("Incompatible value for variable " + this.id + "!");
+			System.exit(0);
+		}
+		return null; // Per le dichiarazioni possiamo lasciare a null, perché non ha senso il tipo di ritorno per le variabili
 	}
 
 }

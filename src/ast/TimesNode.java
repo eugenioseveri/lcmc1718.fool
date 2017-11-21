@@ -1,5 +1,7 @@
 package ast;
 
+import lib.FOOLLib;
+
 public class TimesNode implements Node {
 
 	public Node left;
@@ -16,5 +18,14 @@ public class TimesNode implements Node {
 		return indent + "Times\n"
 				+ this.left.toPrint(indent + "  ")
 				+ this.right.toPrint(indent + "  ");
+	}
+
+	@Override
+	public Node typeCheck() {
+		if(!(FOOLLib.isSubtype(this.left.typeCheck(), new IntTypeNode()) && FOOLLib.isSubtype(this.right.typeCheck(), new IntTypeNode()))) {
+			System.out.println("Non integers in multiplication!");
+			System.exit(0);
+		};
+		return new IntTypeNode();
 	}
 }
