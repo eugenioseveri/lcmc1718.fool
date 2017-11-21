@@ -21,15 +21,14 @@ grammar FOOL;
  * PARSER RULES
  *------------------------------------------------------------------*/
 
-prog returns [Node ast]: e=exp {$ast = new ProgNode($e.ast);} SEMIC
-	| LET
-		{	HashMap<String,STEntry> hm = new HashMap<String,STEntry>();
-			symTable.add(hm);
-		}
-	d=declist IN e=exp SEMIC
-		{	$ast = new ProgLetInNode($d.astlist,$e.ast);
-			symTable.remove(nestingLevel);
-		};
+prog returns [Node ast]:
+	{	HashMap<String,STEntry> hm = new HashMap<String,STEntry> ();
+		symTable.add(hm);
+	}
+	( e=exp {$ast = new ProgNode($e.ast);} SEMIC
+	| LET d=declist IN e=exp 
+		{ $ast = new ProgLetInNode($d.astlist,$e.ast); }
+	) {	symTable.remove(nestingLevel); } SEMIC ;
 
 // Lista di dichiarazioni (di variabili o funzioni). La chiusura "+" indica una o più volte.
 declist	returns [ArrayList<Node> astlist]:
@@ -38,10 +37,10 @@ declist	returns [ArrayList<Node> astlist]:
 		(	VAR i=ID COLON t=type ASS e=exp
 			{	VarNode v = new VarNode($i.text,$t.ast,$e.ast);
 				$astlist.add(v);
-				HashMap<String,STEntry> hm = symTable.get(nestingLevel); //tabella del livello corrente (detta tabella del fronte)
+				HashMap<String,STEntry> hm = symTable.get(nestingLevel); // Tabella del livello corrente (detta tabella del fronte)
 				// Verificare che nello scope attuale (il fronte della tabella), la variabile sia già stata dichiarata. "put" sostituisce, ma se la chiave era già occupata restituisce la coppia vecchia, altrimenti null.
-				if(hm.put($i.text, new STEntry(nestingLevel)) != null) {
-					//Errore identificatore (variabile) già dichiarata
+				if(hm.put($i.text, new STEntry(nestingLevel,$t.ast)) != null) {
+					// Errore identificatore (variabile) già dichiarata
 					System.out.println("Var id" + $i.text + " at line " + $i.line + " already declared.");
 					System.exit(0);
 				};
@@ -52,31 +51,34 @@ declist	returns [ArrayList<Node> astlist]:
 				$astlist.add(f);
 				HashMap<String,STEntry> hm = symTable.get(nestingLevel);
 				// Verificare che nello scope attuale (il fronte della tabella), la funzione sia già stata dichiarata. "put" sostituisce, ma se la chiave era già occupata restituisce la coppia vecchia, altrimenti null.
-				if(hm.put($i.text, new STEntry(nestingLevel)) != null) {
+				STEntry entry = new STEntry(nestingLevel);
+				if(hm.put($i.text, entry) != null) {
 					System.out.println("Fun id" + $i.text + " at line " + $i.line + " already declared.");
 					System.exit(0);
 				};
 				// Entro dentro un nuovo scope.
-				nestingLevel++;  //aumento il livello perchè sono all'interno di una funzione (anche i parametri passati alla funzione rientrano nel livello interno)
+				nestingLevel++;  // Aumento il livello perchè sono all'interno di una funzione (anche i parametri passati alla funzione rientrano nel livello interno)
 				HashMap<String,STEntry> hmn = new HashMap<String,STEntry>();
 				symTable.add(hmn);
 			}
-			LPAR
-				(i=ID COLON t=type
-					{//creare il ParNode, lo attacco al FunNode invocando addPar, aggiungo una STentry alla hashmap hmn
-						ParNode p1 = new ParNode($i.text,$t.ast);
+			LPAR { ArrayList<Node> parTypes = new ArrayList<Node>(); }
+				(i=ID COLON fty=type
+					{ // Creare il ParNode, lo attacco al FunNode invocando addPar, aggiungo una STentry alla hashmap hmn
+						parTypes.add($fty.ast);
+						ParNode p1 = new ParNode($i.text,$fty.ast);
 						f.addPar(p1);
-						if (hmn.put($i.text, new STEntry(nestingLevel)) != null) {
-							//Errore identificatore (parametro) già dichiarato
+						if (hmn.put($i.text, new STEntry(nestingLevel,$fty.ast)) != null) {
+							// Errore identificatore (parametro) già dichiarato
 							System.out.println("Par ID: " + $i.text + " at line " + $i.line + " already declared");
 							System.exit(0);
 						}
 					}
-				(COMMA i=ID COLON t=type
-					{//creare il ParNode, lo attacco al FunNode invocando addPar, aggiungo una STentry alla hashmap hmn
-						ParNode p2 = new ParNode($i.text,$t.ast);
+				(COMMA i=ID COLON ty=type
+					{// Creare il ParNode, lo attacco al FunNode invocando addPar, aggiungo una STentry alla hashmap hmn
+						parTypes.add($ty.ast);
+						ParNode p2 = new ParNode($i.text,$ty.ast);
 						f.addPar(p2);
-						if (hmn.put($i.text, new STEntry(nestingLevel)) != null){
+						if (hmn.put($i.text, new STEntry(nestingLevel,$ty.ast)) != null){
 							//Errore identificatore (parametro) già dichiarato
 							System.out.println("Par ID: " + $i.text + " at line " + $i.line + " already declared");
 							System.exit(0);
@@ -84,10 +86,10 @@ declist	returns [ArrayList<Node> astlist]:
 					}
 				)*
 			)?
-			RPAR
+			RPAR { entry.addType(new ArrowTypeNode(parTypes,$t.ast)); }
 			(LET d=declist IN {f.addDec($d.astlist);})? e=exp
 				{	f.addBody($e.ast);
-					symTable.remove(nestingLevel--); //diminuisco nestingLevel perchè esco dallo scope della funzione
+					symTable.remove(nestingLevel--); // Diminuisco nestingLevel perchè esco dallo scope della funzione
 				}
 		) SEMIC 
 	)+;
@@ -104,9 +106,9 @@ term returns [Node ast]: f=factor {$ast = $f.ast;} (TIMES f=factor {$ast = new T
 factor returns [Node ast] : v=value {$ast = $v.ast;} (EQ v=value {$ast = new EqNode($ast,$v.ast);})* ;
 
 value returns [Node ast]	:
-	i = INTEGER   {$ast = new IntNode(Integer.parseInt($i.text));}
-	| TRUE      {$ast = new BoolNode(true);}
-	| FALSE     {$ast = new BoolNode(false);}
+	i = INTEGER	{$ast = new IntNode(Integer.parseInt($i.text));}
+	| TRUE		{$ast = new BoolNode(true);}
+	| FALSE		{$ast = new BoolNode(false);}
 	| LPAR e = exp RPAR {$ast = $e.ast;}  // Le parentesi lasciano l'albero inalterato.
 	| IF e1 = exp THEN CLPAR e2 =exp CRPAR
 		ELSE CLPAR e3 = exp CRPAR {$ast = new IfNode($e1.ast,$e2.ast,$e3.ast);}
@@ -118,12 +120,19 @@ value returns [Node ast]	:
 			while(j>=0 && entry==null) {
 				entry = symTable.get(j--).get($i.text);
 			}
-			if(entry==null) { //dichiarazione non presente nella symbol table quindi variabile non dichiarata
+			if(entry==null) { // Dichiarazione non presente nella symbol table quindi variabile non dichiarata
 				System.out.println("Id" + $i.text + " at line " + $i.line + " not declared.");
 				System.exit(0);
 			}
 			$ast = new IdNode($i.text, entry);
-		} 
+		}
+		// Supporto alle chiamate a funzioni
+		( LPAR { ArrayList<Node> arglist = new ArrayList<Node>(); }
+			( a=exp { arglist.add($a.ast); }
+			(COMMA a=exp { arglist.add($a.ast); }
+			)*
+		)? RPAR { $ast = new CallNode($i.text,entry,arglist); }
+		)?
 	;
 
 /*------------------------------------------------------------------
