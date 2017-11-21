@@ -113,7 +113,7 @@ value returns [Node ast]	:
 	| IF e1 = exp THEN CLPAR e2 =exp CRPAR
 		ELSE CLPAR e3 = exp CRPAR {$ast = new IfNode($e1.ast,$e2.ast,$e3.ast);}
 	| PRINT LPAR e=exp RPAR	{$ast = new PrintNode($e.ast);}
-	| i=ID // Identificatore di una variabile.
+	| i=ID // Identificatore di una variabile o funzione. Combinazioni possibili ID (variabile) 
 		{	// Cerco la dichiarazione dentro la symbol table e il livello di scope corrente fino allo scope globale (level = 0)
 			int j = nestingLevel;
 			STEntry entry = null;
@@ -126,9 +126,9 @@ value returns [Node ast]	:
 			}
 			$ast = new IdNode($i.text, entry);
 		}
-		// Supporto alle chiamate a funzioni
+		// Supporto alle chiamate a funzioni. Combinazioni possibili ID() (funzione vuota) - ID(exp) (funzione con variabili)
 		( LPAR { ArrayList<Node> arglist = new ArrayList<Node>(); }
-			( a=exp { arglist.add($a.ast); }
+			( a=exp { arglist.add($a.ast); } //tutte volte che incontro un'espressione l'aggiungo alla lista dei parametri
 			(COMMA a=exp { arglist.add($a.ast); }
 			)*
 		)? RPAR { $ast = new CallNode($i.text,entry,arglist); }

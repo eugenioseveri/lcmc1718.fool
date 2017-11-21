@@ -2,6 +2,9 @@ package ast;
 
 public class STEntry {
 
+	//'pallina' dell'albero che contiene:
+	// - il livello dell'albero
+	// - tipo dell'identificatore
 	private int nestingLevel;
 	private Node type;
 	

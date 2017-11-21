@@ -24,6 +24,7 @@ public class VarNode implements Node {
 
 	@Override
 	public Node typeCheck() {
+		//controlliamo che il tipo della espressione sia sottotipo del tipo della var (variabile)
 		if(!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
 			System.out.println("Incompatible value for variable " + this.id + "!");
 			System.exit(0);
