@@ -128,14 +128,14 @@ value returns [Node ast]	:
 				System.out.println("Id" + $i.text + " at line " + $i.line + " not declared.");
 				System.exit(0);
 			}
-			$ast = new IdNode($i.text, entry, nestingLevel);
+			$ast = new IdNode($i.text, entry, nestingLevel); //inserito il nestinglevel per verifiche sullo scope della variabile
 		}
 		// Supporto alle chiamate a funzioni. Combinazioni possibili ID() (funzione vuota) - ID(exp) (funzione con variabili)
 		( LPAR { ArrayList<Node> arglist = new ArrayList<Node>(); }
 			( a=exp { arglist.add($a.ast); } //tutte volte che incontro un'espressione l'aggiungo alla lista dei parametri
 			(COMMA a=exp { arglist.add($a.ast); }
 			)*
-		)? RPAR { $ast = new CallNode($i.text,entry,arglist,nestingLevel); }
+		)? RPAR { $ast = new CallNode($i.text,entry,arglist,nestingLevel); } //inserito il nestinglevel per verifiche sullo scope della funzione chiamata
 		)?
 	;
 

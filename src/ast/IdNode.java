@@ -41,7 +41,7 @@ public class IdNode implements Node {
 		return "push " + this.entry.getOffset() + "\n" // Mette l'offset sullo stack
 				+ "lfp\n" // Mette l'indirizzo puntato dal registro FP sullo stack (l'indirizzo dell'AR della variabile)
 				+ getAR // Risalgo la catena statica
-				+ "add\n" // Li somma
+				+ "add\n" // Li somma (aggiunge l'offset al registro FP)
 				+ "lw\n"; // Carica sullo stack il valore all'indirizzo ottenuto
 	}
 }

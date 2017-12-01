@@ -43,11 +43,11 @@ public class IfNode implements Node {
 	public String codeGeneration() {
 		final String l1 = FOOLLib.freshLabel();
 		final String l2 = FOOLLib.freshLabel();
-		return this.condition.codeGeneration()
-				+ "push 1\n"
-				+ "beq " + l1 + "\n"
+		return this.condition.codeGeneration() //bisogna controllare che la condizione che sia vera
+				+ "push 1\n" //push 1 (true) serve per confrontare con il risutalto della condizione
+				+ "beq " + l1 + "\n" //se la condizione è vera  salto a label1 dove genero il codice del 'then' altrimenti proseguo e genero il codice dell'else
 				+ this.elseStatement.codeGeneration()
-				+ "b " + l2 + "\n"
+				+ "b " + l2 + "\n" //salto a label2 per non generare il codice del 'then'
 				+ l1 + ": \n"
 				+ this.thenStatement.codeGeneration()
 				+ l2 + ": \n";
