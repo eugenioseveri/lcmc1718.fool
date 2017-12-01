@@ -17,9 +17,8 @@ public class ExecuteVM {
       this.code = code;
     }
     
-    public void cpu() {
-    	//ciclo fetch-execute
-      while ( true ) { //si interrompe solo con l'istruzione halt
+    public void cpu() { // Ciclo fetch-execute
+      while ( true ) { // Si interrompe solo con l'istruzione halt
         int bytecode = code[ip++]; // fetch
         int v1,v2;
         int address;
@@ -38,7 +37,7 @@ public class ExecuteVM {
           case SVMParser.SUB:
         	  v1 = pop();
         	  v2 = pop();
-        	  push (v2-v1); //è importante l'ordine della sottrazione perchè il primo valore che pop è in realta il secondo dell'operazione
+        	  push (v2-v1); // è importante l'ordine della sottrazione perchè il primo valore sullo stack è in realtà il secondo operando
         	  break;
           case SVMParser.MULT:
         	  v1 = pop();
@@ -60,7 +59,7 @@ public class ExecuteVM {
         	  break;
           case SVMParser.BRANCH:
         	  address = code[ip];
-        	  ip = address; // assegno address all'instruction point così salto all'istruzione desiderata
+        	  ip = address; // Assegno address all'instruction pointer così salto all'istruzione desiderata
         	  break;
           case SVMParser.BRANCHEQ:
         	  address = code[ip++];

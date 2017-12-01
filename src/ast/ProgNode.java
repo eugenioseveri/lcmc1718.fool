@@ -19,4 +19,10 @@ public class ProgNode implements Node {
 		return this.exp.typeCheck();
 	}
 
+	@Override
+	public String codeGeneration() {
+		return this.exp.codeGeneration()
+				+ "halt\n";
+	}
+
 }

@@ -19,4 +19,9 @@ public class BoolNode implements Node {
 		return new BoolTypeNode();
 	}
 
+	@Override
+	public String codeGeneration() {
+		return "push " + (this.bool ? 1 : 0) + "\n";
+	}
+
 }

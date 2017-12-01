@@ -32,14 +32,16 @@ prog returns [Node ast]:
 
 // Lista di dichiarazioni (di variabili o funzioni). La chiusura "+" indica una o più volte.
 declist	returns [ArrayList<Node> astlist]:
-	{$astlist = new ArrayList<Node>();}	
+	{	$astlist = new ArrayList<Node>();
+		int offset = -2; // Indice di convenzione di inizio (che viene decrementato)
+	}
 	(
 		(	VAR i=ID COLON t=type ASS e=exp
 			{	VarNode v = new VarNode($i.text,$t.ast,$e.ast);
 				$astlist.add(v);
 				HashMap<String,STEntry> hm = symTable.get(nestingLevel); // Tabella del livello corrente (detta tabella del fronte)
 				// Verificare che nello scope attuale (il fronte della tabella), la variabile sia già stata dichiarata. "put" sostituisce, ma se la chiave era già occupata restituisce la coppia vecchia, altrimenti null.
-				if(hm.put($i.text, new STEntry(nestingLevel,$t.ast)) != null) {
+				if(hm.put($i.text, new STEntry(nestingLevel,$t.ast,offset--)) != null) {
 					// Errore identificatore (variabile) già dichiarata
 					System.out.println("Var id" + $i.text + " at line " + $i.line + " already declared.");
 					System.exit(0);
@@ -51,7 +53,7 @@ declist	returns [ArrayList<Node> astlist]:
 				$astlist.add(f);
 				HashMap<String,STEntry> hm = symTable.get(nestingLevel);
 				// Verificare che nello scope attuale (il fronte della tabella), la funzione sia già stata dichiarata. "put" sostituisce, ma se la chiave era già occupata restituisce la coppia vecchia, altrimenti null.
-				STEntry entry = new STEntry(nestingLevel);
+				STEntry entry = new STEntry(nestingLevel,offset--);
 				if(hm.put($i.text, entry) != null) {
 					System.out.println("Fun id" + $i.text + " at line " + $i.line + " already declared.");
 					System.exit(0);
@@ -61,13 +63,15 @@ declist	returns [ArrayList<Node> astlist]:
 				HashMap<String,STEntry> hmn = new HashMap<String,STEntry>();
 				symTable.add(hmn);
 			}
-			LPAR { ArrayList<Node> parTypes = new ArrayList<Node>(); }
+			LPAR {	ArrayList<Node> parTypes = new ArrayList<Node>();
+					int parOffset = 1;
+				}
 				(i=ID COLON fty=type
 					{ // Creare il ParNode, lo attacco al FunNode invocando addPar, aggiungo una STentry alla hashmap hmn
 						parTypes.add($fty.ast);
 						ParNode p1 = new ParNode($i.text,$fty.ast);
 						f.addPar(p1);
-						if (hmn.put($i.text, new STEntry(nestingLevel,$fty.ast)) != null) {
+						if (hmn.put($i.text, new STEntry(nestingLevel,$fty.ast,parOffset++)) != null) {
 							// Errore identificatore (parametro) già dichiarato
 							System.out.println("Par ID: " + $i.text + " at line " + $i.line + " already declared");
 							System.exit(0);
@@ -78,7 +82,7 @@ declist	returns [ArrayList<Node> astlist]:
 						parTypes.add($ty.ast);
 						ParNode p2 = new ParNode($i.text,$ty.ast);
 						f.addPar(p2);
-						if (hmn.put($i.text, new STEntry(nestingLevel,$ty.ast)) != null){
+						if (hmn.put($i.text, new STEntry(nestingLevel,$ty.ast,parOffset++)) != null){
 							//Errore identificatore (parametro) già dichiarato
 							System.out.println("Par ID: " + $i.text + " at line " + $i.line + " already declared");
 							System.exit(0);
@@ -124,14 +128,14 @@ value returns [Node ast]	:
 				System.out.println("Id" + $i.text + " at line " + $i.line + " not declared.");
 				System.exit(0);
 			}
-			$ast = new IdNode($i.text, entry);
+			$ast = new IdNode($i.text, entry, nestingLevel);
 		}
 		// Supporto alle chiamate a funzioni. Combinazioni possibili ID() (funzione vuota) - ID(exp) (funzione con variabili)
 		( LPAR { ArrayList<Node> arglist = new ArrayList<Node>(); }
 			( a=exp { arglist.add($a.ast); } //tutte volte che incontro un'espressione l'aggiungo alla lista dei parametri
 			(COMMA a=exp { arglist.add($a.ast); }
 			)*
-		)? RPAR { $ast = new CallNode($i.text,entry,arglist); }
+		)? RPAR { $ast = new CallNode($i.text,entry,arglist,nestingLevel); }
 		)?
 	;
 

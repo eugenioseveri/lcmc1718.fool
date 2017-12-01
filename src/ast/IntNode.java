@@ -18,4 +18,9 @@ public class IntNode implements Node {
 	public Node typeCheck() {
 		return new IntTypeNode();
 	}
+
+	@Override
+	public String codeGeneration() {
+		return "push " + this.integer + "\n";
+	}
 }
