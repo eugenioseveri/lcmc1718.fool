@@ -29,4 +29,11 @@ public class PlusNode implements Node {
 		};
 		return new IntTypeNode();
 	}
+
+	@Override
+	public String codeGeneration() {
+		return this.left.codeGeneration()
+				+ this.right.codeGeneration()
+				+ "add\n";
+	}
 }

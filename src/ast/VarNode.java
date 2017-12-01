@@ -32,4 +32,9 @@ public class VarNode implements Node {
 		return null; // Per le dichiarazioni possiamo lasciare a null, perché non ha senso il tipo di ritorno per le variabili
 	}
 
+	@Override
+	public String codeGeneration() {
+		return this.exp.codeGeneration();
+	}
+
 }

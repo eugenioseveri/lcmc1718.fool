@@ -19,4 +19,10 @@ public class PrintNode implements Node {
 		return this.exp.typeCheck(); // Ritorna il tipo di se stesso
 	}
 
+	@Override
+	public String codeGeneration() {
+		return this.exp.codeGeneration()
+				+ "print\n";
+	}
+
 }

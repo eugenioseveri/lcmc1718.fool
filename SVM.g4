@@ -3,7 +3,8 @@ grammar SVM;
 @header {
 import java.util.HashMap;
 }
-//are per definire campi o metodi dentro la classe lexer
+
+// Aree per definire campi o metodi dentro la classe lexer
 @lexer::members {
 int lexicalErrors=0; //tiene memoria del numero di errori lessicali
 }

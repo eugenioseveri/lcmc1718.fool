@@ -38,4 +38,10 @@ public class ArrowTypeNode implements Node {
 		return null;
 	}
 
+	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
+	@Override
+	public String codeGeneration() {
+		return null;
+	}
+
 }

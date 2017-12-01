@@ -49,16 +49,22 @@ public class FunNode implements Node {
 
 	@Override
 	public Node typeCheck() {
-		//chiamare il type check delle la lista delle dichiarazioni interne alla funzione
+		// Chiamare il type check delle la lista delle dichiarazioni interne alla funzione
 		for(Node dec:decList) {
 			dec.typeCheck();
 		}
-		//controlliamo che il corpo della funzione sia sottotipo del tipo della funzione
+		// Controlliamo che il corpo della funzione sia sottotipo del tipo della funzione
 		if(!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
 			System.out.println("Incompatible value for variable!");
 			System.exit(0);
 		}
 		return null; // Come VarNode è una dichiarazione, quindi non si ha valore di ritorno
+	}
+
+	@Override
+	public String codeGeneration() {
+		//TODO
+		return null;
 	}
 
 }

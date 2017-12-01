@@ -2,28 +2,46 @@ package ast;
 
 public class IdNode implements Node {
 
-	public String id;
+	private String id;
 	private STEntry entry;
-	
-	public IdNode(String id, STEntry entry) {
+	private int nestingLevel;
+
+	public IdNode(String id,  STEntry entry, int nestingLevel) {
 		super();
 		this.id = id;
 		this.entry = entry;
+		this.nestingLevel = nestingLevel;
 	}
 
 	@Override
 	public String toPrint(String indent) {
-		return indent + "Id:" + this.id + "\n" + entry.toPrint(indent + "  ");
+		return indent + "Id:" + this.id + "at nestingLevel " + this.nestingLevel + "\n"
+				+ this.entry.toPrint(indent + "  ");
 	}
 
 	@Override
 	public Node typeCheck() {
 		// Controllare il caso in cui non è una variabile ma una funzione, erroneamente usata come variabile (senza parentesi tonde)
 		if(this.entry.getType() instanceof ArrowTypeNode) {
-			//errore perchè sto usando l'identificatore di una funzione come se fosse una variabile
+			// Errore perchè sto usando l'identificatore di una funzione come se fosse una variabile
 			System.out.println("Wrong usage of function identifier!");
 			System.exit(0);
 		}
 		return this.entry.getType();
+	}
+
+	@Override
+	public String codeGeneration() {
+		String getAR = ""; // Recupero l'AR in cui è dichiarata la variabile che sto usando
+		for(int i=0; i<this.nestingLevel - this.entry.getNestingLevel(); i++) {
+			// Differenza di nesting level tra la posizione corrente e la dichiarazione di "id".
+			// Se è una variabile locale si esegue la differenza è 0, altrimenti si deve risalire la catena statica
+			getAR += "lw\n";
+		}
+		return "push " + this.entry.getOffset() + "\n" // Mette l'offset sullo stack
+				+ "lfp\n" // Mette l'indirizzo puntato dal registro FP sullo stack (l'indirizzo dell'AR della variabile)
+				+ getAR // Risalgo la catena statica
+				+ "add\n" // Li somma
+				+ "lw\n"; // Carica sullo stack il valore all'indirizzo ottenuto
 	}
 }

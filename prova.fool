@@ -1,13 +1,31 @@
+let 
+  var x:int = 1;
+  var b:bool = true;
+in
+  print (if (b) then { x+1 } else { x+2 });
+
+/* SERBATOIO ESEMPI
+let 
+  var x:int = 1;
+  var b:bool = true;
+in
+  print (if (b) then { x+1 } else { x+2 });
+---------------
+let 
+  fun f:int (i:int, j:int) i+j;
+in
+  print (f(3,5));
+----------------
 let
-  var x:int = 5+3;
+  var y:int = 5+2;
   fun f:bool (n:int, m:int)
     let 
-      var x:bool = true;
-    in x==(n==m);   
+      var x:int = m;
+  in x==y;   
 in  
   print ( 
-   if f(x,8) 
-     then { false }
-     else { 10 }
-  ) 
-;
+    if f(y,8) 
+      then { false }
+      else { 10 }
+  ); 
+*/

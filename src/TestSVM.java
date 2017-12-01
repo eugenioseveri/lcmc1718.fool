@@ -5,20 +5,20 @@ public class TestSVM {
 
 		String fileName = "quicksort.fool.asm";
 
-		CharStream chars = CharStreams.fromFileName(fileName);
-		SVMLexer lexer = new SVMLexer(chars);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		SVMParser parser = new SVMParser(tokens);
+		CharStream charsSVM = CharStreams.fromFileName(fileName);
+		SVMLexer lexerSVM = new SVMLexer(charsSVM);
+		CommonTokenStream tokensSVM = new CommonTokenStream(lexerSVM);
+		SVMParser parserSVM = new SVMParser(tokensSVM);
 
-		parser.assembly();
+		parserSVM.assembly();
 
-		System.out.println("You had: " + lexer.lexicalErrors + " lexical errors and " + parser.getNumberOfSyntaxErrors() + " syntax errors.");
-		if (lexer.lexicalErrors > 0 || parser.getNumberOfSyntaxErrors() > 0) {
+		System.out.println("You had: " + lexerSVM.lexicalErrors + " lexical errors and " + parserSVM.getNumberOfSyntaxErrors() + " syntax errors.");
+		if (lexerSVM.lexicalErrors > 0 || parserSVM.getNumberOfSyntaxErrors() > 0) {
 			System.exit(1);
 		}
 
 		System.out.println("Starting Virtual Machine...");
-		ExecuteVM vm = new ExecuteVM(parser.code);
+		ExecuteVM vm = new ExecuteVM(parserSVM.code);
 		vm.cpu();
 	}
 }

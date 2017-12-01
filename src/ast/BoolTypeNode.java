@@ -15,4 +15,10 @@ public class BoolTypeNode implements Node {
 	public Node typeCheck() {
 		return null;
 	}
+
+	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
+	@Override
+	public String codeGeneration() {
+		return null;
+	}
 }

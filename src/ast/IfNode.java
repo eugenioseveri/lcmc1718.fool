@@ -38,5 +38,19 @@ public class IfNode implements Node {
 		System.exit(0);
 		return null; // Irraggiungibile, ma è un problema non decidibile
 	}
+	
+	@Override
+	public String codeGeneration() {
+		final String l1 = FOOLLib.freshLabel();
+		final String l2 = FOOLLib.freshLabel();
+		return this.condition.codeGeneration()
+				+ "push 1\n"
+				+ "beq " + l1 + "\n"
+				+ this.elseStatement.codeGeneration()
+				+ "b " + l2 + "\n"
+				+ l1 + ": \n"
+				+ this.thenStatement.codeGeneration()
+				+ l2 + ": \n";
+	}
 
 }

@@ -28,4 +28,11 @@ public class TimesNode implements Node {
 		};
 		return new IntTypeNode();
 	}
+
+	@Override
+	public String codeGeneration() {
+		return this.left.codeGeneration()
+				+ this.right.codeGeneration()
+				 + "mult\n";
+	}
 }
