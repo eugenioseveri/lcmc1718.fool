@@ -21,6 +21,7 @@ public class BoolNode implements Node {
 
 	@Override
 	public String codeGeneration() {
+		//true metto 1 nello stack altrimenti 0
 		return "push " + (this.bool ? 1 : 0) + "\n";
 	}
 

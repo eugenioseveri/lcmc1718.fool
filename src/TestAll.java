@@ -26,7 +26,7 @@ public class TestAll {
 		System.out.println(type.toPrint("Type checking ok! Type of the program is: "));
 
 		// Code generation (prova.fool.asm)
-		String code=ast.codeGeneration();
+		String code=ast.codeGeneration(); //(genero il codice assembly che poi SVM utilizzerà)
 		BufferedWriter out = new BufferedWriter(new FileWriter(fileName + ".asm"));
 		out.write(code);
 		out.close();

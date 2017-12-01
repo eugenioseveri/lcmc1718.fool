@@ -7,7 +7,7 @@ public class STEntry {
 	// - tipo dell'identificatore
 	private int nestingLevel;
 	private Node type;
-	private int offset;
+	private int offset; //offset serve per identificare la posizione della variabile dentro l'AR (activation record)
 	
 	public STEntry(int nestingLevel, int offset) {
 		super();
