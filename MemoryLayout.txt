@@ -1,0 +1,26 @@
+LAYOUT AR FUNZIONI IN SLIDES: (STACK CRESCE VERSO IL BASSO!)
+
+CL:address (fp) di AR chiamante
+valore ultimo (m-esimo) parametro     [offset   m]
+.
+.
+valore primo parametro                [offset   1]   
+AL:address (fp) di AR dichiarazione   <- $fp in codice body della funz
+Return Address
+valore/indir prima var/fun dichiarata [offset -2]
+valore/indir seconda var/fun          [offset -3]
+.
+.
+valore/indir ultima (n-esima) var/fun [offset -(n+1)] 
+
+------------------------------------------------------------
+
+LAYOUT AR AMB GLOBALE: (STACK CRESCE VERSO IL BASSO!)
+
+[BASE DELLO STACK E' QUI SOTTO]  <- $fp (settato a valore iniziale di $sp)
+Return Address fittizio 0 (non ci serve perche' si va in halt)
+valore/indir prima var/fun dichiarata [offset -2]
+valore/indir seconda var/fun          [offset -3]
+.
+.
+valore/indir ultima (n-esima) var/fun [offset -(n+1)]

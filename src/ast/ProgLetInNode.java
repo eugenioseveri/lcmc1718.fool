@@ -2,6 +2,8 @@ package ast;
 
 import java.util.ArrayList;
 
+import lib.FOOLLib;
+
 public class ProgLetInNode implements Node {
 
 	private ArrayList<Node> decList;
@@ -41,7 +43,8 @@ public class ProgLetInNode implements Node {
 		return "push 0\n" // Spazio fittizio per uniformare la gestione della memoria
 				+ declCode
 				+ this.exp.codeGeneration()
-				+ "halt\n";
+				+ "halt\n"
+				+ FOOLLib.getCode();
 	}
 
 }
