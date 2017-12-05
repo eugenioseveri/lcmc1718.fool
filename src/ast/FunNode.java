@@ -63,8 +63,36 @@ public class FunNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		//TODO
-		return null;
+		final String funl = FOOLLib.freshFunLabel();
+		String declCode = "";
+		for(Node dec:this.decList) {
+			declCode += dec.codeGeneration();
+		}
+		String popDecl = "";
+		for(Node dec:this.decList) {
+			popDecl += "pop\n";
+		}
+		String popParList = "";
+		for(Node par:this.parlist) {
+			popParList += "pop\n";
+		}
+		FOOLLib.putCode(funl + ":\n"
+				+ "cfp\n" // Setta FP allo SP
+				+ "lra\n" // Prende il valore del Return Address e lo mette sullo stack
+				+ declCode
+				+ this.exp.codeGeneration()
+				// Da qui, deallocazione AR
+				+ "srv\n" // Pop del return value della funzione precedente e memorizzazione in RV (registro temporaneo per il valore di ritorno)
+				+  popDecl // Aggiunge una "pop" per ogni dichiarazione
+				+ "sra\n" // Pop del Return Address e memorizzazione in RA
+				+ "pop\n" // Pop dell'Access Link (che non serve più)
+				+ popParList // Pop di tutti i parametri
+				+ "sfp\n" // Ripristino il FP al valore del Control Link
+				+ "lrv\n" // Ora che l'AR è stato deallocato, si lascia sullo stack il valore di ritorno della funzione
+				+ "lra\n" // Ritornare al chiamante (indirizzo temporaneamente messo in RA)
+				+ "js\n" // Salta a RA
+				); 
+		return "push " + funl + "\n";
 	}
 
 }

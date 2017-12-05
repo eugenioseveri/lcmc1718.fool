@@ -36,10 +36,10 @@ public class EqNode implements Node {
 	public String codeGeneration() {
 		final String l1 = FOOLLib.freshLabel();
 		final String l2 = FOOLLib.freshLabel();
-		//codice generato dal figlio di sinistra seguito dal codice generato dal sottoalbero di destra + operazione di "confronto"
+		// Codice generato dal figlio di sinistra seguito dal codice generato dal sottoalbero di destra + operazione di "confronto"
 		return this.left.codeGeneration()
 				+ this.right.codeGeneration()
-				+ "beq " + l1 + "\n" //se la condizione è vera salto alla label1 e push 1 (true) altrimenti push 0 (false) e salto a label2 
+				+ "beq " + l1 + "\n" // Se la condizione è vera salto alla label1 e push 1 (true) altrimenti push 0 (false) e salto a label2 
 				+ "push 0\n"
 				+ "b " + l2 + "\n"
 				+ l1 + ": \n"
