@@ -44,7 +44,7 @@ public class ProgLetInNode implements Node {
 				+ declCode
 				+ this.exp.codeGeneration()
 				+ "halt\n"
-				+ FOOLLib.getCode();
+				+ FOOLLib.getCode(); //codice assembly delle funzioni 
 	}
 
 }
