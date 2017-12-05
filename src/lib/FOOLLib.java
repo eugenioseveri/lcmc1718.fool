@@ -36,7 +36,7 @@ public class FOOLLib {
 	}
 	
 	/**
-	 * Inserisce il codice di una funzione all'elenco di quelli già esistenti 
+	 * Inserisce il codice assembly di una funzione all'elenco di quelli già esistenti 
 	 */
 	public static void putCode(String code) {
 		funCode += "\n" + code; // Viene aggiunta una linea vuota prima di ogni funzione (per leggibilità del codice)
