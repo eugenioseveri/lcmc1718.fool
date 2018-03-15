@@ -38,6 +38,7 @@ public class IdNode implements Node {
 			// Se è una variabile locale si esegue la differenza è 0, altrimenti si deve risalire la catena statica
 			getAR += "lw\n";
 		}
+		//TODO per HighOrder vanno pushati due offest 
 		return "push " + this.entry.getOffset() + "\n" // Mette l'offset sullo stack
 				+ "lfp\n" // Mette l'indirizzo puntato dal registro FP sullo stack (l'indirizzo dell'AR della variabile)
 				+ getAR // Risalgo la catena statica
