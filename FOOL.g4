@@ -98,16 +98,31 @@ declist	returns [ArrayList<Node> astlist]:
 		) SEMIC 
 	)+;
 
-type returns [Node ast]	: 
+type returns [Node ast]	:
 	INT	{$ast = new IntTypeNode();} // Rappresenta l'elemento sintattico del tipo int e non il valore.
 	| BOOL	{$ast = new BoolTypeNode();}
 	;
 
-exp	returns [Node ast]: t=term {$ast = $t.ast;} (PLUS t=term {$ast = new PlusNode($ast,$t.ast);})* ;
+exp	returns [Node ast]:
+	t=term {$ast = $t.ast;}
+	(PLUS t=term {$ast = new PlusNode($ast,$t.ast);}
+	| MINUS t=term {$ast = new MinusNode($ast, $t.ast);}
+	| OR t=term {$ast = new OrNode($ast, $t.ast);}
+	)* ;
 
-term returns [Node ast]: f=factor {$ast = $f.ast;} (TIMES f=factor {$ast = new TimesNode($ast,$f.ast);})* ;
+term returns [Node ast]:
+	f=factor {$ast = $f.ast;}
+	(TIMES f=factor {$ast = new TimesNode($ast,$f.ast);}
+	| DIV f=factor {$ast = new DivNode($ast, $f.ast);}
+	| AND f=factor {$ast = new AndNode($ast, $f.ast);}
+	)* ;
 
-factor returns [Node ast] : v=value {$ast = $v.ast;} (EQ v=value {$ast = new EqNode($ast,$v.ast);})* ;
+factor returns [Node ast]:
+	v=value {$ast = $v.ast;}
+	(EQ v=value {$ast = new EqNode($ast,$v.ast);}
+	| GE v=value {$ast = new GreaterEqNode($ast,$v.ast);}
+	| LE v=value {$ast = new LessEqNode($ast,$v.ast);}
+	)* ;
 
 value returns [Node ast]	:
 	i = INTEGER	{$ast = new IntNode(Integer.parseInt($i.text));}
@@ -116,6 +131,7 @@ value returns [Node ast]	:
 	| LPAR e = exp RPAR {$ast = $e.ast;}  // Le parentesi lasciano l'albero inalterato.
 	| IF e1 = exp THEN CLPAR e2 =exp CRPAR
 		ELSE CLPAR e3 = exp CRPAR {$ast = new IfNode($e1.ast,$e2.ast,$e3.ast);}
+	| NOT LPAR e=exp RPAR {$ast = new NotNode($e.ast);}
 	| PRINT LPAR e=exp RPAR	{$ast = new PrintNode($e.ast);}
 	| i=ID // Identificatore di una variabile o funzione. Combinazioni possibili ID (variabile) 
 		{	// Cerco la dichiarazione dentro la symbol table e il livello di scope corrente fino allo scope globale (level = 0)
@@ -145,11 +161,18 @@ value returns [Node ast]	:
 SEMIC	: ';' ;
 COLON	: ':' ;
 COMMA 	: ',' ;
+DOT		: '.' ;
 EQ		: '==' ;
+GE		: '>=' ;
+LE		: '<=' ;
+NOT		: '!' ;
+AND		: '&&' ;
+OR		: '||' ;
 ASS		: '=' ;
 PLUS	: '+' ;
+MINUS	: '-' ;
 TIMES	: '*' ;
-INTEGER : ('-')?(('1'..'9')('0'..'9')*) | '0';
+DIV		: '/' ;
 TRUE	: 'true' ;
 FALSE	: 'false' ;
 LPAR	: '(' ;
@@ -164,13 +187,16 @@ LET		: 'let' ;
 IN		: 'in' ;
 VAR		: 'var' ;
 FUN		: 'fun' ;
+CLASS	: 'class' ;
+EXTENDS	: 'extends' ;
+NEW		: 'new' ;
+NULL	: 'null' ;
 INT		: 'int' ;
 BOOL	: 'bool' ;
+ARROW	: '->' ;
 
+INTEGER : ('-')?(('1'..'9')('0'..'9')*) | '0' ;
 ID		: ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9')* ;
-
 WHITESP	: (' '|'\t'|'\n'|'\r')+ -> channel(HIDDEN) ;
-
 COMMENT	: '/*' (.)*? '*/' -> channel(HIDDEN) ;
-
 ERR		: . { System.out.println("Invalid char: "+ getText()); lexicalErrors++; } -> channel(HIDDEN);
