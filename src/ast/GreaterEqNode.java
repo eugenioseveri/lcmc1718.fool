@@ -36,8 +36,13 @@ public class GreaterEqNode implements Node {
 	public String codeGeneration() {
 		final String l1 = FOOLLib.freshLabel();
 		final String l2 = FOOLLib.freshLabel();
-		// Essendoci in assembly solo l'opzione "<=" e non ">=", sfruttiamo "<=" "al contrario".
-		// TODO inserire commenti
+		/*
+		 * Essendoci in assembly solo l'opzione "<=" e non ">=", sfruttiamo "<=" "al contrario"
+		 * quindi pusho prima il sottoalbero di destra e successivamente il sottoalbero di sinistra
+		 * se 'bleq' è vero allora il secondo valore è minore del primo quindi salto a l1 e pusho 1 (TRUE)
+		 * 
+		 * TODO completare il commento (ora mi sta facendo un attimo di confusione)
+		 */
 		return this.right.codeGeneration()
 				+ this.left.codeGeneration()
 				+ "bleq " + l1 + "\n" 

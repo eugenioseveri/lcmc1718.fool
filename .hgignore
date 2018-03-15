@@ -1,20 +1,8 @@
+syntax: glob
 bin
-src/SVM.tokens
-src/SVMLexer.java
-src/SVMLexer.tokens
-src/SVMParser.java
-src/SVMBaseListener.java
-src/SVMListener.java
-src/FOOL.tokens
-src/FOOLLexer.java
-src/FOOLLexer.tokens
-src/FOOLParser.java
-src/SimpleExp.tokens
-src/SimpleExpLeft.tokens
-src/SimpleExpLeftLexer.java
-src/SimpleExpLeftLexer.tokens
-src/SimpleExpLeftParser.java
-src/SimpleExpLexer.java
-src/SimpleExpLexer.tokens
-src/SimpleExpParser.java
-prova.fool.asm
+*\Listener.java
+*.tokens
+*\Lexer.java
+*\Parser.java
+*.asm
+
