@@ -1,0 +1,11 @@
+let
+  fun g:int(x:(int,int)->int)
+    x(5,7);
+  fun f:int(c:int)
+    let
+      fun linsum:int(a:int,b:int)
+        (a+b)*c;
+    in 
+      g(linsum);   
+in
+  print(f(2));

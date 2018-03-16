@@ -1,8 +1,6 @@
 syntax: glob
 bin
-*\Listener.java
+*Listener.java
 *.tokens
-*\Lexer.java
-*\Parser.java
-*.asm
-
+*Lexer.java
+*Parser.java
