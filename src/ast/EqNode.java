@@ -25,6 +25,10 @@ public class EqNode implements Node {
 		// Serve tenere conto dell'ereditarietà (singola)
 		Node l = this.left.typeCheck();
 		Node r = this.right.typeCheck();
+		if(l instanceof ArrowTypeNode || r instanceof ArrowTypeNode) {
+			System.out.println("Cannot compare functions!");
+			System.exit(0);
+		}
 		if(!(FOOLLib.isSubtype(l, r) || FOOLLib.isSubtype(r, l))) {
 			System.out.println("Incompatible types in equal!");
 			System.exit(0);
