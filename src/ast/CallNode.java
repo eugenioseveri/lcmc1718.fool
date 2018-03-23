@@ -36,11 +36,11 @@ public class CallNode implements Node {
 		// Controllo che l'identificatore faccia riferiemento ad una funzione
 		if(this.entry.getType() instanceof ArrowTypeNode) {
 			atn = (ArrowTypeNode) entry.getType(); 
-		} else {
-			// Errore perchè sto usando l'identificatore di una variabile come se fosse una funzione
+		}/* else { // Lo abbiamo rimosso perché con l'estensione higher-order l'identificatore di una variabile può essere una funzione
+			// Errore perché sto usando l'identificatore di una variabile come se fosse una funzione
 			System.out.println("Invocation of a non-function " + this.id);
 			System.exit(0);
-		}
+		}*/
 		
 		// Controllo che il numero dei parametri sia uguale alla dichiarazione
 		ArrayList<Node> atnParList = atn.getParlist();
