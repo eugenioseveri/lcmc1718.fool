@@ -23,7 +23,7 @@ public class IdNode implements Node {
 	public Node typeCheck() {
 		// Controllare il caso in cui non è una variabile ma una funzione, erroneamente usata come variabile (senza parentesi tonde)
 		if(this.entry.getType() instanceof ArrowTypeNode) {
-			// Errore perchè sto usando l'identificatore di una funzione come se fosse una variabile
+			// Errore perché sto usando l'identificatore di una funzione come se fosse una variabile
 			System.out.println("Wrong usage of function identifier!");
 			System.exit(0);
 		}

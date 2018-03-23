@@ -4,13 +4,14 @@ import java.util.ArrayList;
 
 import lib.FOOLLib;
 
-public class FunNode implements Node {
+public class FunNode implements DecNode {
 
 	private String id;
 	private Node type;
 	private ArrayList<Node> parlist = new ArrayList<Node>();
 	private ArrayList<Node> decList = new ArrayList<Node>();
 	private Node exp;
+	private Node symType;
 	
 	public FunNode(String id, Node type) {
 		super();
@@ -100,5 +101,16 @@ public class FunNode implements Node {
 				); 
 		return "push " + funl + "\n";
 	}
+
+	@Override
+	public Node getSymType() {
+		return this.symType;
+	}
+
+	public void setSymType(Node symType) {
+		this.symType = symType;
+	}
+	
+	
 
 }

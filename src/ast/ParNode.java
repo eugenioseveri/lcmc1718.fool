@@ -1,6 +1,6 @@
 package ast;
 
-public class ParNode implements Node {
+public class ParNode implements DecNode {
 
 	private String id;
 	private Node type;
@@ -27,6 +27,11 @@ public class ParNode implements Node {
 	@Override
 	public String codeGeneration() {
 		return null;
+	}
+
+	@Override
+	public Node getSymType() {
+		return this.type;
 	}
 
 }

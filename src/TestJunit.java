@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.util.Scanner;
-
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -49,9 +47,9 @@ public class TestJunit {
 			e.printStackTrace();
 		}
 		System.out.flush();
-		final String[] lines = this.lpsOut.buffer.toString().split("\\n");
-		assertTrue(lines[0].startsWith("You had: 0 lexical errors and 0 syntax errors.\r"));
-		assertTrue(lines[2].startsWith("2\r"));
+		final String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
+		assertTrue(lines[0].compareTo("You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[2].compareTo("2")==0);
 	}
 	
 	@Test
@@ -64,14 +62,14 @@ public class TestJunit {
 			e.printStackTrace();
 		}
 		System.out.flush();
-		final String[] lines = this.lpsOut.buffer.toString().split("\\n");
-		assertTrue(lines[0].startsWith("You had: 0 lexical errors and 0 syntax errors.\r"));
-		assertTrue(lines[2].startsWith("1\r"));
-		assertTrue(lines[3].startsWith("2\r"));
-		assertTrue(lines[4].startsWith("2\r"));
-		assertTrue(lines[5].startsWith("3\r"));
-		assertTrue(lines[6].startsWith("4\r"));
-		assertTrue(lines[7].startsWith("5\r"));
+		String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
+		assertTrue(lines[0].compareTo("You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[2].compareTo("1")==0);
+		assertTrue(lines[3].compareTo("2")==0);
+		assertTrue(lines[4].compareTo("2")==0);
+		assertTrue(lines[5].compareTo("3")==0);
+		assertTrue(lines[6].compareTo("4")==0);
+		assertTrue(lines[7].compareTo("5")==0);
 	}
 	
 	@Test
@@ -103,6 +101,11 @@ public class TestJunit {
 		/* Test dell'estensione higher-order e object-oriented senza ereditarietà integrate ("quicksort_ho.fool"). */
 		fail("TODO");
 	}
+	
+	//private String[] splitOutputLines(String lines) {
+		/* Divide una stringa in un array di stringhe in base ai caratteri di "a capo". */
+	// TODO?
+	//}
 	
 	/**
 	 * Metodo di utilità che compila un file sorgente FOOL e lo esegue.
@@ -164,7 +167,7 @@ public class TestJunit {
 	}
 	
 	/**
-	 * Classe che consente il redirezionamento di un'output stream.
+	 * Classe che consente il redirezionamento di un'output stream. Decorator di "PrintStream".
 	 */
 	static class LoggedPrintStream extends PrintStream {
 		final StringBuilder buffer;

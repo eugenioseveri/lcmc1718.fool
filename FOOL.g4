@@ -36,7 +36,7 @@ declist	returns [ArrayList<Node> astlist]:
 		int offset = -2; // Indice di convenzione di inizio (che viene decrementato)
 	}
 	(
-		(	VAR i=ID COLON t=type ASS e=exp
+		(	VAR i=ID COLON t=hotype ASS e=exp
 			{	VarNode v = new VarNode($i.text,$t.ast,$e.ast);
 				$astlist.add(v);
 				HashMap<String,STEntry> hm = symTable.get(nestingLevel); // Tabella del livello corrente (detta tabella del fronte)
@@ -47,13 +47,14 @@ declist	returns [ArrayList<Node> astlist]:
 					System.exit(0);
 				};
 			}
-		| FUN i=ID COLON t=type 
+		| FUN i=ID COLON t=hotype 
 			{	
 				FunNode f = new FunNode($i.text,$t.ast);
 				$astlist.add(f);
 				HashMap<String,STEntry> hm = symTable.get(nestingLevel);
 				// Verificare che nello scope attuale (il fronte della tabella), la funzione sia già stata dichiarata. "put" sostituisce, ma se la chiave era già occupata restituisce la coppia vecchia, altrimenti null.
-				STEntry entry = new STEntry(nestingLevel,offset--);
+				STEntry entry = new STEntry(nestingLevel,offset);
+				offset -= 2; // Il layout higher-order occupa due posti invece di uno 
 				if(hm.put($i.text, entry) != null) {
 					System.out.println("Fun id" + $i.text + " at line " + $i.line + " already declared.");
 					System.exit(0);
@@ -66,7 +67,7 @@ declist	returns [ArrayList<Node> astlist]:
 			LPAR {	ArrayList<Node> parTypes = new ArrayList<Node>();
 					int parOffset = 1;
 				}
-				(i=ID COLON fty=type
+				(i=ID COLON fty=hotype
 					{ // Creare il ParNode, lo attacco al FunNode invocando addPar, aggiungo una STentry alla hashmap hmn
 						parTypes.add($fty.ast);
 						ParNode p1 = new ParNode($i.text,$fty.ast);
@@ -77,7 +78,7 @@ declist	returns [ArrayList<Node> astlist]:
 							System.exit(0);
 						}
 					}
-				(COMMA i=ID COLON ty=type
+				(COMMA i=ID COLON ty=hotype
 					{// Creare il ParNode, lo attacco al FunNode invocando addPar, aggiungo una STentry alla hashmap hmn
 						parTypes.add($ty.ast);
 						ParNode p2 = new ParNode($i.text,$ty.ast);
@@ -90,7 +91,9 @@ declist	returns [ArrayList<Node> astlist]:
 					}
 				)*
 			)?
-			RPAR { entry.addType(new ArrowTypeNode(parTypes,$t.ast)); }
+			RPAR { ArrowTypeNode functionType = new ArrowTypeNode(parTypes,$t.ast);
+				entry.addType(functionType);
+				f.setSymType(functionType); }
 			(LET d=declist IN {f.addDec($d.astlist);})? e=exp
 				{	f.addBody($e.ast);
 					symTable.remove(nestingLevel--); // Diminuisco nestingLevel perchè esco dallo scope della funzione
@@ -98,10 +101,22 @@ declist	returns [ArrayList<Node> astlist]:
 		) SEMIC 
 	)+;
 
+hotype returns [Node ast] :
+	t=type {$ast=$t.ast;}
+	| a=arrow {$ast=$a.ast;}
+	;
+
 type returns [Node ast]	:
 	INT	{$ast = new IntTypeNode();} // Rappresenta l'elemento sintattico del tipo int e non il valore.
 	| BOOL	{$ast = new BoolTypeNode();}
+	//| ID //TODO per l'estensione OO
 	;
+	
+arrow returns [Node ast] :
+	{ArrayList<Node> parList = new ArrayList<Node>();}
+	LPAR (h=hotype {parList.add($h.ast);}
+			(COMMA h=hotype {parList.add($h.ast);})*
+		)? RPAR ARROW t=type {$ast = new ArrowTypeNode(parList,$t.ast);};
 
 exp	returns [Node ast]:
 	t=term {$ast = $t.ast;}
@@ -141,7 +156,7 @@ value returns [Node ast]	:
 				entry = symTable.get(j--).get($i.text);
 			}
 			if(entry==null) { // Dichiarazione non presente nella symbol table quindi variabile non dichiarata
-				System.out.println("Id" + $i.text + " at line " + $i.line + " not declared.");
+				System.out.println("Id " + $i.text + " at line " + $i.line + " not declared.");
 				System.exit(0);
 			}
 			$ast = new IdNode($i.text, entry, nestingLevel); // Inserito il nestinglevel per verifiche sullo scope della variabile
