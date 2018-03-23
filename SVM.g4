@@ -54,7 +54,7 @@ assembly:
 	  | STORERV     { code[i++] = STORERV; } ///pop the top of the stack and copy it in the RV register    
 	  | LOADFP      { code[i++] = LOADFP; } ///push in the stack the content of the FP register   
 	  | STOREFP     { code[i++] = STOREFP; } ///pop the top of the stack and copy it in the FP register    
-	  | COPYFP      { code[i++] = COPYFP; } ///copy in the FP register the currest stack pointer    
+	  | COPYFP      { code[i++] = COPYFP; } ///copy in the FP register the current stack pointer    
 	  | LOADHP      { code[i++] = LOADHP; } ///push in the stack the content of the HP register    
 	  | STOREHP     { code[i++] = STOREHP; } ///pop the top of the stack and copy it in the HP register    
 	  | PRINT       { code[i++] = PRINT; } //visualize the top of the stack without removing it   

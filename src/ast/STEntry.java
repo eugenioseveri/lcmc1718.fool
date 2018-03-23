@@ -45,7 +45,7 @@ public class STEntry {
 	}
 
 	public String toPrint(String indent) { 
-		return indent + "STEntry: nestlev " + this.nestingLevel + "\n"
+		return indent + "STEntry: nestingLevel " + this.nestingLevel + "\n"
 				+ indent + "STEntry: type\n " + this.type.toPrint(indent + "  ")
 				+ indent + "STEntry: offset " + this.offset + ("\n");
 	}
