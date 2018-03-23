@@ -76,10 +76,18 @@ public class FunNode implements DecNode {
 		}
 		String popDecl = "";
 		for(Node dec:this.decList) {
+			if (((DecNode)dec).getSymType() instanceof ArrowTypeNode) { // TODO verificare a runtime se non va in errore il cast
+			//if (dec instanceof DecNode && ((DecNode)dec).getSymType() instanceof ArrowTypeNode) {
+				popDecl += "pop\n";
+			}
 			popDecl += "pop\n";
 		}
 		String popParList = "";
 		for(Node par:this.parlist) {
+			if (((DecNode)par).getSymType() instanceof ArrowTypeNode) { // TODO verificare a runtime se non va in errore il cast
+			//if (par instanceof DecNode && ((DecNode)par).getSymType() instanceof ArrowTypeNode) {
+				popParList += "pop\n";
+			}
 			popParList += "pop\n";
 		}
 		//crea realmente il codice della funzione (compreso di dichiarazioni interne e corpo (exp))
@@ -90,7 +98,7 @@ public class FunNode implements DecNode {
 				+ this.exp.codeGeneration() //codice del corpo della funzione
 				// Da qui, deallocazione AR (activation record)
 				+ "srv\n" // Pop del return value della funzione precedente e memorizzazione in RV (registro temporaneo per il valore di ritorno)
-				+  popDecl // Aggiunge 'n' "pop" per ogni dichiarazione
+				+ popDecl // Aggiunge 'n' "pop" per ogni dichiarazione
 				+ "sra\n" // Pop del Return Address e memorizzazione in RA
 				+ "pop\n" // Pop dell'Access Link (che non serve più)
 				+ popParList // Pop di tutti i parametri
@@ -98,8 +106,9 @@ public class FunNode implements DecNode {
 				+ "lrv\n" // Ora che l'AR è stato deallocato, si lascia sullo stack il valore di ritorno della funzione
 				+ "lra\n" // Ritornare al chiamante (indirizzo temporaneamente messo in RA)
 				+ "js\n" // Salta a RA (chi ha chiamato la funzione)
-				); 
-		return "push " + funl + "\n";
+				);
+		return "lfp\n" // Push nello stack indirizzo FP a questo AR
+				+ "push " + funl + "\n"; // Push indirizzo (etichetta) della funzione [finisce a offset - 1]
 	}
 
 	@Override
@@ -110,7 +119,4 @@ public class FunNode implements DecNode {
 	public void setSymType(Node symType) {
 		this.symType = symType;
 	}
-	
-	
-
 }

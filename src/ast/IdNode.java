@@ -38,11 +38,22 @@ public class IdNode implements Node {
 			// Se è una variabile locale si esegue la differenza è 0, altrimenti si deve risalire la catena statica
 			getAR += "lw\n";
 		}
-		//TODO per HighOrder vanno pushati due offest 
+		
+		String functionalAdditionalCode = ""; // TODO refactor nome variabile
+		// Se il nodo è di tipo funzionale deve essere recuperato anche l'indirizzo della funzione
+		if (this.entry.getType() instanceof ArrowTypeNode) {
+			functionalAdditionalCode =  "push " + (this.entry.getOffset()-1) + "\n" // Mette l'offset sullo stack
+						+ "lfp\n" // Mette l'indirizzo puntato dal registro FP sullo stack (l'indirizzo dell'AR della variabile)
+						+ getAR // Risalgo la catena statica
+						+ "add\n" // Li somma (aggiunge l'offset al registro FP)
+						+ "lw\n"; // Carica sullo stack il valore all'indirizzo ottenuto
+		}
+		
 		return "push " + this.entry.getOffset() + "\n" // Mette l'offset sullo stack
 				+ "lfp\n" // Mette l'indirizzo puntato dal registro FP sullo stack (l'indirizzo dell'AR della variabile)
 				+ getAR // Risalgo la catena statica
 				+ "add\n" // Li somma (aggiunge l'offset al registro FP)
-				+ "lw\n"; // Carica sullo stack il valore all'indirizzo ottenuto
+				+ "lw\n" // Carica sullo stack il valore all'indirizzo ottenuto
+				+ functionalAdditionalCode;
 	}
 }

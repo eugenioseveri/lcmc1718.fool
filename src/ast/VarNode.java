@@ -24,7 +24,7 @@ public class VarNode implements DecNode {
 
 	@Override
 	public Node typeCheck() {
-		//controlliamo che il tipo della espressione sia sottotipo del tipo della var (variabile)
+		// Controlliamo che il tipo della espressione sia sottotipo del tipo della var (variabile)
 		if(!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
 			System.out.println("Incompatible value for variable " + this.id + "!");
 			System.exit(0);
@@ -34,6 +34,7 @@ public class VarNode implements DecNode {
 
 	@Override
 	public String codeGeneration() {
+		// Nel caso varNode sia di tipo funzionale => mette due cose nello stack (vedere IdNode)
 		return this.exp.codeGeneration();
 	}
 
