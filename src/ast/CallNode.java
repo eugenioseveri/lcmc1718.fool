@@ -10,7 +10,7 @@ public class CallNode implements Node {
 	private int nestingLevel;
 	private STEntry entry;
 	private ArrayList<Node> parlist = new ArrayList<Node>();
-	
+
 	public CallNode(String id, STEntry entry, ArrayList<Node> parlist, int nestingLevel) {
 		super();
 		this.id = id;
@@ -26,8 +26,8 @@ public class CallNode implements Node {
 			parStr += par.toPrint(indent + "  ");
 		}
 		return indent + "Call:" + this.id + " at nestingLevel " + this.nestingLevel + "\n"
-				+ this.entry.toPrint(indent +  "  ")
-				+ parStr;
+		+ this.entry.toPrint(indent +  "  ")
+		+ parStr;
 	}
 
 	@Override
@@ -41,14 +41,14 @@ public class CallNode implements Node {
 			System.out.println("Invocation of a non-function " + this.id);
 			System.exit(0);
 		}*/
-		
+
 		// Controllo che il numero dei parametri sia uguale alla dichiarazione
 		ArrayList<Node> atnParList = atn.getParlist();
 		if (!(atnParList.size() == this.parlist.size())) {
 			System.out.println("Wrong number of parameters in the invocation of " + this.id);
 			System.exit(0);
 		}
-		
+
 		// Controllo che il tipo di ogni parametro attuale dentro parlist sia sottotipo dei parametri della dichiarazione
 		for(int i=0; i<this.parlist.size(); i++) {
 			if(!(FOOLLib.isSubtype((this.parlist.get(i)).typeCheck(), atnParList.get(i)))) {
@@ -69,13 +69,18 @@ public class CallNode implements Node {
 		for(int i=0; i<this.nestingLevel-this.entry.getNestingLevel(); i++) {
 			getAR += "lw\n";
 		}
+
+		//TODO fatto fino a Higher-Order
 		return // Allocazione della parte corrente dell'AR della funzione che sta venendo chiamata
 				"lfp\n" // Control Link
 				+ parCode // Allocazione parametri
+				+ "push " + this.entry.getOffset() + "\n"
 				+ "lfp\n" // Access Link (anche prossima riga)
-				+ getAR
+				+ getAR // Risalgo la catena statica
+				+ "add\n" // Li somma
+				+ "lw\n" // Carica sullo stack il valore all'indirizzo ottenuto
 				// Da qui, codice per recuperare l'indirizzo a cui saltare (uguale a IdNode)
-				+ "push " + this.entry.getOffset() + "\n" // Mette l'offset sullo stack
+				+ "push " + (this.entry.getOffset() - 1) + "\n" // Mette l'offset sullo stack
 				+ "lfp\n" // Mette l'indirizzo puntato dal registro FP sullo stack (l'indirizzo dell'AR della variabile)
 				+ getAR // Risalgo la catena statica
 				+ "add\n" // Li somma

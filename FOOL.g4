@@ -43,7 +43,7 @@ declist	returns [ArrayList<Node> astlist]:
 				// Verificare che nello scope attuale (il fronte della tabella), la variabile sia già stata dichiarata. "put" sostituisce, ma se la chiave era già occupata restituisce la coppia vecchia, altrimenti null.
 				if(hm.put($i.text, new STEntry(nestingLevel,$t.ast,offset--)) != null) {
 					// Errore identificatore (variabile) già dichiarata
-					System.out.println("Var id" + $i.text + " at line " + $i.line + " already declared.");
+					System.out.println("Var id: " + $i.text + " at line " + $i.line + " already declared.");
 					System.exit(0);
 				};
 			}
@@ -56,7 +56,7 @@ declist	returns [ArrayList<Node> astlist]:
 				STEntry entry = new STEntry(nestingLevel,offset);
 				offset -= 2; // Il layout higher-order occupa due posti invece di uno 
 				if(hm.put($i.text, entry) != null) {
-					System.out.println("Fun id" + $i.text + " at line " + $i.line + " already declared.");
+					System.out.println("Fun id: " + $i.text + " at line " + $i.line + " already declared.");
 					System.exit(0);
 				};
 				// Entro dentro un nuovo scope.
@@ -72,6 +72,9 @@ declist	returns [ArrayList<Node> astlist]:
 						parTypes.add($fty.ast);
 						ParNode p1 = new ParNode($i.text,$fty.ast);
 						f.addPar(p1);
+						if ($fty.ast instanceof ArrowTypeNode) {
+                    		parOffset++;
+                  		}
 						if (hmn.put($i.text, new STEntry(nestingLevel,$fty.ast,parOffset++)) != null) {
 							// Errore identificatore (parametro) già dichiarato
 							System.out.println("Par ID: " + $i.text + " at line " + $i.line + " already declared");
@@ -83,6 +86,9 @@ declist	returns [ArrayList<Node> astlist]:
 						parTypes.add($ty.ast);
 						ParNode p2 = new ParNode($i.text,$ty.ast);
 						f.addPar(p2);
+						if ($ty.ast instanceof ArrowTypeNode) {
+                      		parOffset++;
+                    	}
 						if (hmn.put($i.text, new STEntry(nestingLevel,$ty.ast,parOffset++)) != null){
 							//Errore identificatore (parametro) già dichiarato
 							System.out.println("Par ID: " + $i.text + " at line " + $i.line + " already declared");
