@@ -42,13 +42,13 @@ public class TestJunit {
 		/* Test della SVM con il file "prova.fool.asm" (già compilato). Output atteso: "2". */
 		try {
 			runSvm("test/prova.fool");
-		} catch (IOException e) {
-			fail("IOException in runSvm()");
+		} catch (Exception e) {
+			fail("Exception in runSvm()");
 			e.printStackTrace();
 		}
 		System.out.flush();
 		final String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
-		assertTrue(lines[0].compareTo("You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[0].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
 		assertTrue(lines[2].compareTo("2")==0);
 	}
 	
@@ -57,13 +57,13 @@ public class TestJunit {
 		/* Test della SVM con il file "quicksort.fool.asm" (già compilato). Output atteso: "1 2 2 3 4 5". */
 		try {
 			runSvm("test/quicksort.fool");
-		} catch (IOException e) {
-			fail("IOException in runSvm()");
+		} catch (Exception e) {
+			fail("Exception in runSvm()");
 			e.printStackTrace();
 		}
 		System.out.flush();
 		String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
-		assertTrue(lines[0].compareTo("You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[0].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
 		assertTrue(lines[2].compareTo("1")==0);
 		assertTrue(lines[3].compareTo("2")==0);
 		assertTrue(lines[4].compareTo("2")==0);
@@ -74,14 +74,38 @@ public class TestJunit {
 	
 	@Test
 	public void testFoolBaseOperators() {
-		/* Test della prima estensione del progetto (operatori ">=", ">=", "||", "&&", "/", "-", "!". */
-		fail("TODO");
+		/* Test della prima estensione del progetto (operatori ">=", ">=", "||", "&&", "/", "-", "!"). (baseoperators.fool) */
+		try {
+			runAll("test/baseoperators.fool");
+		} catch (Exception e) {
+			fail("Exception in runSvm()");
+			e.printStackTrace();
+		}
+		System.out.flush();
+		String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
+		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[275].compareTo("Type checking ok! Type of the program is: IntType")==0);
+		assertTrue(lines[277].compareTo("Code generated! Assembling and running generated code.")==0);
+		assertTrue(lines[278].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[280].compareTo("0")==0);
 	}
 	
 	@Test
 	public void testFoolHigherOrder() {
 		/* Test dell'estensione higher-order ("linsum.fool"). */
-		fail("TODO");
+		try {
+			runAll("test/linsum.fool");
+		} catch (Exception e) {
+			fail("Exception in runSvm()");
+			e.printStackTrace();
+		}
+		System.out.flush();
+		String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
+		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[74].compareTo("Type checking ok! Type of the program is: IntType")==0);
+		assertTrue(lines[76].compareTo("Code generated! Assembling and running generated code.")==0);
+		assertTrue(lines[77].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[79].compareTo("24")==0);
 	}
 	
 	@Test
@@ -102,17 +126,12 @@ public class TestJunit {
 		fail("TODO");
 	}
 	
-	//private String[] splitOutputLines(String lines) {
-		/* Divide una stringa in un array di stringhe in base ai caratteri di "a capo". */
-	// TODO?
-	//}
-	
 	/**
 	 * Metodo di utilità che compila un file sorgente FOOL e lo esegue.
 	 * @param fileName Il file sorgente con estensione ".fool".
 	 * @throws IOException
 	 */
-	public void runAll(final String fileName) throws IOException {
+	private void runAll(final String fileName) throws IOException {
 		runFool(fileName);
 		generateCode(fileName);
 		runSvm(fileName);
@@ -127,7 +146,7 @@ public class TestJunit {
 
 		parserSVM.assembly();
 
-		System.out.println("You had: " + lexerSVM.lexicalErrors + " lexical errors and " + parserSVM.getNumberOfSyntaxErrors() + " syntax errors.");
+		System.out.println("[SVM] You had: " + lexerSVM.lexicalErrors + " lexical errors and " + parserSVM.getNumberOfSyntaxErrors() + " syntax errors.");
 		if (lexerSVM.lexicalErrors > 0 || parserSVM.getNumberOfSyntaxErrors() > 0) {
 			System.exit(1);
 		}
@@ -146,7 +165,7 @@ public class TestJunit {
 
 		this.ast = parser.prog().ast; // Generazione AST con Id associate a relative entry symbol table.
 
-		System.out.println("You had: " + lexer.lexicalErrors + " lexical errors and "
+		System.out.println("[FOOL] You had: " + lexer.lexicalErrors + " lexical errors and "
 							+ parser.getNumberOfSyntaxErrors() + " syntax errors.");
 
 		System.out.println("Visualizing AST...");
