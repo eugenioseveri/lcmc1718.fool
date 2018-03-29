@@ -4,3 +4,4 @@ bin
 *.tokens
 *Lexer.java
 *Parser.java
+*.asm
