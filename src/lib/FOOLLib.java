@@ -31,12 +31,6 @@ public class FOOLLib {
 		} else {
 			return false;
 		}
-		/*return (a.getClass().equals(b.getClass()) && !(a instanceof ArrowTypeNode || b instanceof ArrowTypeNode) ) || // Caso dell'uguaglianza
-				(a instanceof BoolTypeNode && b instanceof IntTypeNode) || // Caso sottotipo definisce che Bool è sottotipo di Int
-				(a instanceof ArrowTypeNode && b instanceof ArrowTypeNode &&
-						((ArrowTypeNode) a).getParlist().size() == ((ArrowTypeNode) b).getParlist().size()) && // Controllo che il numero dei parametri sia lo stesso
-						((ArrowTypeNode) a).getParlist().stream().allMatch(p -> p.getClass() ==)
-						((ArrowTypeNode) a).getRet().getClass().equals(((ArrowTypeNode) b).getRet().getClass()); // Controllo che il tipo di ritorno sia lo stesso*/
 	}
 	
 	/**

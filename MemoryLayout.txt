@@ -5,7 +5,7 @@ valore ultimo (m-esimo) parametro     [offset   m]
 .
 .
 valore primo parametro                [offset   1]   
-AL:address (fp) di AR dichiarazione   <- $fp in codice body della funz
+AL:address (fp) di AR dichiarazione   <- $fp in codice body della funzione
 Return Address
 valore/indir prima var/fun dichiarata [offset -2]
 valore/indir seconda var/fun          [offset -3]

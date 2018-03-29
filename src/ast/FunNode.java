@@ -76,16 +76,14 @@ public class FunNode implements DecNode {
 		}
 		String popDecl = "";
 		for(Node dec:this.decList) {
-			if (((DecNode)dec).getSymType() instanceof ArrowTypeNode) { // TODO verificare a runtime se non va in errore il cast
-			//if (dec instanceof DecNode && ((DecNode)dec).getSymType() instanceof ArrowTypeNode) {
+			if (((DecNode)dec).getSymType() instanceof ArrowTypeNode) {
 				popDecl += "pop\n";
 			}
 			popDecl += "pop\n";
 		}
 		String popParList = "";
 		for(Node par:this.parlist) {
-			if (((DecNode)par).getSymType() instanceof ArrowTypeNode) { // TODO verificare a runtime se non va in errore il cast
-			//if (par instanceof DecNode && ((DecNode)par).getSymType() instanceof ArrowTypeNode) {
+			if (((DecNode)par).getSymType() instanceof ArrowTypeNode) {
 				popParList += "pop\n";
 			}
 			popParList += "pop\n";
