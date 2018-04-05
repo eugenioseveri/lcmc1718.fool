@@ -13,7 +13,7 @@ public class FunNode implements DecNode {
 	private Node exp;
 	private Node symType;
 	
-	public FunNode(String id, Node type) {
+	public FunNode(final String id, final Node type) {
 		super();
 		this.id = id;
 		this.type = type;

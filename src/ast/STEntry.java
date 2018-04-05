@@ -8,6 +8,7 @@ public class STEntry {
 	private int nestingLevel;
 	private Node type;
 	private int offset; // Serve per identificare la posizione della variabile dentro l'AR (activation record)
+	private boolean isMethod = false;
 	
 	public STEntry(int nestingLevel, int offset) {
 		super();
@@ -27,6 +28,14 @@ public class STEntry {
 		this.type = type;
 		this.offset = offset;
 	}
+	
+	public STEntry(int nestingLevel, Node type, int offset, boolean isMethod) {
+		super();
+		this.nestingLevel = nestingLevel;
+		this.type = type;
+		this.offset = offset;
+		this.isMethod = isMethod;
+	}
 
 	public void addType(Node type) {
 		this.type = type;
@@ -43,10 +52,15 @@ public class STEntry {
 	public int getOffset() {
 		return this.offset;
 	}
+	
+	public boolean isMethod() {
+		return this.isMethod;
+	}
 
 	public String toPrint(String indent) { 
 		return indent + "STEntry: nestingLevel " + this.nestingLevel + "\n"
 				+ indent + "STEntry: type\n " + this.type.toPrint(indent + "  ")
-				+ indent + "STEntry: offset " + this.offset + ("\n");
+				+ indent + "STEntry: offset " + this.offset + ("\n")
+				+ indent + "STEntry: isMethod " + this.isMethod + ("\n");
 	}
 }
