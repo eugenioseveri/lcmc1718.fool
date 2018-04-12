@@ -8,11 +8,13 @@ public class ClassNode implements DecNode {
 	private String id;
 	private List<Node> fields = new ArrayList<>();
 	private List<Node> methods = new ArrayList<>();
+	private STEntry classEntry;
 	private Node symType;
 	
-	public ClassNode(final String id, final List<Node> fields, final List<Node> methods) {
+	public ClassNode(final String id, final STEntry classEntry, final List<Node> fields, final List<Node> methods) {
 		super();
 		this.id = id;
+		this.classEntry = classEntry;
 		this.fields = fields;
 		this.methods = methods;
 	}

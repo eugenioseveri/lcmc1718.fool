@@ -1,15 +1,14 @@
 package ast;
 
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
 public class NewNode implements Node {
 
 	private String classId; // Id della classe che sto istanziando
-	private ArrayList<Node> parList; // Argomenti che vengono passati alla new
-	private Map<String,STEntry> entry; // Class entry che descrive la classe istanziata (sia campi che metodi)
+	private List<Node> parList; // Argomenti che vengono passati alla new
+	private STEntry entry; // STEntry che descrive la classe istanziata (sia campi che metodi tramite classTypeNode)
 	
-	public NewNode(String classId, ArrayList<Node> parList, Map<String,STEntry> entry) {
+	public NewNode(final String classId, final STEntry entry, final List<Node> parList) {
 		super();
 		this.classId = classId;
 		this.parList = parList;
