@@ -1,19 +1,19 @@
 package ast;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ClassTypeNode implements Node {
 
 	//(tipi dei campi, inclusi quelli ereditati)
-	private ArrayList<Node> allFields;
+	private List<Node> allFields;
 	
 	//(tipi funzionali dei metodi, inclusi quelli ereditati)
-	private ArrayList<Node> allMethods;
+	private List<Node> allMethods;
 
-	public ClassTypeNode(ArrayList<Node> allFields, ArrayList<Node> allMethods) {
+	public ClassTypeNode(List<Node> fieldsList, List<Node> methodsList) {
 		super();
-		this.allFields = allFields;
-		this.allMethods = allMethods;
+		this.allFields = fieldsList;
+		this.allMethods = methodsList;
 	}
 
 	@Override
