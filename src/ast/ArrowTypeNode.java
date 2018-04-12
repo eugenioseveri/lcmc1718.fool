@@ -1,19 +1,20 @@
 package ast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ArrowTypeNode implements Node {
 
-	private ArrayList<Node> parlist; // Lista con i tipi dei parametri
+	private List<Node> parlist; // Lista con i tipi dei parametri
 	private Node ret; // Tipo di ritorno della funzione
 	
-	public ArrowTypeNode(ArrayList<Node> parlist, Node ret) {
+	public ArrowTypeNode(List<Node> parlist, Node ret) {
 		super();
 		this.parlist = parlist;
 		this.ret = ret;
 	}
 
-	public ArrayList<Node> getParlist() {
+	public List<Node> getParlist() {
 		return parlist;
 	}
 
@@ -42,6 +43,15 @@ public class ArrowTypeNode implements Node {
 	@Override
 	public String codeGeneration() {
 		return null;
+	}
+
+	@Override
+	public Node cloneNode() {
+		List<Node> params = new ArrayList<>();
+		for (Node n: this.parlist) {
+			params.add(n.cloneNode());
+		}
+		return new ArrowTypeNode(params, this.ret.cloneNode());
 	}
 
 }

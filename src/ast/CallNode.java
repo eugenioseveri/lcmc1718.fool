@@ -1,5 +1,6 @@
 package ast;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import lib.FOOLLib;
@@ -43,7 +44,7 @@ public class CallNode implements Node {
 		}*/
 
 		// Controllo che il numero dei parametri sia uguale alla dichiarazione
-		ArrayList<Node> atnParList = atn.getParlist();
+		List<Node> atnParList = atn.getParlist();
 		if (!(atnParList.size() == this.parlist.size())) {
 			System.out.println("Wrong number of parameters in the invocation of " + this.id);
 			System.exit(0);
@@ -87,6 +88,11 @@ public class CallNode implements Node {
 				+ "lw\n" // Carica sullo stack il valore all'indirizzo ottenuto
 				// Salto
 				+ "js\n";
+	}
+	
+	@Override
+	public Node cloneNode() {
+		return null;
 	}
 
 }

@@ -36,5 +36,10 @@ public class ClassCallNode implements Node {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return null;
+	}
 
 }

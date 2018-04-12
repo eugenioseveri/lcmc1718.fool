@@ -59,13 +59,11 @@ cllist returns [List<Node> astlist]:
  			
          	ClassTypeNode classType = new ClassTypeNode(fieldsList,methodsList);
          	
- 			//TODO dichiarare Entry della superclasse a null
+ 			//dichiara Entry della superclasse a null
+ 			STEntry superEntry = null;
  			
  			STEntry entry = new STEntry(nestingLevel,classType,offset--); //STEntry della classe da inserire al livello 0 della symbolTable
  			hm.put($i.text,entry); //inserisco nella hashMap di livello 0 la classe appena dichiarata
- 			
- 			//creare la superclass entry a null anche se non estendo nessuna classe
- 			
  		}
  		(EXTENDS ei=ID
  		{
@@ -75,8 +73,12 @@ cllist returns [List<Node> astlist]:
 				System.out.println("Class id: " + $i.text + " at line " + $i.line + " not declared.");
 				System.exit(0);
  			}
+ 			//recupero STEntry della classe da estendere
+ 			superEntry = hm.get($ei.text);
  			//TODO clonare il ClassTypeNode della classe da cui si eredita
+ 			ClassTypeNode superClassType = (ClassTypeNode) superEntry.getType().cloneNode();
  			//TODO clonare la virtualTable della classe da cui si eredita
+ 			classTable
  			
  			//prelevare Entry della super classe
  			

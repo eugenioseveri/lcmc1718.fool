@@ -36,5 +36,10 @@ public class DivNode implements Node {
 				+ this.right.codeGeneration()
 				+ "div\n";
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new DivNode(this.left.cloneNode(), this.right.cloneNode());
+	}
 
 }

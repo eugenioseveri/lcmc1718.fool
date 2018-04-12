@@ -46,5 +46,10 @@ public class ProgLetInNode implements Node {
 				+ "halt\n"
 				+ FOOLLib.getCode(); //codice assembly delle funzioni 
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return null;
+	}
 
 }

@@ -51,5 +51,19 @@ public class MethodNode implements DecNode {
 		this.symType = symType;
 	}
 
-	
+	@Override
+	public Node cloneNode() {
+		List<Node> params = new ArrayList<>();
+		for (Node n: this.parlist) {
+			params.add(n.cloneNode());
+		}
+		List<Node> decs = new ArrayList<>();
+		for (Node n: this.decList) {
+			decs.add(n.cloneNode());
+		}
+		MethodNode tmp = new MethodNode(this.id, this.type.cloneNode(), params, decs);
+		tmp.setSymType(this.symType.cloneNode());
+		tmp.addBody(this.exp.cloneNode());
+		return tmp;
+	}
 }

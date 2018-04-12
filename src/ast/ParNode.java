@@ -33,5 +33,10 @@ public class ParNode implements DecNode {
 	public Node getSymType() {
 		return this.type;
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new ParNode(this.id, this.type.cloneNode());
+	}
 
 }

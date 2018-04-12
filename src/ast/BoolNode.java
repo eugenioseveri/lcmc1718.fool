@@ -25,4 +25,9 @@ public class BoolNode implements Node {
 		return "push " + (this.bool ? 1 : 0) + "\n";
 	}
 
+	@Override
+	public Node cloneNode() {
+		return new BoolNode(this.bool);
+	}
+
 }

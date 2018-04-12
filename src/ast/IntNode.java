@@ -23,4 +23,9 @@ public class IntNode implements Node {
 	public String codeGeneration() {
 		return "push " + this.integer + "\n";
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new IntNode(this.integer);
+	}
 }

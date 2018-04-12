@@ -20,5 +20,10 @@ public class EmptyTypeNode implements Node {
 	public String codeGeneration() {
 		return null;
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new EmptyTypeNode();
+	}
 
 }

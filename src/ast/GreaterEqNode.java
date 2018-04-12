@@ -56,5 +56,10 @@ public class GreaterEqNode implements Node {
 				+ "push 1\n"
 				+ l2 + ": \n";
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new GreaterEqNode(this.left.cloneNode(), this.right.cloneNode());
+	}
 
 }

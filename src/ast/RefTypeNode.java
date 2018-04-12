@@ -25,4 +25,9 @@ public class RefTypeNode implements Node {
 	public String codeGeneration() {
 		return null;
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new RefTypeNode(this.id);
+	}
 }

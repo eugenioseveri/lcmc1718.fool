@@ -24,5 +24,10 @@ public class ProgNode implements Node {
 		return this.exp.codeGeneration()
 				+ "halt\n";
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return null;
+	}
 
 }

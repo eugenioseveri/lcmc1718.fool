@@ -42,5 +42,10 @@ public class VarNode implements DecNode {
 	public Node getSymType() {
 		return this.type;
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new VarNode(this.id, this.type.cloneNode(), this.exp.cloneNode());
+	}
 
 }

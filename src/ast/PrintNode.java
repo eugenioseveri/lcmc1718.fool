@@ -24,5 +24,10 @@ public class PrintNode implements Node {
 		return this.exp.codeGeneration()
 				+ "print\n";
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return null;
+	}
 
 }

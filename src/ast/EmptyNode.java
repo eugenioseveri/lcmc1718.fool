@@ -17,5 +17,10 @@ public class EmptyNode implements Node {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new EmptyNode();
+	}
 
 }
