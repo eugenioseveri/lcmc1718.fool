@@ -52,5 +52,10 @@ public class IfNode implements Node {
 				+ this.thenStatement.codeGeneration()
 				+ l2 + ": \n";
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new IfNode(this.condition.cloneNode(), this.thenStatement.cloneNode(), this.elseStatement.cloneNode());
+	}
 
 }

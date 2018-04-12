@@ -52,4 +52,9 @@ public class AndNode implements Node {
 
 	}
 
+	@Override
+	public Node cloneNode() {
+		return new AndNode(this.left.cloneNode(), this.right.cloneNode());
+	}
+
 }

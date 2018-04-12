@@ -33,5 +33,10 @@ public class FieldNode implements DecNode {
 	public Node getSymType() {
 		return this.type;
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new FieldNode(this.id, this.type.cloneNode());
+	}
 
 }

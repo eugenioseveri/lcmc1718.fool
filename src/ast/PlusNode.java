@@ -36,4 +36,9 @@ public class PlusNode implements Node {
 				+ this.right.codeGeneration()
 				+ "add\n";
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new PlusNode(this.left.cloneNode(), this.right.cloneNode());
+	}
 }

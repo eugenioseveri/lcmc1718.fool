@@ -35,4 +35,9 @@ public class TimesNode implements Node {
 				+ this.right.codeGeneration()
 				 + "mult\n";
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new TimesNode(this.left.cloneNode(), this.right.cloneNode());
+	}
 }

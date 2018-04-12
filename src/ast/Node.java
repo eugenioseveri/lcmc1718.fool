@@ -19,4 +19,10 @@ public interface Node {
 	 * @return Stringa contenente il codice assembly generato.
 	 */
 	String codeGeneration();
+	
+	/**
+	 * Ritorna una DeepCopy del nodo.
+	 * @return Clone del nodo.
+	 */
+	Node cloneNode();
 }

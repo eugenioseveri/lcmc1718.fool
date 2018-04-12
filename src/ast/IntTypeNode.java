@@ -21,4 +21,9 @@ public class IntTypeNode implements Node {
 	public String codeGeneration() {
 		return null;
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new IntTypeNode();
+	}
 }

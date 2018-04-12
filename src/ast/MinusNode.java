@@ -37,4 +37,8 @@ public class MinusNode implements Node {
 				+ "sub\n";
 	}
 
+	@Override
+	public Node cloneNode() {
+		return new MinusNode(this.left.cloneNode(), this.right.cloneNode());
+	}
 }

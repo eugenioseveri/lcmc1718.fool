@@ -50,5 +50,10 @@ public class EqNode implements Node {
 				+ "push 1\n"
 				+ l2 + ": \n";
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new EqNode(this.left.cloneNode(), this.right.cloneNode());
+	}
 
 }

@@ -1,5 +1,6 @@
 package ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassTypeNode implements Node {
@@ -31,5 +32,17 @@ public class ClassTypeNode implements Node {
 	public String codeGeneration() {
 		return null;
 	}
-
+	
+	@Override
+	public Node cloneNode() {
+		List<Node> fields = new ArrayList<>();
+		for (Node n: this.allFields) {
+			fields.add(n.cloneNode());
+		}
+		List<Node> methods = new ArrayList<>();
+		for (Node n: this.allMethods) {
+			methods.add(n.cloneNode());
+		}
+		return new ClassTypeNode(fields, methods);
+	}
 }

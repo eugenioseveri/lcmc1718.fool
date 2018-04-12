@@ -45,4 +45,9 @@ public class ClassNode implements DecNode {
 	public void setSymType(Node symType) {
 		this.symType = symType;
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return null;
+	}
 }

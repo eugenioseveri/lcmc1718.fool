@@ -21,4 +21,9 @@ public class BoolTypeNode implements Node {
 	public String codeGeneration() {
 		return null;
 	}
+
+	@Override
+	public Node cloneNode() {
+		return new BoolTypeNode();
+	}
 }

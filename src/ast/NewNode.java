@@ -1,5 +1,6 @@
 package ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NewNode implements Node {
@@ -31,6 +32,15 @@ public class NewNode implements Node {
 	public String codeGeneration() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public Node cloneNode() {
+		List<Node> params = new ArrayList<>();
+		for (Node n: this.parList) {
+			params.add(n.cloneNode());
+		}
+		return new NewNode(this.classId, this.entry, params); //TODO verificare se si deve fare il clone dell'TEntry
 	}
 
 }

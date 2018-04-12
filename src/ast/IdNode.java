@@ -50,4 +50,9 @@ public class IdNode implements Node {
 				+ "lw\n" // Carica sullo stack il valore all'indirizzo ottenuto
 				+ codeHO;
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new IdNode(this.id, this.entry, this.nestingLevel); // TODO vedere se serve clonare anche la STEntry
+	}
 }

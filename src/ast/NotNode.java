@@ -45,5 +45,10 @@ public class NotNode implements Node {
 				+ "push 0\n"
 				+ l2 + ": \n";
 	}
+	
+	@Override
+	public Node cloneNode() {
+		return new NotNode(this.exp.cloneNode());
+	}
 
 }
