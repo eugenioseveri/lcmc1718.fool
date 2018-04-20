@@ -59,72 +59,101 @@ cllist returns [List<Node> astlist]:
  			
          	ClassTypeNode classType = new ClassTypeNode(fieldsList,methodsList);
          	
- 			//dichiara Entry della superclasse a null
- 			STEntry superEntry = null;
+ 			STEntry superEntry = null; // Dichiara Entry della superclasse a null
+ 			Map<String,STEntry> superVirtualTable = null; // Virtual table della classe padre
+ 			HashMap<String,STEntry> virtualTable = new HashMap<>(); // VirtualTable vuota
  			
  			STEntry entry = new STEntry(nestingLevel,classType,offset--); //STEntry della classe da inserire al livello 0 della symbolTable
  			hm.put($i.text,entry); //inserisco nella hashMap di livello 0 la classe appena dichiarata
  		}
  		(EXTENDS ei=ID
  		{
- 			//verificare che esista la classe padre se non la trovo termino il PARSER
+ 			// Verificare che esista la classe padre se non la trovo termino il PARSER
  			if (classTable.get($ei.text) == null){
  				// Errore identificatore (classe) già dichiarata
 				System.out.println("Class id: " + $i.text + " at line " + $i.line + " not declared.");
 				System.exit(0);
  			}
- 			//recupero STEntry della classe da estendere
+ 			// Recupero STEntry della classe da estendere
  			superEntry = hm.get($ei.text);
- 			//TODO clonare il ClassTypeNode della classe da cui si eredita
+ 			// Clonare il ClassTypeNode della classe da cui si eredita
  			ClassTypeNode superClassType = (ClassTypeNode) superEntry.getType().cloneNode();
- 			//TODO clonare la virtualTable della classe da cui si eredita
- 			classTable
+ 			// Clonare la virtualTable della classe da cui si eredita
+ 			superVirtualTable = classTable.get($ei.text);
+ 			//Map<String,STEntry> superVirtualTableClone = new HashMap<>(); // TODO vedere se questa virtual table copiata serve veramente
+ 			for(String s : superVirtualTable.keySet()) {
+ 				virtualTable.put(s, superVirtualTable.get(s).cloneEntry());
+ 			}
  			
- 			//prelevare Entry della super classe
- 			
- 			// Clono la STEntry della superclass ed estenderla
+ 			// Clono la STEntry della superclass ed estenderla?
  		}
  		)? 
- 		{  			
+ 		{
  			
- 			ClassNode c = new ClassNode($i.text,entry,fieldsList,methodsList); //con l'ereditarietà superclasse
- 			$astlist.add(c);
+ 			ClassNode classNode = new ClassNode($i.text,entry,fieldsList,methodsList); //con l'ereditarietà superclasse
+ 			$astlist.add(classNode);
  			
  			// Entro dentro un nuovo scope.
 			nestingLevel++;  // Aumento il livello perchè sono all'interno di una classe (anche i parametri passati alla funzione rientrano nel livello interno)
-			HashMap<String,STEntry> virtualTable = new HashMap<>(); //VirtualTable vuota
          	classTable.put($i.text,virtualTable);
 			symTable.add(virtualTable);
+			
+			// Scorro la virtualTable per calcolare gli offset di partenza dei campi e dei metodi (necessario per l'ereditarietà)
+			int fieldOffset = -1; // Offset iniziale dei campi di una classe (offset che aumenta verso il basso)
+			int methodOffset = 0; // Offset iniziale dei metodi di una classe (offset che aumenta verso l'alto)
+			if(superEntry != null) {
+				for(String s : virtualTable.keySet()) {
+					if(virtualTable.get(s).isMethod()) {
+						methodOffset++;
+					} else {
+						fieldOffset--;
+					}
+ 				}
+			}
  		}
- 		LPAR { int fieldOffset = -1; //offset iniziale dei campi di una classe (offset che aumenta verso il basso)
- 			}
- 			(c1=ID COLON t1=type { 
+ 		LPAR 
+ 			(c1=ID COLON t1=type {
  				//aggiunto il campo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
- 				fieldsList.add(new FieldNode($c1.text,$t1.ast));
- 				//TODO CASO EXTENDS: fare controllo se il campo esiste già... Non deve dare errore ma sovrascriverlo (preservando l'offset)
- 				virtualTable.put($c1.text, new STEntry(nestingLevel,$t1.ast,fieldOffset--));
- 				
+ 				if(virtualTable.get($c1.text) == null) { // Caso con o senza override
+ 					fieldsList.add(-fieldOffset-1, new FieldNode($c1.text,$t1.ast));
+ 					virtualTable.put($c1.text, new STEntry(nestingLevel,$t1.ast,fieldOffset--));
+ 				} else {
+ 					fieldsList.add(-virtualTable.get($c1.text).getOffset()-1, new FieldNode($c1.text,$t1.ast));
+ 					virtualTable.put($c1.text, new STEntry(nestingLevel,$t1.ast,virtualTable.get($c1.text).getOffset()));
+ 				}
  			} (COMMA c2=ID COLON t2=type {
- 			
+ 				if(virtualTable.get($c2.text) != null) { // Controllo se un campo sta venendo dichiarato erroneamente più volte nella stessa classe
+ 					System.out.println("Field id: " + $c2.text + " at line " + $i.line + " already declared.");
+ 					System.exit(0);
+ 				}
  				//aggiunto il campo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
- 				fieldsList.add(new FieldNode($c2.text,$t2.ast));
- 				//TODO CASO EXTENDS: fare controllo se il campo esiste già... Non deve dare errore ma sovrascriverlo (preservando l'offset)
- 				virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,fieldOffset--));
+ 				if(virtualTable.get($c2.text) == null) { // Caso con o senza override
+ 					fieldsList.add(-fieldOffset-1, new FieldNode($c2.text,$t2.ast));
+ 					virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,fieldOffset--));
+ 				} else {
+ 					fieldsList.add(-virtualTable.get($c2.text).getOffset()-1, new FieldNode($c2.text,$t2.ast));
+ 					virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,virtualTable.get($c2.text).getOffset()));
+ 				}
  			}
  			)* )? RPAR
  				// inizia la dichiarazione e definizione dei metodi   
               CLPAR { 
-              	int methodOffset = 0; //offset iniziale dei metodi di una classe (offset che aumenta verso l'alto)
+              	//int methodOffset = 0; //offset iniziale dei metodi di una classe (offset che aumenta verso l'alto)
             	List<Node> parList = new ArrayList<>();
-            	List<Node> decList = new ArrayList<>(); 		
+            	List<Node> decList = new ArrayList<>();
  			}
                  ( FUN m1=ID COLON mt1=type {
                  	//aggiunto il metodo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
                  	MethodNode methodNode = new MethodNode($m1.text,$mt1.ast,parList,decList);
-                 	methodsList.add(methodNode);
-                 	STEntry methodEntry = new STEntry(nestingLevel,$mt1.ast,methodOffset++,true);
-                 	//methodOffset += 2; //TODO verificare -> Il layout higher-order occupa due posti invece di uno anche per i metodi HO all'interno di una classe
-                 	//TODO CASO EXTENDS: fare controllo se il metodo esiste già... Non deve dare errore ma sovrascriverlo (preservando l'offset)
+                 	
+                 	STEntry methodEntry = null;
+                 	if(virtualTable.get($m1.text) == null) { // Caso con o senza ereditarietà (preservando l'offset)
+                 		methodsList.add(methodOffset, methodNode);
+                 		methodEntry = new STEntry(nestingLevel,$mt1.ast,methodOffset++,true);
+                 	} else {
+                 		methodsList.add(virtualTable.get($m1.text).getOffset(), methodNode);
+                 		methodEntry = new STEntry(nestingLevel,$mt1.ast,virtualTable.get($m1.text).getOffset(),true);
+                 	}
                  	virtualTable.put($m1.text,methodEntry);
                  	
                  	// Entro dentro un nuovo scope.

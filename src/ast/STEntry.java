@@ -63,4 +63,8 @@ public class STEntry {
 				+ indent + "STEntry: offset " + this.offset + ("\n")
 				+ indent + "STEntry: isMethod " + this.isMethod + ("\n");
 	}
+	
+	public STEntry cloneEntry() {
+		return new STEntry(this.nestingLevel, this.type.cloneNode(), this.offset, this.isMethod);
+	}
 }
