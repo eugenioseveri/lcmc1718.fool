@@ -29,13 +29,20 @@ prog returns [Node ast]:
 	{	
 		HashMap<String,STEntry> hm = new HashMap<> ();
 		symTable.add(hm);
+		boolean isObjectOriented = false;
 	}
 	( e=exp {$ast = new ProgNode($e.ast);} //Caso in cui non ho dichiarazioni, quindi un programma semplice  
-	| LET ( c=cllist (d=declist)? 
+	| LET ( c=cllist (d=declist)? {isObjectOriented = true;}
         	| d=declist
             ) IN e=exp 
-		{	$ast = new ProgLetInNode($d.astlist,$e.ast); //TODO aggiungere c.astlist nel costruttore
-			//non gli passo solo exp ma anche declist che sarà un albero di nodi (parseTree), cioè tutte le vecchie dichiarazioni fatte. Stessa cosa per cllist, gli passo tutte le dichiarazioni di classi fatte.
+		{
+			// Non gli passo solo exp ma anche declist che sarà un albero di nodi (parseTree), cioè tutte le vecchie dichiarazioni fatte.
+			// Stessa cosa per cllist, gli passo tutte le dichiarazioni di classi fatte.
+			if (isObjectOriented == true) {
+				$ast = new ProgLetInNode($c.astlist,$d.astlist,$e.ast);
+			} else {
+				$ast = new ProgLetInNode($d.astlist,$e.ast);
+			}			
 		} 
 	) {	symTable.remove(nestingLevel); } SEMIC ;
 
@@ -62,9 +69,6 @@ cllist returns [List<Node> astlist]:
  			STEntry superEntry = null; // Dichiara Entry della superclasse a null
  			Map<String,STEntry> superVirtualTable = null; // Virtual table della classe padre
  			HashMap<String,STEntry> virtualTable = new HashMap<>(); // VirtualTable vuota
- 			
- 			STEntry entry = new STEntry(nestingLevel,classType,offset--); //STEntry della classe da inserire al livello 0 della symbolTable
- 			hm.put($i.text,entry); //inserisco nella hashMap di livello 0 la classe appena dichiarata
  		}
  		(EXTENDS ei=ID
  		{
@@ -76,19 +80,24 @@ cllist returns [List<Node> astlist]:
  			}
  			// Recupero STEntry della classe da estendere
  			superEntry = hm.get($ei.text);
+ 			
  			// Clonare il ClassTypeNode della classe da cui si eredita
- 			ClassTypeNode superClassType = (ClassTypeNode) superEntry.getType().cloneNode();
+ 			classType = (ClassTypeNode) superEntry.getType().cloneNode();
+ 			fieldsList = classType.getAllFields();
+ 			methodsList = classType.getAllMethods();
+ 			
  			// Clonare la virtualTable della classe da cui si eredita
  			superVirtualTable = classTable.get($ei.text);
+ 			
  			//Map<String,STEntry> superVirtualTableClone = new HashMap<>(); // TODO vedere se questa virtual table copiata serve veramente
  			for(String s : superVirtualTable.keySet()) {
  				virtualTable.put(s, superVirtualTable.get(s).cloneEntry());
  			}
- 			
- 			// Clono la STEntry della superclass ed estenderla?
  		}
  		)? 
  		{
+ 			STEntry entry = new STEntry(nestingLevel,classType,offset--); //STEntry della classe da inserire al livello 0 della symbolTable
+ 			hm.put($i.text,entry); //inserisco nella hashMap di livello 0 la classe appena dichiarata
  			
  			ClassNode classNode = new ClassNode($i.text,entry,superEntry,fieldsList,methodsList); //con l'ereditarietà superclasse
  			$astlist.add(classNode);
@@ -137,12 +146,10 @@ cllist returns [List<Node> astlist]:
  			}
  			)* )? RPAR
  				// inizia la dichiarazione e definizione dei metodi   
-              CLPAR { 
-              	//int methodOffset = 0; //offset iniziale dei metodi di una classe (offset che aumenta verso l'alto)
-            	List<Node> parList = new ArrayList<>();
-            	List<Node> decList = new ArrayList<>();
- 			}
+              CLPAR {}
                  ( FUN m1=ID COLON mt1=type {
+                 	List<Node> parList = new ArrayList<>();
+            		List<Node> decList = new ArrayList<>();
                  	//aggiunto il metodo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
                  	MethodNode methodNode = new MethodNode($m1.text,$mt1.ast,parList,decList);
                  	

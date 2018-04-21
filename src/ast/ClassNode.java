@@ -23,19 +23,23 @@ public class ClassNode implements DecNode {
 	
 	@Override
 	public String toPrint(String indent) {
-		String fields= "";
-		String methods = "";
-		for(Node f:this.fields) {
-			fields += f.toPrint(indent + "  ");
-		}
-		for(Node m:this.methods) {
-			methods += m.toPrint(indent + "  ");
-		}
+//		String fields= "";
+//		String methods = "";
+//		for(Node f:this.fields) {
+//			fields += f.toPrint(indent + "  ");
+//		}
+//		for(Node m:this.methods) {
+//			methods += m.toPrint(indent + "  ");
+//		}
+//		String superEntryStr = "";
+//		if (this.superEntry != null) { 
+//			superEntryStr = this.superEntry.toPrint(indent +  "  ");
+//		}
 		return indent + "Class " + this.id + "\n" +
-			this.classEntry.toPrint(indent +  "  ") +
-			this.superEntry.toPrint(indent +  "  ") +
-			fields +
-			methods;
+			this.classEntry.toPrint(indent +  "  ");
+			//superEntryStr + //TODO decidere se è da stampare
+			//fields + //TODO decidere se è da stampare
+			//methods; //TODO decidere se è da stampare
 	}
 
 	@Override
