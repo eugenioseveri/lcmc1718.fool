@@ -16,11 +16,24 @@ public class ClassTypeNode implements Node {
 		this.allFields = fieldsList;
 		this.allMethods = methodsList;
 	}
+	
+	public List<Node> getAllMethods() {
+		return this.allMethods;
+	}
 
 	@Override
 	public String toPrint(String indent) {
-		// TODO Auto-generated method stub
-		return null;
+		String fields= "";
+		String methods = "";
+		for(Node f:this.allFields) {
+			fields += f.toPrint(indent + "  ");
+		}
+		for(Node m:this.allMethods) {
+			methods += m.toPrint(indent + "  ");
+		}
+		return indent + "ClassType:\n" +
+				fields +
+				methods;
 	}
 
 	@Override

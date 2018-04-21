@@ -90,7 +90,7 @@ cllist returns [List<Node> astlist]:
  		)? 
  		{
  			
- 			ClassNode classNode = new ClassNode($i.text,entry,fieldsList,methodsList); //con l'ereditarietà superclasse
+ 			ClassNode classNode = new ClassNode($i.text,entry,superEntry,fieldsList,methodsList); //con l'ereditarietà superclasse
  			$astlist.add(classNode);
  			
  			// Entro dentro un nuovo scope.
@@ -404,13 +404,13 @@ value returns [Node ast]:
 		| DOT i2=ID LPAR {
 			
 			//controllare se esiste la classe da istanziare
-			Map<String,STEntry> classEntry = classTable.get($i.text);
-			if (classEntry == null) {
+			Map<String,STEntry> virtualTable = classTable.get(((RefTypeNode)(entry.getType())).getId());
+			if (virtualTable == null) {
 				System.out.println("Class " + $i.text + " at line " + $i.line + " not declared.");
 				System.exit(0);
 			}
 			
-			STEntry methodEntry = classEntry.get($i2.text);
+			STEntry methodEntry = virtualTable.get($i2.text);
 			//controllo se il metodo esiste (verifico l'esistenza)
 			if (methodEntry == null){
 				System.out.println("Method " + $i.text + " at line " + $i.line + " not declared.");

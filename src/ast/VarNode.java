@@ -18,7 +18,7 @@ public class VarNode implements DecNode {
 	@Override
 	public String toPrint(String indent) {
 		return indent + "Var:" + this.id + "\n" +
-				type.toPrint(indent + "  ") +
+				this.type.toPrint(indent + "  ") +
 				this.exp.toPrint(indent + "  ");
 	}
 

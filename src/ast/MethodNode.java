@@ -24,10 +24,25 @@ public class MethodNode implements DecNode {
 		this.exp = exp;
 	}
 	
+	public String getId() {
+		return this.id;
+	}
+	
 	@Override
 	public String toPrint(String indent) {
-		// TODO Auto-generated method stub
-		return null;
+		String declrStr= "";
+		String parStr = "";
+		for(Node dec:this.decList) {
+			declrStr += dec.toPrint(indent + "  ");
+		}
+		for(Node par:this.parlist) {
+			parStr += par.toPrint(indent + "  ");
+		}
+		return indent + "Method:" + this.id + "\n" +
+				this.type.toPrint(indent + "  ") +
+				parStr +
+				declrStr +
+				this.exp.toPrint(indent + "  ");
 	}
 
 	@Override

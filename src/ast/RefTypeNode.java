@@ -9,6 +9,10 @@ public class RefTypeNode implements Node {
 		this.id = id;
 	}
 	
+	public String getId() {
+		return this.id;
+	}
+	
 	@Override
 	public String toPrint(String indent) {
 		return indent + "RefType "+ this.id + "\n";

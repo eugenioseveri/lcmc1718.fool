@@ -18,8 +18,13 @@ public class NewNode implements Node {
 
 	@Override
 	public String toPrint(String indent) {
-		// TODO Auto-generated method stub
-		return null;
+		String parStr = "";
+		for(Node par:this.parList) {
+			parStr += par.toPrint(indent + "  ");
+		}
+		return indent + "New: " + this.classId + "\n"+
+				this.entry.toPrint(indent +  "  ") +
+				parStr;
 	}
 
 	@Override

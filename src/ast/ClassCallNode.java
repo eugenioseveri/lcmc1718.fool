@@ -21,8 +21,14 @@ public class ClassCallNode implements Node {
 
 	@Override
 	public String toPrint(String indent) {
-		// TODO Auto-generated method stub
-		return null;
+		String argStr = "";
+		for(Node arg:this.argList) {
+			argStr += arg.toPrint(indent + "  ");
+		}
+		return indent + "ClassCall: " + this.id + "." + this.method + " at nestingLevel " + this.nestingLevel + "\n"+
+				this.classEntry.toPrint(indent +  "  ") + 
+				this.methodEntry.toPrint(indent +  "  ") +
+				argStr;
 	}
 
 	@Override
