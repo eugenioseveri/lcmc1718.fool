@@ -14,7 +14,7 @@ public class ParNode implements DecNode {
 	@Override
 	public String toPrint(String indent) {
 		return indent + "Par:" + this.id + "\n" +
-				type.toPrint(indent + "  ");
+				this.type.toPrint(indent + "  ");
 	}
 
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia

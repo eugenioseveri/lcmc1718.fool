@@ -20,6 +20,10 @@ public class ClassTypeNode implements Node {
 	public List<Node> getAllMethods() {
 		return this.allMethods;
 	}
+	
+	public List<Node> getAllFields() {
+		return this.allFields;
+	}
 
 	@Override
 	public String toPrint(String indent) {
@@ -31,7 +35,7 @@ public class ClassTypeNode implements Node {
 		for(Node m:this.allMethods) {
 			methods += m.toPrint(indent + "  ");
 		}
-		return indent + "ClassType:\n" +
+		return indent + "ClassType\n" +
 				fields +
 				methods;
 	}

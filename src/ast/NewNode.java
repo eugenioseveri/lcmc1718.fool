@@ -23,7 +23,7 @@ public class NewNode implements Node {
 			parStr += par.toPrint(indent + "  ");
 		}
 		return indent + "New: " + this.classId + "\n"+
-				this.entry.toPrint(indent +  "  ") +
+				//this.entry.toPrint(indent +  "  ") + //TODO decidere se è da stampare
 				parStr;
 	}
 

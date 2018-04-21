@@ -1,27 +1,44 @@
 package ast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import lib.FOOLLib;
 
 public class ProgLetInNode implements Node {
 
-	private ArrayList<Node> decList;
+	private List<Node> decList;
+	private List<Node> cllist;
 	private Node exp;
 	
-	public ProgLetInNode(ArrayList<Node> declist, Node exp) {
+	public ProgLetInNode(List<Node> declist, Node exp) {
 		super();
 		this.decList = declist;
+		this.cllist = new ArrayList<>();
+		this.exp = exp;
+	}
+	
+	public ProgLetInNode(List<Node> cllist, List<Node> declist, Node exp) {
+		super();
+		this.decList = declist;
+		this.cllist = cllist;
 		this.exp = exp;
 	}
 
 	@Override
 	public String toPrint(String indent) {
 		String declStr = "";
+		String clStr = "";
 		for(Node dec:this.decList) {
 			declStr += dec.toPrint(indent + "  ");
 		}
-		return indent + "ProgLetIn\n" + declStr + this.exp.toPrint("  ");
+		for(Node cl:this.cllist) {
+			clStr += cl.toPrint(indent + "  ");
+		}
+		return indent + "ProgLetIn\n" +
+				clStr +
+				declStr +
+				this.exp.toPrint("  ");
 	}
 
 	@Override
