@@ -12,18 +12,30 @@ public class ClassNode implements DecNode {
 	private STEntry superEntry;
 	private Node symType;
 	
-	public ClassNode(final String id, final STEntry classEntry, final List<Node> fields, final List<Node> methods) {
+	public ClassNode(final String id, final STEntry classEntry, final STEntry superEntry, final List<Node> fields, final List<Node> methods) {
 		super();
 		this.id = id;
 		this.classEntry = classEntry;
+		this.superEntry = superEntry;
 		this.fields = fields;
 		this.methods = methods;
 	}
 	
 	@Override
 	public String toPrint(String indent) {
-		// TODO Auto-generated method stub
-		return null;
+		String fields= "";
+		String methods = "";
+		for(Node f:this.fields) {
+			fields += f.toPrint(indent + "  ");
+		}
+		for(Node m:this.methods) {
+			methods += m.toPrint(indent + "  ");
+		}
+		return indent + "Class " + this.id + "\n" +
+			this.classEntry.toPrint(indent +  "  ") +
+			this.superEntry.toPrint(indent +  "  ") +
+			fields +
+			methods;
 	}
 
 	@Override

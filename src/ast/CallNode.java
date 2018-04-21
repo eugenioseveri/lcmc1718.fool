@@ -26,9 +26,9 @@ public class CallNode implements Node {
 		for(Node par:this.parlist) {
 			parStr += par.toPrint(indent + "  ");
 		}
-		return indent + "Call:" + this.id + " at nestingLevel " + this.nestingLevel + "\n"
-		+ this.entry.toPrint(indent +  "  ")
-		+ parStr;
+		return indent + "Call:" + this.id + " at nestingLevel " + this.nestingLevel + "\n" +
+				this.entry.toPrint(indent +  "  ") +
+				parStr;
 	}
 
 	@Override
