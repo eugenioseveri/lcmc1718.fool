@@ -37,12 +37,12 @@ public class STEntry {
 		this.isMethod = isMethod;
 	}
 
-	public void addType(Node type) {
+	public void addType(final Node type) {
 		this.type = type;
 	}
 	
 	public int getNestingLevel() {
-		return nestingLevel;
+		return this.nestingLevel;
 	}
 
 	public Node getType() {
@@ -57,9 +57,9 @@ public class STEntry {
 		return this.isMethod;
 	}
 
-	public String toPrint(String indent) { 
+	public String toPrint(final String indent) { 
 		return indent + "STEntry: nestingLevel " + this.nestingLevel + "\n"
-				+ indent + "STEntry: type\n " + this.type.toPrint(indent + "  ")
+				+ indent + "STEntry: type\n" + this.type.toPrint(indent + "  ")
 				+ indent + "STEntry: offset " + this.offset + ("\n")
 				+ indent + "STEntry: isMethod " + this.isMethod + ("\n");
 	}

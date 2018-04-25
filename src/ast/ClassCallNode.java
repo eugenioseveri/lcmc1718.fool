@@ -27,7 +27,7 @@ public class ClassCallNode implements Node {
 		}
 		return indent + "ClassCall: " + this.id + "." + this.method + " at nestingLevel " + this.nestingLevel + "\n"+
 				this.classEntry.toPrint(indent +  "  ") + 
-				this.methodEntry.toPrint(indent +  "  ") +
+				this.methodEntry.toPrint(indent +  "    ") +
 				argStr;
 	}
 
