@@ -9,6 +9,7 @@ grammar FOOL;
 
 @parser::members {
 	private int nestingLevel = 0;
+	//int offset = -2; //TODO usare questo offset globale?
 	// Array di tabelle dove l'indice dell'array è il livello sintattico, ossia il livello di scope, indice 0 = dichiarazioni globali, indice 1 = dichiarazioni locali (mappano identificatori con i valori)
 	ArrayList<HashMap<String,STEntry>> symTable = new ArrayList<HashMap<String,STEntry>>();
 	// Il livello dell'ambiente con dichiarazioni più esterne è 0 (nelle slide è 1); il fronte della lista di tabelle è "symTable.get(nestingLevel)"
@@ -123,23 +124,26 @@ cllist returns [List<Node> astlist]:
  		LPAR 
  			(c1=ID COLON t1=type {
  				//aggiunto il campo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
- 				if(virtualTable.get($c1.text) == null) { // Caso con o senza override
+ 				if(virtualTable.get($c1.text) == null) { 
+ 					// Caso senza override
  					fieldsList.add(-fieldOffset-1, new FieldNode($c1.text,$t1.ast));
  					virtualTable.put($c1.text, new STEntry(nestingLevel,$t1.ast,fieldOffset--));
  				} else {
+ 					//caso con override
+ 					fieldsList.remove(-virtualTable.get($c1.text).getOffset()-1);
  					fieldsList.add(-virtualTable.get($c1.text).getOffset()-1, new FieldNode($c1.text,$t1.ast));
  					virtualTable.put($c1.text, new STEntry(nestingLevel,$t1.ast,virtualTable.get($c1.text).getOffset()));
  				}
  			} (COMMA c2=ID COLON t2=type {
- 				if(virtualTable.get($c2.text) != null) { // Controllo se un campo sta venendo dichiarato erroneamente più volte nella stessa classe
- 					System.out.println("Field id: " + $c2.text + " at line " + $i.line + " already declared.");
- 					System.exit(0);
- 				}
  				//aggiunto il campo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
  				if(virtualTable.get($c2.text) == null) { // Caso con o senza override
+ 					// Caso senza override
  					fieldsList.add(-fieldOffset-1, new FieldNode($c2.text,$t2.ast));
  					virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,fieldOffset--));
  				} else {
+ 					// Caso con override
+ 					System.out.println($c2.text + " " + (-virtualTable.get($c2.text).getOffset()-1));
+ 					fieldsList.remove(-virtualTable.get($c2.text).getOffset()-1);
  					fieldsList.add(-virtualTable.get($c2.text).getOffset()-1, new FieldNode($c2.text,$t2.ast));
  					virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,virtualTable.get($c2.text).getOffset()));
  				}
@@ -154,10 +158,13 @@ cllist returns [List<Node> astlist]:
                  	MethodNode methodNode = new MethodNode($m1.text,$mt1.ast,parList,decList);
                  	
                  	STEntry methodEntry = null;
-                 	if(virtualTable.get($m1.text) == null) { // Caso con o senza ereditarietà (preservando l'offset)
+                 	if(virtualTable.get($m1.text) == null) {
+                 		// Caso senza ereditarietà 
                  		methodsList.add(methodOffset, methodNode);
                  		methodEntry = new STEntry(nestingLevel,$mt1.ast,methodOffset++,true);
                  	} else {
+                 		// Caso con ereditarietà (preservando l'offset - OVERLOAD NON SUPPORTATO)
+                 		methodsList.remove(virtualTable.get($m1.text).getOffset());
                  		methodsList.add(virtualTable.get($m1.text).getOffset(), methodNode);
                  		methodEntry = new STEntry(nestingLevel,$mt1.ast,virtualTable.get($m1.text).getOffset(),true);
                  	}
