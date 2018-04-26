@@ -1,5 +1,8 @@
 package lib;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ast.*;
 
 // Funzioni ausialiarie di libreria per FOOL.
@@ -8,6 +11,7 @@ public class FOOLLib {
 	private static int labCount = 0; // Contatore utilizzato per generare etichette fresh
 	private static int funLabCount = 0; //Come labCount, ma per le funzioni
 	private static String funCode = ""; // Stringa contentente i codici delle funzioni
+	private static Map<String,String> superType = new HashMap<>(); // mappa le classi con le relative superclassi: classID -> superClassID
 	
 	/**
 	 * Funzione che definisce l'idea di sottotipo.
@@ -15,18 +19,47 @@ public class FOOLLib {
 	 * @return True se "a" è sottotipo di "b", False altrimenti
 	 */
 	public static boolean isSubtype(Node a, Node b) {
-		//TODO ottimizzare con chiamate ricorsive a subtype invece di controllare la stessa cosa più volte
-		if(a instanceof ArrowTypeNode && b instanceof ArrowTypeNode &&
-				((ArrowTypeNode) a).getParlist().size() == ((ArrowTypeNode) b).getParlist().size() && // Controllo che il numero dei parametri sia lo stesso
-				((ArrowTypeNode) a).getRet().getClass().equals(((ArrowTypeNode) b).getRet().getClass())) { // Controllo che il tipo di ritorno sia lo stesso
-			for (int i=0; i< ((ArrowTypeNode) a).getParlist().size(); i++) { // Controllo che le classi dei parametri corrispondano
-				if(((ArrowTypeNode) a).getParlist().get(i).getClass() != ((ArrowTypeNode) b).getParlist().get(i).getClass())
+		
+		if (a instanceof ArrowTypeNode && b instanceof ArrowTypeNode) {
+			/*--RELAZIONE DI CO-VARIANZA sul tipo di ritorno (cioè posso prendere un tipo di ritorno più specifico)--*/
+			// Controllo che il tipo di ritorno sia l'uno il sottotipo dell'altro
+			if (!isSubtype(((ArrowTypeNode) a).getRet(),((ArrowTypeNode) b).getRet())) {
+				return false;
+			}
+			
+			// Controllo che il numero dei parametri sia lo stesso
+			if (((ArrowTypeNode) a).getParlist().size() != ((ArrowTypeNode) b).getParlist().size()) {
+				return false;
+			}
+			
+			/*--RELAZIONE DI CONTRO-VARIANZA sul tipo dei parametri (cioè posso prendere argomenti più generali)--*/
+			// Vado a controllare che ogni coppia di parametri siano sottotipo l'uno dell'altro (parametro di b sottotipo di quello di a)
+			for (int i=0; i< ((ArrowTypeNode) a).getParlist().size(); i++) {
+				if(!isSubtype(((ArrowTypeNode) b).getParlist().get(i),((ArrowTypeNode) a).getParlist().get(i))) {
 					return false;
+				}
 			}
 			return true;
-		} else if(a.getClass().equals(b.getClass()) && !(a instanceof ArrowTypeNode || b instanceof ArrowTypeNode)) { // Caso dell'uguaglianza
+		} else if (a instanceof RefTypeNode && b instanceof RefTypeNode) { // se sono entrambi classi vado a vedere le relazioni nella mappa superType
+			// se entrambi i ref type node contengono il riferimento alla stessa classe
+			if (((RefTypeNode) a).getId().compareTo(((RefTypeNode) b).getId()) == 0) {
+				return true;
+			}
+			String currentClass = ((RefTypeNode) a).getId();
+			String superClass = null;
+			do {
+				superClass = superType.get(currentClass);
+				if (superClass != null && superClass.compareTo(((RefTypeNode) b).getId()) == 0) {
+					return true;
+				}
+				currentClass = superClass;
+			} while (superClass != null);
+			return false;
+		} else if (a instanceof EmptyTypeNode && b instanceof RefTypeNode) { //se a è null allora è sottotipo di qualsiasi classe
 			return true;
 		} else if (a instanceof BoolTypeNode && b instanceof IntTypeNode) { // Caso sottotipo definisce che Bool è sottotipo di Int
+			return true;
+		} else if (a.getClass().equals(b.getClass())) { // Caso dell'uguaglianza
 			return true;
 		} else {
 			return false;
@@ -61,6 +94,10 @@ public class FOOLLib {
 	 */
 	public static String getCode() {
 		return funCode;
+	}
+	
+	public static void addSuperType(final String strClass, final String strSuperClass) {
+		superType.put(strClass, strSuperClass);
 	}
 
 }

@@ -3,6 +3,8 @@ package ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import lib.FOOLLib;
+
 public class MethodNode implements DecNode {
 
 	private String id;
@@ -47,8 +49,16 @@ public class MethodNode implements DecNode {
 
 	@Override
 	public Node typeCheck() {
-		// TODO Auto-generated method stub
-		return null;
+		// Chiamare il type check delle la lista delle dichiarazioni interne al metodo
+		for(Node dec:decList) {
+			dec.typeCheck();
+		}
+		// Controlliamo che il corpo della funzione sia sottotipo del tipo del metodo
+		if(!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
+			System.out.println("Incompatible value for variable!");
+			System.exit(0);
+		}
+		return null; // Come VarNode è una dichiarazione, quindi non si ha valore di ritorno
 	}
 
 	@Override
@@ -59,7 +69,7 @@ public class MethodNode implements DecNode {
 
 	@Override
 	public Node getSymType() {
-		return symType;
+		return this.symType;
 	}
 
 	public void setSymType(Node symType) {

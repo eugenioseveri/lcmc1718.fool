@@ -3,6 +3,8 @@ package ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import lib.FOOLLib;
+
 public class NewNode implements Node {
 
 	private String classId; // Id della classe che sto istanziando
@@ -29,8 +31,21 @@ public class NewNode implements Node {
 
 	@Override
 	public Node typeCheck() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Node> fields = ((ClassTypeNode) this.entry.getType()).getAllFields();
+		// Controllo che il numero dei parametri sia uguale alla dichiarazione del costruttore
+		if (fields.size() != this.parList.size()) {
+			System.out.println("Wrong number of parameters in the instantiation of " + this.classId);
+			System.exit(0);
+		}
+		
+		// Controllo che il tipo di ogni parametro attuale dentro parlist sia sottotipo dei parametri della dichiarazione del costruttore
+		for(int i=0; i<this.parList.size(); i++) {
+			if(!(FOOLLib.isSubtype(this.parList.get(i).typeCheck(), ((FieldNode) fields.get(i)).getSymType()))) {
+				System.out.println("Wrong type for " + (i+1) + "-th parameter in the instantiation of " + this.classId);
+				System.exit(0);
+			}
+		}
+		return new RefTypeNode(this.classId);
 	}
 
 	@Override
@@ -45,7 +60,7 @@ public class NewNode implements Node {
 		for (Node n: this.parList) {
 			params.add(n.cloneNode());
 		}
-		return new NewNode(this.classId, this.entry, params); //TODO verificare se si deve fare il clone dell'TEntry
+		return new NewNode(this.classId, this.entry.cloneEntry(), params);
 	}
 
 }

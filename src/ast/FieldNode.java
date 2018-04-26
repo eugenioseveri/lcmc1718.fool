@@ -10,6 +10,10 @@ public class FieldNode implements DecNode {
 		this.id = id;
 		this.type = type;
 	}
+	
+	public String getId() {
+		return this.id;
+	}
 
 	@Override
 	public String toPrint(String indent) {

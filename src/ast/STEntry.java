@@ -29,6 +29,14 @@ public class STEntry {
 		this.offset = offset;
 	}
 	
+	public STEntry(int nestingLevel, int offset, boolean isMethod) {
+		super();
+		this.nestingLevel = nestingLevel;
+		this.type = null;
+		this.offset = offset;
+		this.isMethod = isMethod;
+	}
+	
 	public STEntry(int nestingLevel, Node type, int offset, boolean isMethod) {
 		super();
 		this.nestingLevel = nestingLevel;
