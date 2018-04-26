@@ -21,6 +21,14 @@ public class IdNode implements Node {
 
 	@Override
 	public Node typeCheck() {
+		if (this.entry.isMethod()) {
+			System.out.println(this.id + " is a method");
+			System.exit(0);
+		}
+		if (this.entry.getType() instanceof ClassTypeNode) {
+			System.out.println(this.id + " already used for a Class name!");
+			System.exit(0);
+		}
 		return this.entry.getType();
 	}
 
@@ -53,6 +61,6 @@ public class IdNode implements Node {
 	
 	@Override
 	public Node cloneNode() {
-		return new IdNode(this.id, this.entry, this.nestingLevel); // TODO vedere se serve clonare anche la STEntry
+		return new IdNode(this.id, this.entry.cloneEntry(), this.nestingLevel);
 	}
 }

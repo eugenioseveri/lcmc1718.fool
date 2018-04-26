@@ -45,7 +45,7 @@ public class CallNode implements Node {
 
 		// Controllo che il numero dei parametri sia uguale alla dichiarazione
 		List<Node> atnParList = atn.getParlist();
-		if (!(atnParList.size() == this.parlist.size())) {
+		if (atnParList.size() != this.parlist.size()) {
 			System.out.println("Wrong number of parameters in the invocation of " + this.id);
 			System.exit(0);
 		}
@@ -71,7 +71,6 @@ public class CallNode implements Node {
 			getAR += "lw\n";
 		}
 
-		//TODO fatto fino a Higher-Order
 		return // Allocazione della parte corrente dell'AR della funzione che sta venendo chiamata
 				"lfp\n" // Control Link
 				+ parCode // Allocazione parametri

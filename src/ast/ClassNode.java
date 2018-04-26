@@ -3,6 +3,8 @@ package ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import lib.FOOLLib;
+
 public class ClassNode implements DecNode {
 
 	private String id;
@@ -31,20 +33,48 @@ public class ClassNode implements DecNode {
 		for(Node m:this.methods) {
 			methods += m.toPrint(indent + "  ");
 		}
-//		String superEntryStr = "";
-//		if (this.superEntry != null) { 
-//			superEntryStr = this.superEntry.toPrint(indent +  "  ");
-//		}
+		String superEntryStr = "";
+		if (this.superEntry != null) { 
+			superEntryStr = this.superEntry.toPrint(indent +  "  ");
+		}
+		//TODO decidere cosa stampare
 		return indent + "Class " + this.id + "\n" +
 			//this.classEntry.toPrint(indent +  "  ");
-			//superEntryStr + //TODO decidere se è da stampare
-			fields + //TODO decidere se è da stampare
-			methods; //TODO decidere se è da stampare
+			//superEntryStr + 
+			fields +
+			methods;
 	}
 
 	@Override
 	public Node typeCheck() {
-		// TODO Auto-generated method stub
+		//richiama sui figli che sono metodi
+		for(Node n: this.methods) {
+			n.typeCheck();
+		}
+		
+		//Campi e metodi della classe padre
+		List<Node> superFields = ((ClassTypeNode)this.superEntry.getType()).getAllFields();
+		List<Node> superMethods = ((ClassTypeNode)this.superEntry.getType()).getAllMethods();
+		
+		//Campi e metodi della classe locale
+		List<Node> fields = ((ClassTypeNode)this.symType).getAllFields();
+		List<Node> methods = ((ClassTypeNode)this.symType).getAllMethods();
+		
+		//Controllo che i campi della classe figlio siano sottotipo della classe padre
+		for(int i = 0; i < superFields.size(); i++) {
+			if (!FOOLLib.isSubtype(((FieldNode)fields.get(i)).getSymType(),((FieldNode)superFields.get(i)).getSymType())){
+				System.out.println("Error subtyping field " + ((FieldNode)fields.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
+				System.exit(0);
+			}
+		}
+		
+		//Controllo che i metodi della classe figlio siano sottotipo della classe padre
+		for(int i = 0; i < superMethods.size(); i++) {
+			if (!FOOLLib.isSubtype(((MethodNode)methods.get(i)).getSymType(),((MethodNode)superMethods.get(i)).getSymType())){
+				System.out.println("Error subtyping method " + ((MethodNode)methods.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
+				System.exit(0);
+			}
+		}
 		return null;
 	}
 

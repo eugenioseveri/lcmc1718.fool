@@ -1,6 +1,8 @@
 package ast;
 
 import java.util.List;
+
+import lib.FOOLLib;
 public class ClassCallNode implements Node {
 	
 	private String id;
@@ -33,8 +35,24 @@ public class ClassCallNode implements Node {
 
 	@Override
 	public Node typeCheck() {
-		// TODO Auto-generated method stub
-		return null;
+		// Recupero il tipo di ritorno e i parametri (nel parser è già stato controllato che esista la classe e che contenga il metodo)
+		ArrowTypeNode atn = (ArrowTypeNode) this.methodEntry.getType();
+		
+		// Controllo che il numero dei parametri sia uguale alla dichiarazione
+		List<Node> atnParList = atn.getParlist();
+		if (atnParList.size() != this.argList.size()) {
+			System.out.println("Wrong number of parameters in the invocation of " + this.id + "." + this.method + "()");
+			System.exit(0);
+		}
+
+		// Controllo che il tipo di ogni parametro attuale dentro parlist sia sottotipo dei parametri della dichiarazione
+		for(int i=0; i<this.argList.size(); i++) {
+			if(!(FOOLLib.isSubtype((this.argList.get(i)).typeCheck(), atnParList.get(i)))) {
+				System.out.println("Wrong type for " + (i+1) + "-th parameter in the invocation of " + this.id + "." + this.method + "()");
+				System.exit(0);
+			}
+		}
+		return atn.getRet();
 	}
 
 	@Override

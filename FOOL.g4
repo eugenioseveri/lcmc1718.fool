@@ -5,6 +5,7 @@ grammar FOOL;
 	import java.util.HashMap;
 	import java.util.ArrayList;
 	import ast.*;
+	import lib.FOOLLib;
 }
 
 @parser::members {
@@ -90,10 +91,12 @@ cllist returns [List<Node> astlist]:
  			// Clonare la virtualTable della classe da cui si eredita
  			superVirtualTable = classTable.get($ei.text);
  			
- 			//Map<String,STEntry> superVirtualTableClone = new HashMap<>(); // TODO vedere se questa virtual table copiata serve veramente
  			for(String s : superVirtualTable.keySet()) {
  				virtualTable.put(s, superVirtualTable.get(s).cloneEntry());
  			}
+ 			
+ 			//Aggiorniamo la mappa dei supertipi in FOOLLib
+ 			FOOLLib.addSuperType($i.text, $ei.text);
  		}
  		)? 
  		{
@@ -101,6 +104,7 @@ cllist returns [List<Node> astlist]:
  			hm.put($i.text,entry); //inserisco nella hashMap di livello 0 la classe appena dichiarata
  			
  			ClassNode classNode = new ClassNode($i.text,entry,superEntry,fieldsList,methodsList); //con l'ereditarietà superclasse
+ 			classNode.setSymType(classType);
  			$astlist.add(classNode);
  			
  			// Entro dentro un nuovo scope.
@@ -121,7 +125,7 @@ cllist returns [List<Node> astlist]:
  				}
 			}
  		}
- 		LPAR 
+ 		LPAR
  			(c1=ID COLON t1=type {
  				//aggiunto il campo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
  				if(virtualTable.get($c1.text) == null) { 
@@ -142,7 +146,6 @@ cllist returns [List<Node> astlist]:
  					virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,fieldOffset--));
  				} else {
  					// Caso con override
- 					System.out.println($c2.text + " " + (-virtualTable.get($c2.text).getOffset()-1));
  					fieldsList.remove(-virtualTable.get($c2.text).getOffset()-1);
  					fieldsList.add(-virtualTable.get($c2.text).getOffset()-1, new FieldNode($c2.text,$t2.ast));
  					virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,virtualTable.get($c2.text).getOffset()));
@@ -150,7 +153,7 @@ cllist returns [List<Node> astlist]:
  			}
  			)* )? RPAR
  				// inizia la dichiarazione e definizione dei metodi   
-              CLPAR {}
+              CLPAR
                  ( FUN m1=ID COLON mt1=type {
                  	List<Node> parList = new ArrayList<>();
             		List<Node> decList = new ArrayList<>();
@@ -161,12 +164,12 @@ cllist returns [List<Node> astlist]:
                  	if(virtualTable.get($m1.text) == null) {
                  		// Caso senza ereditarietà 
                  		methodsList.add(methodOffset, methodNode);
-                 		methodEntry = new STEntry(nestingLevel,$mt1.ast,methodOffset++,true);
+                 		methodEntry = new STEntry(nestingLevel,methodOffset++,true);
                  	} else {
                  		// Caso con ereditarietà (preservando l'offset - OVERLOAD NON SUPPORTATO)
                  		methodsList.remove(virtualTable.get($m1.text).getOffset());
                  		methodsList.add(virtualTable.get($m1.text).getOffset(), methodNode);
-                 		methodEntry = new STEntry(nestingLevel,$mt1.ast,virtualTable.get($m1.text).getOffset(),true);
+                 		methodEntry = new STEntry(nestingLevel,virtualTable.get($m1.text).getOffset(),true);
                  	}
                  	virtualTable.put($m1.text,methodEntry);
                  	
@@ -219,16 +222,16 @@ cllist returns [List<Node> astlist]:
                  		
                  	})* )? RPAR {
                  		// ora è possibile istanziare il nodo che rappresenta il tipo della funzione
-						ArrowTypeNode functionType = new ArrowTypeNode(parTypes,$mt1.ast);
-						methodEntry.addType(functionType);
+						ArrowTypeNode methodType = new ArrowTypeNode(parTypes,$mt1.ast);
+						methodEntry.addType(methodType);
 						// aggiungo il tipo anche al MethodNode
-						methodNode.setSymType(functionType); 
+						methodNode.setSymType(methodType);
                  	}
 	                (LET (VAR v1=ID COLON vt1=type ASS e1=exp SEMIC {
 	                		VarNode v = new VarNode($v1.text,$vt1.ast,$e1.ast);
 	                		decList.add(v);
 	                		
-	                		if (hmn.put($v1.text, new STEntry(nestingLevel,$vt1.ast,varOffset--)) != null) { //TODO controllare se l'offset è corretto
+	                		if (hmn.put($v1.text, new STEntry(nestingLevel,$vt1.ast,varOffset--)) != null) {
 								// Errore identificatore (parametro) già dichiarato
 								System.out.println("Var ID: " + $v1.text + " at line " + $v1.line + " already declared");
 								System.exit(0);
@@ -260,11 +263,11 @@ declist	returns [ArrayList<Node> astlist]:
 					// Errore identificatore (variabile) già dichiarata
 					System.out.println("Var id: " + $i.text + " at line " + $i.line + " already declared.");
 					System.exit(0);
-				};
+				}
 			}
-		| FUN i=ID COLON t=hotype //TODO qui ci va type invece di hotype ma genera errore...
+		| FUN i=ID COLON tf=type
 			{	
-				FunNode f = new FunNode($i.text,$t.ast);
+				FunNode f = new FunNode($i.text,$tf.ast);
 				$astlist.add(f);
 				HashMap<String,STEntry> hm = symTable.get(nestingLevel);
 				// Verificare che nello scope attuale (il fronte della tabella), la funzione sia già stata dichiarata. "put" sostituisce, ma se la chiave era già occupata restituisce la coppia vecchia, altrimenti null.
@@ -319,7 +322,7 @@ declist	returns [ArrayList<Node> astlist]:
 			)?
 			RPAR { 
 				// ora è possibile istanziare il nodo che rappresenta il tipo della funzione
-				ArrowTypeNode functionType = new ArrowTypeNode(parTypes,$t.ast);
+				ArrowTypeNode functionType = new ArrowTypeNode(parTypes,$tf.ast);
 				entry.addType(functionType);
 				// aggiungo il tipo anche al FunNode
 				f.setSymType(functionType); }
@@ -344,7 +347,7 @@ type returns [Node ast]	:
 arrow returns [Node ast] :
 	{
 		//lista dei parametri
-		ArrayList<Node> parList = new ArrayList<Node>();
+		List<Node> parList = new ArrayList<Node>();
 	}
 	LPAR (h=hotype {parList.add($h.ast);}
 			(COMMA h=hotype {parList.add($h.ast);})*
@@ -417,6 +420,12 @@ value returns [Node ast]:
 			)? RPAR { $ast = new CallNode($i.text,entry,argList,nestingLevel); } // Inserito il nestinglevel per verifiche sullo scope della funzione chiamata
 		| DOT i2=ID LPAR {
 			
+			// controllo se id è riferimento di una classe
+			if (!(entry.getType() instanceof RefTypeNode)) {
+				System.out.println($i.text + " is not a refernce to a class type object at line " + $i.line);
+				System.exit(0);
+			}
+			
 			//controllare se esiste la classe da istanziare
 			Map<String,STEntry> virtualTable = classTable.get(((RefTypeNode)(entry.getType())).getId());
 			if (virtualTable == null) {
@@ -433,8 +442,6 @@ value returns [Node ast]:
 				System.out.println($i.text + " at line " + $i.line + " is not a method.");
 				System.exit(0);
 			}
-			
-			//TODO serve controllare se la classe è già stata istanziata?
 				
 			List<Node> argList = new ArrayList<>(); //Lista degli argomenti passati al ClassCallNode
 			}(e1=exp {argList.add($e1.ast);} 
