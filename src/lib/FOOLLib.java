@@ -1,6 +1,8 @@
 package lib;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ast.*;
@@ -8,11 +10,13 @@ import ast.*;
 // Funzioni ausialiarie di libreria per FOOL.
 public class FOOLLib {
 	
+	public static final int MEMSIZE = 10000;
 	private static int labCount = 0; // Contatore utilizzato per generare etichette fresh
 	private static int funLabCount = 0; //Come labCount, ma per le funzioni
+	private static int methodLabCount = 0; //Come labCount, ma peeìr le funzioni
 	private static String funCode = ""; // Stringa contentente i codici delle funzioni
 	private static Map<String,String> superType = new HashMap<>(); // mappa le classi con le relative superclassi: classID -> superClassID
-	
+	private static List<List<String>> dispatchTables = new ArrayList<>(); // lista delle dispatchTable di ogni classe (solo nomi dei metodi)
 	/**
 	 * Funzione che definisce l'idea di sottotipo.
 	 * Valuta se il tipo di "a" è <= al tipo di "b", dove "a" e "b" sono tipi di base (Int o Bool).
@@ -68,6 +72,7 @@ public class FOOLLib {
 	
 	/**
 	 * Ogni volta che è chiamato genera una nuova etichetta
+	 * @return etichetta
 	 */
 	public static String freshLabel() {
 		return "label" + labCount++;
@@ -80,6 +85,13 @@ public class FOOLLib {
 	// Come freshLabel, ma per le funzioni
 	public static String freshFunLabel() {
 		return "function" + funLabCount++;
+	}
+	/**
+	 * Come freshLabel(), ma per i metodi.
+	 * @see #FOOLLib.freshLabel()
+	 */
+	public static String freshMethodLabel() {
+		return "method" + methodLabCount ++;
 	}
 	
 	/**
@@ -98,6 +110,14 @@ public class FOOLLib {
 	
 	public static void addSuperType(final String strClass, final String strSuperClass) {
 		superType.put(strClass, strSuperClass);
+	}
+	
+	public static void addDispatchTable(final List<String> dt) {
+		dispatchTables.add(dt);
+	}
+	
+	public static List<List<String>> getDispatchTable() {
+		return dispatchTables;
 	}
 
 }

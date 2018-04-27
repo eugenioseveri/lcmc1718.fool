@@ -66,27 +66,48 @@ public class CallNode implements Node {
 		for(int i=this.parlist.size()-1; i>=0; i--) {
 			parCode += this.parlist.get(i).codeGeneration();
 		}
+		
 		String getAR = "";
 		for(int i=0; i<this.nestingLevel-this.entry.getNestingLevel(); i++) {
 			getAR += "lw\n";
 		}
-
-		return // Allocazione della parte corrente dell'AR della funzione che sta venendo chiamata
-				"lfp\n" // Control Link
-				+ parCode // Allocazione parametri
-				+ "push " + this.entry.getOffset() + "\n"
-				+ "lfp\n" // Access Link (anche prossima riga)
-				+ getAR // Risalgo la catena statica
-				+ "add\n" // Li somma
-				+ "lw\n" // Carica sullo stack il valore all'indirizzo ottenuto
-				// Da qui, codice per recuperare l'indirizzo a cui saltare (uguale a IdNode)
-				+ "push " + (this.entry.getOffset() - 1) + "\n" // Mette l'offset sullo stack
-				+ "lfp\n" // Mette l'indirizzo puntato dal registro FP sullo stack (l'indirizzo dell'AR della variabile)
-				+ getAR // Risalgo la catena statica
-				+ "add\n" // Li somma
-				+ "lw\n" // Carica sullo stack il valore all'indirizzo ottenuto
-				// Salto
-				+ "js\n";
+		
+		//se non è un metodo, ritorno codice di estensione Higher Order
+		//se lo è: ritorno codice di estensione Object Oriented
+		if (this.entry.isMethod()) {
+			// quando si recupera indirizzo a cui saltare si aggiunge 1 alla differenza di nesting level per raggiungere la dispatch table
+			getAR += "lw\n";
+			return // Allocazione della parte corrente dell'AR della funzione che sta venendo chiamata
+					"lfp\n" // Control Link
+					+ parCode // Allocazione parametri
+					+ "lfp\n" // Access Link (anche prossima riga)
+					+ getAR
+					// Da qui, codice per recuperare l'indirizzo a cui saltare (uguale a IdNode)
+					+ "push " + this.entry.getOffset() + "\n" // Mette l'offset sullo stack
+					+ "lfp\n" // Mette l'indirizzo puntato dal registro FP sullo stack (l'indirizzo dell'AR della variabile)
+					+ getAR // Risalgo la catena statica
+					+ "add\n" // Li somma
+					+ "lw\n" // Carica sullo stack il valore all'indirizzo ottenuto
+					// Salto
+					+ "js\n";
+		} else {
+			return // Allocazione della parte corrente dell'AR della funzione che sta venendo chiamata
+					"lfp\n" // Control Link
+					+ parCode // Allocazione parametri
+					+ "push " + this.entry.getOffset() + "\n"
+					+ "lfp\n" // Access Link (anche prossima riga)
+					+ getAR // Risalgo la catena statica
+					+ "add\n" // Li somma
+					+ "lw\n" // Carica sullo stack il valore all'indirizzo ottenuto
+					// Da qui, codice per recuperare l'indirizzo a cui saltare (uguale a IdNode)
+					+ "push " + (this.entry.getOffset() - 1) + "\n" // Mette l'offset sullo stack
+					+ "lfp\n" // Mette l'indirizzo puntato dal registro FP sullo stack (l'indirizzo dell'AR della variabile)
+					+ getAR // Risalgo la catena statica
+					+ "add\n" // Li somma
+					+ "lw\n" // Carica sullo stack il valore all'indirizzo ottenuto
+					// Salto
+					+ "js\n";
+		}
 	}
 	
 	@Override

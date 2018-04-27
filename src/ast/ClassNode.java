@@ -80,8 +80,31 @@ public class ClassNode implements DecNode {
 
 	@Override
 	public String codeGeneration() {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("code generation class "+this.id+": entry offset " +this.classEntry.getOffset());
+		
+		// aggiorno la Dispatch Table creata settando la posizione data dall’offset del metodo alla sua etichetta
+		List<String> dispatchTable = FOOLLib.getDispatchTable().get(this.classEntry.getOffset());
+		String methodLabel;
+		for (int i = 0; i < this.methods.size(); i++) {
+			MethodNode mn = (MethodNode) this.methods.get(i);
+			methodLabel = FOOLLib.freshMethodLabel();
+			mn.setLabel(methodLabel);
+			dispatchTable.remove(mn.getMethodOffset());
+			dispatchTable.add(mn.getMethodOffset(), methodLabel);
+			mn.codeGeneration();
+		}
+		// creo sullo heap la Dispatch Table che ho costruito: per ciascuna etichetta, la memorizzo a indirizzo in $hp ed incremento $hp
+		String dispatchTableCode = "";
+		for (String label: dispatchTable) {
+			dispatchTableCode += 	"push " + label + "\n"+
+									"lhp\n"+
+									"add 1\n"+
+									"shp\n"+
+									"lhp\n";
+		}
+		// metto valore di $hp sullo stack: sarà il dispatch pointer da ritornare alla fine
+		return "lhp\n"+
+				dispatchTableCode;
 	}
 
 	@Override
