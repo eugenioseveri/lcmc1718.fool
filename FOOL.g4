@@ -10,7 +10,7 @@ grammar FOOL;
 
 @parser::members {
 	private int nestingLevel = 0;
-	//int offset = -2; //TODO usare questo offset globale?
+	int globalOffset = -2; //TODO usare questo offset globale?
 	// Array di tabelle dove l'indice dell'array è il livello sintattico, ossia il livello di scope, indice 0 = dichiarazioni globali, indice 1 = dichiarazioni locali (mappano identificatori con i valori)
 	ArrayList<HashMap<String,STEntry>> symTable = new ArrayList<HashMap<String,STEntry>>();
 	// Il livello dell'ambiente con dichiarazioni più esterne è 0 (nelle slide è 1); il fronte della lista di tabelle è "symTable.get(nestingLevel)"
@@ -52,7 +52,7 @@ prog returns [Node ast]:
 //gestione della dichiarazione delle classi per semplicità le classi sono contenute solamente nell'ambiente globale (nesting level 0)
 cllist returns [List<Node> astlist]:
 	{	$astlist = new ArrayList<Node>();
-		int offset = -2; // Indice di convenzione di inizio (che viene decrementato)
+		//int offset = -2; // Indice di convenzione di inizio (che viene decrementato)
 	}
  	( CLASS i=ID
  		{
@@ -100,7 +100,7 @@ cllist returns [List<Node> astlist]:
  		}
  		)? 
  		{
- 			STEntry entry = new STEntry(nestingLevel,classType,offset--); //STEntry della classe da inserire al livello 0 della symbolTable
+ 			STEntry entry = new STEntry(nestingLevel,classType,globalOffset--); //STEntry della classe da inserire al livello 0 della symbolTable
  			hm.put($i.text,entry); //inserisco nella hashMap di livello 0 la classe appena dichiarata
  			
  			ClassNode classNode = new ClassNode($i.text,entry,superEntry,fieldsList,methodsList); //con l'ereditarietà superclasse
@@ -162,12 +162,14 @@ cllist returns [List<Node> astlist]:
                  	
                  	STEntry methodEntry = null;
                  	if(virtualTable.get($m1.text) == null) {
-                 		// Caso senza ereditarietà 
+                 		// Caso senza ereditarietà
+                 		methodNode.setMethodOffset(methodOffset);
                  		methodsList.add(methodOffset, methodNode);
                  		methodEntry = new STEntry(nestingLevel,methodOffset++,true);
                  	} else {
                  		// Caso con ereditarietà (preservando l'offset - OVERLOAD NON SUPPORTATO)
                  		methodsList.remove(virtualTable.get($m1.text).getOffset());
+                 		methodNode.setMethodOffset(virtualTable.get($m1.text).getOffset());
                  		methodsList.add(virtualTable.get($m1.text).getOffset(), methodNode);
                  		methodEntry = new STEntry(nestingLevel,virtualTable.get($m1.text).getOffset(),true);
                  	}
@@ -244,13 +246,26 @@ cllist returns [List<Node> astlist]:
         	     )*
         	    // Ora devo ricordarmi di chiudere il livello interno della classe (livello virtual table) torno a lv.0
   				//A livello zero della symTable ricordo che ho tutti i nomi delle classi, con relativa STEntry, in questo modo le tengo in vita                 
-				CRPAR {symTable.remove(nestingLevel--);}
+				CRPAR {
+					symTable.remove(nestingLevel--);
+					/* Per ogni classe si costruisce la relativa Dispatch Table con etichette di tutti i metodi, anche ereditati,
+					   ordinati in base ai loro offset. Le Dispatch Table di tutte le classi vengono create staticamente dal compilatore
+					   in ordine di dichiarazione classi nell’ambiente globale */
+					List<String> dispatchTable = new ArrayList<>();
+					for (Node n: methodsList) {
+						dispatchTable.add(((MethodNode) n).getId());
+					}
+					FOOLLib.addDispatchTable(dispatchTable);
+				}
           )+ ; 
 
 // Lista di dichiarazioni (di variabili o funzioni). La chiusura "+" indica una o più volte.
 declist	returns [ArrayList<Node> astlist]:
 	{	$astlist = new ArrayList<Node>();
 		int offset = -2; // Indice di convenzione di inizio (che viene decrementato)
+		if (nestingLevel == 0) {
+			offset = globalOffset;
+		}
 	}
 	(
 		(	VAR i=ID COLON t=hotype ASS e=exp

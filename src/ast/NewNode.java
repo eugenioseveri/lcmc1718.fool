@@ -50,7 +50,14 @@ public class NewNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		// TODO Auto-generated method stub
+		/*String parCode = "";
+		for (Node par: this.parList) {
+			par.codeGeneration();
+		}*/
+		// TODO continuare da 'poi' di new node, slide 59 delle specifiche del progetto
+		
+		 
+		
 		return null;
 	}
 	

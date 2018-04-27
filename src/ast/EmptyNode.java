@@ -14,8 +14,7 @@ public class EmptyNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		// TODO Auto-generated method stub
-		return null;
+		return "push -1\n";
 	}
 	
 	@Override

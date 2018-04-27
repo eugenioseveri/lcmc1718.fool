@@ -13,6 +13,8 @@ public class MethodNode implements DecNode {
 	private List<Node> decList = new ArrayList<>();
 	private Node exp;
 	private Node symType;
+	private String label;
+	private int offset; //TODO informazione ridondante perchè già presente nella class table come indice della lista dei metodi
 	
 	public MethodNode(final String id, final Node type, final List<Node> parlist, final List<Node> decList) {
 		super();
@@ -22,16 +24,32 @@ public class MethodNode implements DecNode {
 		this.decList = decList;
 	}
 	
-	public void addBody (Node exp) {
+	public void addBody (final Node exp) {
 		this.exp = exp;
+	}
+	
+	public String getLabel() {
+		return this.label;
+	}
+	
+	public void setLabel(final String label) {
+		this.label = label;
 	}
 	
 	public String getId() {
 		return this.id;
 	}
 	
+	public int getMethodOffset() {
+		return this.offset;
+	}
+	
+	public void setMethodOffset(final int offset) {
+		this.offset = offset;
+	}
+	
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		String declrStr= "";
 		String parStr = "";
 		for(Node dec:this.decList) {
@@ -63,7 +81,41 @@ public class MethodNode implements DecNode {
 
 	@Override
 	public String codeGeneration() {
-		// TODO Auto-generated method stub
+		/*
+		 * Passi:
+		 * - generare indirizzo (label) dove mettere il codice del metodo 
+		 * - creare realmente il codice del metodo
+		 */
+		String declCode = "";
+		for(Node dec:this.decList) {
+			declCode += dec.codeGeneration();
+		}
+		String popDecl = "";
+		for(Node dec:this.decList) {
+			popDecl += "pop\n";
+		}
+		String popParList = "";
+		for(Node par:this.parlist) {
+			popParList += "pop\n";
+		}
+		
+		//crea realmente il codice della funzione (compreso di dichiarazioni interne e corpo (exp))
+		FOOLLib.putCode(this.label + ":\n"
+				+ "cfp\n" // Setta FP allo SP
+				+ "lra\n" // Prende il valore del Return Address e lo mette sullo stack
+				+ declCode
+				+ this.exp.codeGeneration() //codice del corpo della funzione
+				// Da qui, deallocazione AR (activation record)
+				+ "srv\n" // Pop del return value della funzione precedente e memorizzazione in RV (registro temporaneo per il valore di ritorno)
+				+ popDecl // Aggiunge 'n' "pop" per ogni dichiarazione
+				+ "sra\n" // Pop del Return Address e memorizzazione in RA
+				+ "pop\n" // Pop dell'Access Link (che non serve più)
+				+ popParList // Pop di tutti i parametri
+				+ "sfp\n" // Ripristino il FP al valore del Control Link
+				+ "lrv\n" // Ora che l'AR è stato deallocato, si lascia sullo stack il valore di ritorno della funzione
+				+ "lra\n" // Ritornare al chiamante (indirizzo temporaneamente messo in RA)
+				+ "js\n" // Salta a RA (chi ha chiamato la funzione)
+				);
 		return null;
 	}
 
