@@ -52,27 +52,29 @@ public class ClassNode implements DecNode {
 			n.typeCheck();
 		}
 		
-		//Campi e metodi della classe padre
-		List<Node> superFields = ((ClassTypeNode)this.superEntry.getType()).getAllFields();
-		List<Node> superMethods = ((ClassTypeNode)this.superEntry.getType()).getAllMethods();
-		
-		//Campi e metodi della classe locale
-		List<Node> fields = ((ClassTypeNode)this.symType).getAllFields();
-		List<Node> methods = ((ClassTypeNode)this.symType).getAllMethods();
-		
-		//Controllo che i campi della classe figlio siano sottotipo della classe padre
-		for(int i = 0; i < superFields.size(); i++) {
-			if (!FOOLLib.isSubtype(((FieldNode)fields.get(i)).getSymType(),((FieldNode)superFields.get(i)).getSymType())){
-				System.out.println("Error subtyping field " + ((FieldNode)fields.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
-				System.exit(0);
+		if (this.superEntry != null) {
+			//Campi e metodi della classe padre
+			List<Node> superFields = ((ClassTypeNode)this.superEntry.getType()).getAllFields();
+			List<Node> superMethods = ((ClassTypeNode)this.superEntry.getType()).getAllMethods();
+			
+			//Campi e metodi della classe locale
+			List<Node> fields = ((ClassTypeNode)this.symType).getAllFields();
+			List<Node> methods = ((ClassTypeNode)this.symType).getAllMethods();
+			
+			//Controllo che i campi della classe figlio siano sottotipo della classe padre
+			for(int i = 0; i < superFields.size(); i++) {
+				if (!FOOLLib.isSubtype(((FieldNode)fields.get(i)).getSymType(),((FieldNode)superFields.get(i)).getSymType())){
+					System.out.println("Error subtyping field " + ((FieldNode)fields.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
+					System.exit(0);
+				}
 			}
-		}
-		
-		//Controllo che i metodi della classe figlio siano sottotipo della classe padre
-		for(int i = 0; i < superMethods.size(); i++) {
-			if (!FOOLLib.isSubtype(((MethodNode)methods.get(i)).getSymType(),((MethodNode)superMethods.get(i)).getSymType())){
-				System.out.println("Error subtyping method " + ((MethodNode)methods.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
-				System.exit(0);
+			
+			//Controllo che i metodi della classe figlio siano sottotipo della classe padre
+			for(int i = 0; i < superMethods.size(); i++) {
+				if (!FOOLLib.isSubtype(((MethodNode)methods.get(i)).getSymType(),((MethodNode)superMethods.get(i)).getSymType())){
+					System.out.println("Error subtyping method " + ((MethodNode)methods.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
+					System.exit(0);
+				}
 			}
 		}
 		return null;
@@ -80,10 +82,10 @@ public class ClassNode implements DecNode {
 
 	@Override
 	public String codeGeneration() {
-		System.out.println("code generation class "+this.id+": entry offset " +this.classEntry.getOffset());
+		System.out.println("Code generation class "+ this.id +": entry offset " + this.classEntry.getOffset());
 		
 		// aggiorno la Dispatch Table creata settando la posizione data dall’offset del metodo alla sua etichetta
-		List<String> dispatchTable = FOOLLib.getDispatchTable().get(this.classEntry.getOffset());
+		List<String> dispatchTable = FOOLLib.getDispatchTable().get(-this.classEntry.getOffset()-2);
 		String methodLabel;
 		for (int i = 0; i < this.methods.size(); i++) {
 			MethodNode mn = (MethodNode) this.methods.get(i);
@@ -96,11 +98,13 @@ public class ClassNode implements DecNode {
 		// creo sullo heap la Dispatch Table che ho costruito: per ciascuna etichetta, la memorizzo a indirizzo in $hp ed incremento $hp
 		String dispatchTableCode = "";
 		for (String label: dispatchTable) {
-			dispatchTableCode += 	"push " + label + "\n"+
+			dispatchTableCode +=	"push " + label + "\n"+
 									"lhp\n"+
-									"add 1\n"+
-									"shp\n"+
-									"lhp\n";
+									"sw\n"+
+									"lhp\n"+
+									"push 1\n"+
+									"add\n"+
+									"shp\n";
 		}
 		// metto valore di $hp sullo stack: sarà il dispatch pointer da ritornare alla fine
 		return "lhp\n"+
