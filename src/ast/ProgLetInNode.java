@@ -48,20 +48,30 @@ public class ProgLetInNode implements Node {
 		for(Node dec:this.decList) {
 			dec.typeCheck();
 		}
+		
+		for(Node cl:this.cllist) {
+			cl.typeCheck();
+		}
+		
 		return this.exp.typeCheck();
 	}
 
 	@Override
 	public String codeGeneration() {
+		String classCode = "";
+		for(Node cl:this.cllist) {
+			classCode += cl.codeGeneration();
+		}
 		String declCode = "";
 		for(Node dec:this.decList) {
 			declCode += dec.codeGeneration();
 		}
 		return "push 0\n" // Spazio fittizio per uniformare la gestione della memoria
+				+ classCode
 				+ declCode
 				+ this.exp.codeGeneration()
 				+ "halt\n"
-				+ FOOLLib.getCode(); //codice assembly delle funzioni 
+				+ FOOLLib.getCode(); //codice assembly dei metodi e delle funzioni
 	}
 	
 	@Override

@@ -51,9 +51,7 @@ prog returns [Node ast]:
  
 //gestione della dichiarazione delle classi per semplicità le classi sono contenute solamente nell'ambiente globale (nesting level 0)
 cllist returns [List<Node> astlist]:
-	{	$astlist = new ArrayList<Node>();
-		//int offset = -2; // Indice di convenzione di inizio (che viene decrementato)
-	}
+	{ $astlist = new ArrayList<Node>(); }
  	( CLASS i=ID
  		{
  			Map<String,STEntry> hm = symTable.get(nestingLevel); // Tabella del livello corrente (detta tabella del fronte o hash table dell'ambiente dove sto parsando)
@@ -69,7 +67,6 @@ cllist returns [List<Node> astlist]:
          	ClassTypeNode classType = new ClassTypeNode(fieldsList,methodsList);
          	
  			STEntry superEntry = null; // Dichiara Entry della superclasse a null
- 			Map<String,STEntry> superVirtualTable = null; // Virtual table della classe padre
  			HashMap<String,STEntry> virtualTable = new HashMap<>(); // VirtualTable vuota
  		}
  		(EXTENDS ei=ID
@@ -77,7 +74,7 @@ cllist returns [List<Node> astlist]:
  			// Verificare che esista la classe padre se non la trovo termino il PARSER
  			if (classTable.get($ei.text) == null){
  				// Errore identificatore (classe) già dichiarata
-				System.out.println("Class id: " + $i.text + " at line " + $i.line + " not declared.");
+				System.out.println("SuperClass id: " + $ei.text + " at line " + $ei.line + " not declared.");
 				System.exit(0);
  			}
  			// Recupero STEntry della classe da estendere
@@ -89,8 +86,9 @@ cllist returns [List<Node> astlist]:
  			methodsList = classType.getAllMethods();
  			
  			// Clonare la virtualTable della classe da cui si eredita
- 			superVirtualTable = classTable.get($ei.text);
+ 			Map<String,STEntry> superVirtualTable = classTable.get($ei.text);
  			
+ 			//Aggiungo alla virtualTable della classe in dichiarazione i campi ed i metodi, con le rispettive STentry, dalla classe padre
  			for(String s : superVirtualTable.keySet()) {
  				virtualTable.put(s, superVirtualTable.get(s).cloneEntry());
  			}
@@ -103,7 +101,7 @@ cllist returns [List<Node> astlist]:
  			STEntry entry = new STEntry(nestingLevel,classType,globalOffset--); //STEntry della classe da inserire al livello 0 della symbolTable
  			hm.put($i.text,entry); //inserisco nella hashMap di livello 0 la classe appena dichiarata
  			
- 			ClassNode classNode = new ClassNode($i.text,entry,superEntry,fieldsList,methodsList); //con l'ereditarietà superclasse
+ 			ClassNode classNode = new ClassNode($i.text,entry,superEntry,fieldsList,methodsList); //con l'ereditarietà superclasse se presente
  			classNode.setSymType(classType);
  			$astlist.add(classNode);
  			
@@ -115,27 +113,26 @@ cllist returns [List<Node> astlist]:
 			// Scorro la virtualTable per calcolare gli offset di partenza dei campi e dei metodi (necessario per l'ereditarietà)
 			int fieldOffset = -1; // Offset iniziale dei campi di una classe (offset che aumenta verso il basso)
 			int methodOffset = 0; // Offset iniziale dei metodi di una classe (offset che aumenta verso l'alto)
-			if(superEntry != null) {
-				for(String s : virtualTable.keySet()) {
-					if(virtualTable.get(s).isMethod()) {
-						methodOffset++;
-					} else {
-						fieldOffset--;
-					}
- 				}
+			
+			//Aggiorno gli offset di campi e metodi in caso di ereditarietà
+			for(String s : virtualTable.keySet()) {
+				if(virtualTable.get(s).isMethod()) {
+					methodOffset++;
+				} else {
+					fieldOffset--;
+				}
 			}
  		}
  		LPAR
  			(c1=ID COLON t1=type {
- 				//aggiunto il campo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
+ 				//aggiunto il campo nella lista che di conseguenza viene aggiornata la ClassTypeNode per riferimento
  				if(virtualTable.get($c1.text) == null) { 
  					// Caso senza override
  					fieldsList.add(-fieldOffset-1, new FieldNode($c1.text,$t1.ast));
  					virtualTable.put($c1.text, new STEntry(nestingLevel,$t1.ast,fieldOffset--));
  				} else {
- 					//caso con override
- 					fieldsList.remove(-virtualTable.get($c1.text).getOffset()-1);
- 					fieldsList.add(-virtualTable.get($c1.text).getOffset()-1, new FieldNode($c1.text,$t1.ast));
+ 					// Caso con override
+ 					fieldsList.set(-virtualTable.get($c1.text).getOffset()-1, new FieldNode($c1.text,$t1.ast));
  					virtualTable.put($c1.text, new STEntry(nestingLevel,$t1.ast,virtualTable.get($c1.text).getOffset()));
  				}
  			} (COMMA c2=ID COLON t2=type {
@@ -146,8 +143,7 @@ cllist returns [List<Node> astlist]:
  					virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,fieldOffset--));
  				} else {
  					// Caso con override
- 					fieldsList.remove(-virtualTable.get($c2.text).getOffset()-1);
- 					fieldsList.add(-virtualTable.get($c2.text).getOffset()-1, new FieldNode($c2.text,$t2.ast));
+ 					fieldsList.set(-virtualTable.get($c2.text).getOffset()-1, new FieldNode($c2.text,$t2.ast));
  					virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,virtualTable.get($c2.text).getOffset()));
  				}
  			}
@@ -168,9 +164,8 @@ cllist returns [List<Node> astlist]:
                  		methodEntry = new STEntry(nestingLevel,methodOffset++,true);
                  	} else {
                  		// Caso con ereditarietà (preservando l'offset - OVERLOAD NON SUPPORTATO)
-                 		methodsList.remove(virtualTable.get($m1.text).getOffset());
                  		methodNode.setMethodOffset(virtualTable.get($m1.text).getOffset());
-                 		methodsList.add(virtualTable.get($m1.text).getOffset(), methodNode);
+                 		methodsList.set(virtualTable.get($m1.text).getOffset(), methodNode);
                  		methodEntry = new STEntry(nestingLevel,virtualTable.get($m1.text).getOffset(),true);
                  	}
                  	virtualTable.put($m1.text,methodEntry);
@@ -429,8 +424,8 @@ value returns [Node ast]:
 		}
 		// Supporto alle chiamate a funzioni. Combinazioni possibili ID() (funzione vuota) - ID(exp) (funzione con variabili)
 		( LPAR { ArrayList<Node> argList = new ArrayList<Node>(); }
-			( a=exp { argList.add($a.ast); } //tutte volte che incontro un'espressione l'aggiungo alla lista dei parametri
-				(COMMA a=exp { argList.add($a.ast); }
+			( a1=exp { argList.add($a1.ast); } //tutte volte che incontro un'espressione l'aggiungo alla lista dei parametri
+				(COMMA a2=exp { argList.add($a2.ast); }
 				)*
 			)? RPAR { $ast = new CallNode($i.text,entry,argList,nestingLevel); } // Inserito il nestinglevel per verifiche sullo scope della funzione chiamata
 		| DOT i2=ID LPAR {
@@ -451,17 +446,17 @@ value returns [Node ast]:
 			STEntry methodEntry = virtualTable.get($i2.text);
 			//controllo se il metodo esiste (verifico l'esistenza)
 			if (methodEntry == null){
-				System.out.println("Method " + $i.text + " at line " + $i.line + " not declared.");
+				System.out.println("Method " + $i2.text + " at line " + $i2.line + " not declared.");
 				System.exit(0);
 			} else if (!methodEntry.isMethod()){ //controllo se l'id è un metodo)
-				System.out.println($i.text + " at line " + $i.line + " is not a method.");
+				System.out.println($i2.text + " at line " + $i2.line + " is not a method.");
 				System.exit(0);
 			}
 				
 			List<Node> argList = new ArrayList<>(); //Lista degli argomenti passati al ClassCallNode
 			}(e1=exp {argList.add($e1.ast);} 
 				(COMMA e2=exp {argList.add($e2.ast);})*
-			)? RPAR {$ast = new ClassCallNode($i.text,$i2.text,entry,methodEntry,argList,nestingLevel);}
+			)? RPAR { $ast = new ClassCallNode($i.text,$i2.text,entry,methodEntry,argList,nestingLevel); }
 			
 		)? ;
 

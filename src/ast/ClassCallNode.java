@@ -7,15 +7,15 @@ public class ClassCallNode implements Node {
 	
 	private String id;
 	private String method;
-	private STEntry classEntry;
+	private STEntry entry; //STEntry dell'oggetto di tipo classe
 	private STEntry methodEntry;
 	private List<Node> argList;
 	private int nestingLevel;
 	
-	public ClassCallNode(final String id, final String method, final STEntry classEntry, final STEntry methodEntry, final List<Node> argList, final int nestingLevel) {
+	public ClassCallNode(final String id, final String method, final STEntry entry, final STEntry methodEntry, final List<Node> argList, final int nestingLevel) {
 		this.id = id;
 		this.method = method;
-		this.classEntry = classEntry;
+		this.entry = entry;
 		this.methodEntry = methodEntry;
 		this.argList = argList;
 		this.nestingLevel = nestingLevel;
@@ -28,7 +28,7 @@ public class ClassCallNode implements Node {
 			argStr += arg.toPrint(indent + "  ");
 		}
 		return indent + "ClassCall: " + this.id + "." + this.method + " at nestingLevel " + this.nestingLevel + "\n"+
-				this.classEntry.toPrint(indent +  "  ") + 
+				this.entry.toPrint(indent +  "  ") + 
 				this.methodEntry.toPrint(indent +  "    ") +
 				argStr;
 	}
@@ -58,18 +58,18 @@ public class ClassCallNode implements Node {
 	@Override
 	public String codeGeneration() {
 		String getAR = ""; // Recupero l'AR in cui è dichiarata la variabile che sto usando
-		for(int i=0; i<this.nestingLevel - this.classEntry.getNestingLevel(); i++) {
+		for(int i=0; i<this.nestingLevel - this.entry.getNestingLevel(); i++) {
 			// Differenza di nesting level tra la posizione corrente e la dichiarazione di "id".
 			// Se è una variabile locale si esegue la differenza è 0, altrimenti si deve risalire la catena statica
 			getAR += "lw\n";
 		}
 		
-		List<String> dispatchTable = FOOLLib.getDispatchTable().get(this.classEntry.getOffset());
-		int methodOffset = dispatchTable.indexOf(this.method);
+		System.out.println("Code generation: ClassCallNode: " + this.id + "." + this.method + " methodEntryOffset:" + this.methodEntry.getOffset());
 		
-		return   /*------------Ora devo settare AL recuperando prima Obj-pointer---------------*/
-			     "push " + (this.classEntry.getOffset()) + "\n"//pusho l'offset della dichiarazione dell'oggetto nel suo AR
-			     + "lfp\n" // pusho FP (che punta all'AL)
+		return  "lfp\n" + //Setto il Control link (CL) settando il fp ad esso, praticamente dove punta attualmente sp
+				/*------------Ora devo settare AL recuperando prima Obj-pointer---------------*/
+			     "push " + (this.entry.getOffset()) + "\n"//pusho l'offset della dichiarazione dell'oggetto nel suo AR
+			     + "lfp\n" // pusho FP (che punta all'Access Link)
 			     + getAR // mi permette di risalire la catena statica
 			     + "add\n" // sommando mi posiziono sull'OB della classe        
 			     + "lw\n" // vado a prendere il valore e lo metto sullo stack, in questo modo setto l'AL per il chiamato cioè vado a dirgli che si riferisce a questo AR   
@@ -78,14 +78,16 @@ public class ClassCallNode implements Node {
 			     //ora vado a recuperare l'indirizzo del metodo nella dispatch table a cui saltare
 			     
 			     //Recupero prima l'object-pointer
-			     + "push " + (this.classEntry.getOffset()) + "\n" //pusho l'offset della dichiarazione dell'oggetto nel suo AR
+			     + "push " + (this.entry.getOffset()) + "\n" //pusho l'offset della dichiarazione dell'oggetto nel suo AR
 			     + "lfp\n" //Pusho fp
 			     + getAR // risalgo la catena statica e raggiungo l'oggetto
 			     + "add\n" //Sommando mi ci posiziono sopra con l'object pointer
 			     + "lw\n" //Prendo il valore e lo metto sullo stack
 			  
+			     + "lw\n" //TODO capire perchè?
+			     
 			     //Poi pusho l'offset del metodo
-			     + "push " +methodOffset+"\n"
+			     + "push " + this.methodEntry.getOffset() +"\n"
 			     + "add\n" //Mi ci posiziono
 			     + "lw\n"
 			     + "js\n"; //salto all'indirizzo che c'è sulla cima dello stack (e se lo mangia)
@@ -95,6 +97,7 @@ public class ClassCallNode implements Node {
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
 	@Override
 	public Node cloneNode() {
+		System.err.println("CloneNotSupportedException! " + this.id + "." + this.method + "() methodEntryOffset:" + this.methodEntry.getOffset());
 		return null;
 	}
 

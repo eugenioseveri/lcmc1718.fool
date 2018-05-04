@@ -8,7 +8,7 @@ import lib.FOOLLib;
 public class NewNode implements Node {
 
 	private String classId; // Id della classe che sto istanziando
-	private List<Node> parList; // Argomenti che vengono passati alla new
+	private List<Node> parList; // Field che vengono passati alla new
 	private STEntry entry; // STEntry che descrive la classe istanziata (sia campi che metodi tramite classTypeNode)
 	
 	public NewNode(final String classId, final STEntry entry, final List<Node> parList) {
@@ -50,15 +50,39 @@ public class NewNode implements Node {
 
 	@Override
 	public String codeGeneration() {
-		/*String parCode = "";
+		String parCode = "";
+		//Generazione di codice per i parametri
 		for (Node par: this.parList) {
-			par.codeGeneration();
-		}*/
-		// TODO continuare da 'poi' di new node, slide 59 delle specifiche del progetto
+			parCode += par.codeGeneration();
+		}
 		
-		 
+		// alloco un nuovo oggetto nello heap, come prima cosa allora pusho i parametri mettendoli nello heap dall'ultimo al primo
+		String parCodeHeap = "";
+		for (int i = 0; i < this.parList.size(); i++) {
+			/* Parto salvando sullo heap il (parList.size()-1)-i = (n-1-i)-esimo campo */
+			parCodeHeap += "lhp\n"; //pusho l'hp sullo stack		
+			parCodeHeap += "sw\n"; //salvo l'indirizzo del metodo a dove punta hp
+			// ora ho il parametro nell'heap, devo incrementare l'heap pointer, stessa procedura: Lo carico e lo sommo ad uno
+			parCodeHeap += "lhp\n";
+			parCodeHeap += "push 1\n";
+			parCodeHeap += "add\n";
+			// salvo il valore
+			parCodeHeap += "shp\n";
+		}
 		
-		return null;
+		return parCode 
+				+ parCodeHeap
+				// scrive a indirizzo $hp il dispatch pointer recuperandolo da contenuto indirizzo MEMSIZE + offset classe ID
+				+ "push " + (FOOLLib.MEMSIZE + this.entry.getOffset()) + "\n"
+				+ "lw\n"
+				+ "lhp\n"
+				+ "sw\n"
+				//Aggiugno Object Pointer
+				+ "lhp\n" //carica sullo stack il valore di hp (indirizzo object pointer da ritornare)
+				+ "lhp\n" //incrementa hp
+				+ "push 1\n"
+				+ "add\n"
+				+ "shp\n";
 	}
 	
 	@Override

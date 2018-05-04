@@ -124,7 +124,7 @@ public class MethodNode implements DecNode {
 		return this.symType;
 	}
 
-	public void setSymType(Node symType) {
+	public void setSymType(final Node symType) {
 		this.symType = symType;
 	}
 
@@ -140,7 +140,7 @@ public class MethodNode implements DecNode {
 		}
 		MethodNode tmp = new MethodNode(this.id, this.type.cloneNode(), params, decs);
 		tmp.setSymType(this.symType.cloneNode());
-		tmp.addBody(this.exp.cloneNode());
+		tmp.addBody(this.exp);
 		return tmp;
 	}
 }
