@@ -32,8 +32,12 @@ public class IfNode implements Node {
 		}
 		Node thenNode = this.thenStatement.typeCheck();
 		Node elseNode = this.elseStatement.typeCheck();
-		if(FOOLLib.isSubtype(thenNode, elseNode)) return elseNode;
-		if(FOOLLib.isSubtype(elseNode, thenNode)) return thenNode;
+		
+		Node lca = FOOLLib.lowestCommonAncestor(thenNode, elseNode);
+		if (lca != null) {
+			return lca;
+		}
+		
 		System.out.println("Incompatible types in then-else branches!");
 		System.exit(0);
 		return null; // Irraggiungibile, ma è un problema non decidibile

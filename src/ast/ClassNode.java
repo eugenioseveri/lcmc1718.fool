@@ -37,7 +37,7 @@ public class ClassNode implements DecNode {
 		if (this.superEntry != null) { 
 			superEntryStr = this.superEntry.toPrint(indent +  "  ");
 		}
-		//TODO decidere cosa stampare
+	
 		return indent + "Class " + this.id + "\n" +
 			//this.classEntry.toPrint(indent +  "  ");
 			//superEntryStr + 
@@ -53,14 +53,38 @@ public class ClassNode implements DecNode {
 		}
 		
 		if (this.superEntry != null) {
+			
 			//Campi e metodi della classe padre
 			List<Node> superFields = ((ClassTypeNode)this.superEntry.getType()).getAllFields();
 			List<Node> superMethods = ((ClassTypeNode)this.superEntry.getType()).getAllMethods();
 			
-			//Campi e metodi della classe locale
-			List<Node> fields = ((ClassTypeNode)this.symType).getAllFields();
-			List<Node> methods = ((ClassTypeNode)this.symType).getAllMethods();
+			//Campi e metodi della classe figlio
+			List<Node> localFields = ((ClassTypeNode)this.symType).getAllFields();
+			List<Node> localMethods = ((ClassTypeNode)this.symType).getAllMethods();
 			
+			//Type Checking più efficiente per ClassNode
+			for (int i = 0; i < localFields.size(); i++) {
+				int offset = ((FieldNode)localFields.get(i)).getOffset();
+				if ((-offset-1) < superFields.size()) {
+					if (!FOOLLib.isSubtype(((FieldNode)localFields.get((-offset-1))).getSymType(),((FieldNode)superFields.get((-offset-1))).getSymType())){
+						System.out.println("Error subtyping field " + ((FieldNode)localFields.get((-offset-1))).getId() + " on Class: " + this.id + " at index " + (-offset-1) + " !");
+						System.exit(0);
+					}
+				}
+			}
+			
+			for (int i = 0; i < localMethods.size(); i++) {
+				int offset = ((MethodNode)localMethods.get(i)).getMethodOffset();
+				if ((offset) < superMethods.size()) {
+					if (!FOOLLib.isSubtype(((MethodNode)localMethods.get(offset)).getSymType(),((MethodNode)superMethods.get(offset)).getSymType())){
+						System.out.println("Error subtyping method " + ((MethodNode)localMethods.get(offset)).getId() + " on Class: " + this.id + " at index " + offset + " !");
+						System.exit(0);
+					}
+				}
+			}
+			
+			
+			/*
 			//Controllo che i campi della classe figlio siano sottotipo della classe padre
 			for(int i = 0; i < superFields.size(); i++) {
 				if (!FOOLLib.isSubtype(((FieldNode)fields.get(i)).getSymType(),((FieldNode)superFields.get(i)).getSymType())){
@@ -76,14 +100,13 @@ public class ClassNode implements DecNode {
 					System.exit(0);
 				}
 			}
+			*/
 		}
 		return null;
 	}
 
 	@Override
 	public String codeGeneration() {
-		System.out.println("Code generation class "+ this.id +": entry offset " + this.classEntry.getOffset());
-		
 		// aggiorno la Dispatch Table creata settando la posizione data dall’offset del metodo alla sua etichetta
 		List<String> dispatchTable = FOOLLib.getDispatchTable().get(-this.classEntry.getOffset()-2);
 		String methodLabel;

@@ -57,6 +57,12 @@ public class ClassCallNode implements Node {
 
 	@Override
 	public String codeGeneration() {
+		
+		String argCode = ""; // Stringa per allocare i parametri (si parte dall'ultimo, come da struttura della memoria)
+		for(int i=this.argList.size()-1; i>=0; i--) {
+			argCode += this.argList.get(i).codeGeneration();
+		}
+		
 		String getAR = ""; // Recupero l'AR in cui è dichiarata la variabile che sto usando
 		for(int i=0; i<this.nestingLevel - this.entry.getNestingLevel(); i++) {
 			// Differenza di nesting level tra la posizione corrente e la dichiarazione di "id".
@@ -64,9 +70,8 @@ public class ClassCallNode implements Node {
 			getAR += "lw\n";
 		}
 		
-		System.out.println("Code generation: ClassCallNode: " + this.id + "." + this.method + " methodEntryOffset:" + this.methodEntry.getOffset());
-		
 		return  "lfp\n" + //Setto il Control link (CL) settando il fp ad esso, praticamente dove punta attualmente sp
+				argCode +
 				/*------------Ora devo settare AL recuperando prima Obj-pointer---------------*/
 			     "push " + (this.entry.getOffset()) + "\n"//pusho l'offset della dichiarazione dell'oggetto nel suo AR
 			     + "lfp\n" // pusho FP (che punta all'Access Link)
@@ -83,8 +88,7 @@ public class ClassCallNode implements Node {
 			     + getAR // risalgo la catena statica e raggiungo l'oggetto
 			     + "add\n" //Sommando mi ci posiziono sopra con l'object pointer
 			     + "lw\n" //Prendo il valore e lo metto sullo stack
-			  
-			     + "lw\n" //TODO capire perchè?
+			     + "lw\n" //Prendo il valore e lo metto sullo stack
 			     
 			     //Poi pusho l'offset del metodo
 			     + "push " + this.methodEntry.getOffset() +"\n"
