@@ -14,7 +14,7 @@ public class MethodNode implements DecNode {
 	private Node exp;
 	private Node symType;
 	private String label;
-	private int offset; //TODO informazione ridondante perchè già presente nella class table come indice della lista dei metodi
+	private int offset; //informazione ridondante perchè già presente nella class table come indice della lista dei metodi
 	
 	public MethodNode(final String id, final Node type, final List<Node> parlist, final List<Node> decList) {
 		super();

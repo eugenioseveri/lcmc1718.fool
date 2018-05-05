@@ -75,6 +75,7 @@ public class CallNode implements Node {
 		//se non è un metodo, ritorno codice di estensione Higher Order
 		//se lo è: ritorno codice di estensione Object Oriented
 		if (this.entry.isMethod()) {
+			System.out.println("Code generation: CallNode: " + this.id + " nesting level: " + this.nestingLevel + " offset: " + this.entry.getOffset());
 			// quando si recupera indirizzo a cui saltare si aggiunge 1 alla differenza di nesting level per raggiungere la dispatch table
 			getAR += "lw\n";
 			return // Allocazione della parte corrente dell'AR della funzione che sta venendo chiamata

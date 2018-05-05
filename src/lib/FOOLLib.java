@@ -70,6 +70,71 @@ public class FOOLLib {
 		}
 	}
 	
+	//Metodo per ottimizzazione OO e integrazione HO con OO
+	public static Node lowestCommonAncestor(Node a, Node b) {
+		
+		if (a instanceof EmptyTypeNode)
+			return b;
+
+		if (b instanceof EmptyTypeNode)
+			return a;
+		
+		// se sto lavorando con classi
+		if (a instanceof RefTypeNode && b instanceof RefTypeNode) {
+			
+			RefTypeNode currentType = (RefTypeNode) a;
+			
+			do {
+				// controllo che b non sia un sottotipo diretto della classe attualmente considerata
+				if (FOOLLib.isSubtype(b, currentType)) {
+					// nel caso in cui lo sia => ritorno la classe corrente a
+					return currentType;
+				}
+				//Risalgo la gerarchia passando alla supercalsse della classe corrente a e con quello costruisco un nodo ClassTypeNode per il tipo della super classe 
+				currentType = new RefTypeNode(superType.get(currentType.getId()));
+				
+			} while (currentType.getId() != null);
+			
+		} else if(a instanceof ArrowTypeNode && b instanceof ArrowTypeNode) {
+			// se sto lavorando con tipo funzionali (con lo stesso numero di parametri)
+			ArrowTypeNode typeA = (ArrowTypeNode) a;
+			ArrowTypeNode typeB = (ArrowTypeNode) b;
+
+			if (typeA.getParlist().size() != typeB.getParlist().size()) {
+				return null;
+			}
+			
+			// controllo il tipo di ritorno ricorsivamente (tipo di ritorno il risultato della chiamata ricorsiva (covarianza) )
+			Node retType = FOOLLib.lowestCommonAncestor(typeA.getRet(), typeB.getRet());
+			if (retType == null) {
+				return null;
+			}
+
+			// Controllo i parametri (tipo di parametro i-esimo il tipo che è sottotipo dell'altro (controvarianza))
+			ArrayList<Node> parList = new ArrayList<Node>();
+			for (int i = 0; i < typeA.getParlist().size(); i++) {
+				if (FOOLLib.isSubtype(typeA.getParlist().get(i), typeB.getParlist().get(i))) {
+					parList.add(typeA.getParlist().get(i));
+				} else if (FOOLLib.isSubtype(typeB.getParlist().get(i), typeA.getParlist().get(i))) {
+					parList.add(typeB.getParlist().get(i));
+				} else {
+					// nessuno dei due i-esimi parametri è sottotipo dell'altro
+					return null;
+				}
+			}
+			// sono arrivato in fondo, ritorno il tipo lowestCommonAncestor
+			return new ArrowTypeNode(parList, retType);
+		} else {
+			//per a e b tipi bool/int torna int se almeno uno è int, bool altrimenti
+			if (a instanceof IntTypeNode || b instanceof IntTypeNode)
+				return new IntTypeNode();
+			else
+				return new BoolTypeNode();
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Ogni volta che è chiamato genera una nuova etichetta
 	 * @return etichetta

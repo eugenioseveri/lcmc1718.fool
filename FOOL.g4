@@ -4,13 +4,15 @@ grammar FOOL;
 	import java.util.Map;
 	import java.util.HashMap;
 	import java.util.ArrayList;
+	import java.util.Set;
+	import java.util.HashSet;
 	import ast.*;
 	import lib.FOOLLib;
 }
 
 @parser::members {
 	private int nestingLevel = 0;
-	int globalOffset = -2; //TODO usare questo offset globale?
+	int globalOffset = -2;
 	// Array di tabelle dove l'indice dell'array è il livello sintattico, ossia il livello di scope, indice 0 = dichiarazioni globali, indice 1 = dichiarazioni locali (mappano identificatori con i valori)
 	ArrayList<HashMap<String,STEntry>> symTable = new ArrayList<HashMap<String,STEntry>>();
 	// Il livello dell'ambiente con dichiarazioni più esterne è 0 (nelle slide è 1); il fronte della lista di tabelle è "symTable.get(nestingLevel)"
@@ -68,6 +70,9 @@ cllist returns [List<Node> astlist]:
          	
  			STEntry superEntry = null; // Dichiara Entry della superclasse a null
  			HashMap<String,STEntry> virtualTable = new HashMap<>(); // VirtualTable vuota
+ 			
+ 			//Struttura dati usata per evitare la ridefinizione (erronea) di campi e metodi all'interno della stessa classe
+ 			Set<String> fieldsMethodsName = new HashSet<>();
  		}
  		(EXTENDS ei=ID
  		{
@@ -124,33 +129,51 @@ cllist returns [List<Node> astlist]:
 			}
  		}
  		LPAR
- 			(c1=ID COLON t1=type {
+ 			(c1=ID COLON ct1=type {
+ 				
+ 				//non è necessario controllare la ridefinizione (erronea) del campo perchè è il primo
+ 				fieldsMethodsName.add($c1.text);
+ 				
  				//aggiunto il campo nella lista che di conseguenza viene aggiornata la ClassTypeNode per riferimento
  				if(virtualTable.get($c1.text) == null) { 
  					// Caso senza override
- 					fieldsList.add(-fieldOffset-1, new FieldNode($c1.text,$t1.ast));
- 					virtualTable.put($c1.text, new STEntry(nestingLevel,$t1.ast,fieldOffset--));
+ 					fieldsList.add(-fieldOffset-1, new FieldNode($c1.text,$ct1.ast,fieldOffset));
+ 					virtualTable.put($c1.text, new STEntry(nestingLevel,$ct1.ast,fieldOffset--));
  				} else {
  					// Caso con override
- 					fieldsList.set(-virtualTable.get($c1.text).getOffset()-1, new FieldNode($c1.text,$t1.ast));
- 					virtualTable.put($c1.text, new STEntry(nestingLevel,$t1.ast,virtualTable.get($c1.text).getOffset()));
+ 					fieldsList.set(-virtualTable.get($c1.text).getOffset()-1, new FieldNode($c1.text,$ct1.ast,virtualTable.get($c1.text).getOffset()));
+ 					virtualTable.put($c1.text, new STEntry(nestingLevel,$ct1.ast,virtualTable.get($c1.text).getOffset()));
  				}
- 			} (COMMA c2=ID COLON t2=type {
+ 			} (COMMA c2=ID COLON ct2=type {
+ 				
+ 				if (!fieldsMethodsName.add($c2.text)){
+ 					// Errore identificatore (campo) già dichiarato nella stessa classe
+					System.out.println("Field ID: " + $c2.text + " at line " + $c2.line + " already declared in the same class");
+					System.exit(0);
+ 				}
+ 				
  				//aggiunto il campo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
  				if(virtualTable.get($c2.text) == null) { // Caso con o senza override
  					// Caso senza override
- 					fieldsList.add(-fieldOffset-1, new FieldNode($c2.text,$t2.ast));
- 					virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,fieldOffset--));
+ 					fieldsList.add(-fieldOffset-1, new FieldNode($c2.text,$ct2.ast,fieldOffset));
+ 					virtualTable.put($c2.text, new STEntry(nestingLevel,$ct2.ast,fieldOffset--));
  				} else {
  					// Caso con override
- 					fieldsList.set(-virtualTable.get($c2.text).getOffset()-1, new FieldNode($c2.text,$t2.ast));
- 					virtualTable.put($c2.text, new STEntry(nestingLevel,$t2.ast,virtualTable.get($c2.text).getOffset()));
+ 					fieldsList.set(-virtualTable.get($c2.text).getOffset()-1, new FieldNode($c2.text,$ct2.ast,virtualTable.get($c2.text).getOffset()));
+ 					virtualTable.put($c2.text, new STEntry(nestingLevel,$ct2.ast,virtualTable.get($c2.text).getOffset()));
  				}
  			}
  			)* )? RPAR
  				// inizia la dichiarazione e definizione dei metodi   
               CLPAR
                  ( FUN m1=ID COLON mt1=type {
+                 	
+                 	if (!fieldsMethodsName.add($m1.text)){
+	 					// Errore identificatore (metodo) già dichiarato nella stessa classe
+						System.out.println("Method ID: " + $m1.text + " at line " + $m1.line + " already declared in the same class");
+						System.exit(0);
+ 					}
+                 	
                  	List<Node> parList = new ArrayList<>();
             		List<Node> decList = new ArrayList<>();
                  	//aggiunto il metodo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
