@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lib.FOOLLib;
+import lib.FOOLLib.MethodInheritanceType;
 
 public class MethodNode implements DecNode {
 
@@ -15,21 +16,19 @@ public class MethodNode implements DecNode {
 	private Node symType;
 	private String label;
 	private int offset; //informazione ridondante perchè già presente nella class table come indice della lista dei metodi
+	private MethodInheritanceType mit; //Aggiunto per ulteriore ottimizzazione di typecheck e di code generation
 	
-	public MethodNode(final String id, final Node type, final List<Node> parlist, final List<Node> decList) {
+	public MethodNode(final String id, final Node type, final List<Node> parlist, final List<Node> decList, final MethodInheritanceType mit) {
 		super();
 		this.id = id;
 		this.type = type;
 		this.parlist = parlist;
 		this.decList = decList;
+		this.mit = mit;
 	}
 	
 	public void addBody (final Node exp) {
 		this.exp = exp;
-	}
-	
-	public String getLabel() {
-		return this.label;
 	}
 	
 	public void setLabel(final String label) {
@@ -46,6 +45,10 @@ public class MethodNode implements DecNode {
 	
 	public void setMethodOffset(final int offset) {
 		this.offset = offset;
+	}
+	
+	public MethodInheritanceType getMit() {
+		return this.mit;
 	}
 	
 	@Override
@@ -138,7 +141,8 @@ public class MethodNode implements DecNode {
 		for (Node n: this.decList) {
 			decs.add(n.cloneNode());
 		}
-		MethodNode tmp = new MethodNode(this.id, this.type.cloneNode(), params, decs);
+		//MethodInheritanceType.INHERIT = perché rientra nel caso di un metodo ereditato da una classe figlio
+		MethodNode tmp = new MethodNode(this.id, this.type.cloneNode(), params, decs, MethodInheritanceType.INHERIT);
 		tmp.setSymType(this.symType.cloneNode());
 		tmp.addBody(this.exp);
 		return tmp;

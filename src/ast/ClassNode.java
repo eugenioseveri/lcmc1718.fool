@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lib.FOOLLib;
+import lib.FOOLLib.MethodInheritanceType;
 
 public class ClassNode implements DecNode {
 
@@ -49,7 +50,10 @@ public class ClassNode implements DecNode {
 	public Node typeCheck() {
 		//richiama sui figli che sono metodi
 		for(Node n: this.methods) {
-			n.typeCheck();
+			//Ottimizzazione, effettuato il type check solo in caso di metodo nuovo o riscritto
+			if (((MethodNode)n).getMit() != MethodInheritanceType.INHERIT) {
+				n.typeCheck();
+			}
 		}
 		
 		if (this.superEntry != null) {
@@ -62,7 +66,17 @@ public class ClassNode implements DecNode {
 			List<Node> localFields = ((ClassTypeNode)this.symType).getAllFields();
 			List<Node> localMethods = ((ClassTypeNode)this.symType).getAllMethods();
 			
-			//Type Checking più efficiente per ClassNode
+			//Ottimizzazione, effettuato il subtyping solo in caso di metodo riscritto
+			for (int i = 0; i < localMethods.size(); i++) {
+				if (((MethodNode)localMethods.get(i)).getMit() == MethodInheritanceType.OVERRIDE) {
+					if (!FOOLLib.isSubtype(((MethodNode)localMethods.get(i)).getSymType(),((MethodNode)superMethods.get(i)).getSymType())){
+						System.out.println("Error subtyping method " + ((MethodNode)localMethods.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
+						System.exit(0);
+					}
+				}
+			}
+			
+			//Type Checking più efficiente per ClassNode (Soluzione richiesta nella parte di ottimizzazione)
 			for (int i = 0; i < localFields.size(); i++) {
 				int offset = ((FieldNode)localFields.get(i)).getOffset();
 				if ((-offset-1) < superFields.size()) {
@@ -73,6 +87,7 @@ public class ClassNode implements DecNode {
 				}
 			}
 			
+			/*
 			for (int i = 0; i < localMethods.size(); i++) {
 				int offset = ((MethodNode)localMethods.get(i)).getMethodOffset();
 				if ((offset) < superMethods.size()) {
@@ -82,21 +97,22 @@ public class ClassNode implements DecNode {
 					}
 				}
 			}
+			*/
 			
 			
-			/*
+			/* Soluzione utilizzata prima dell'ottimizzazione 
 			//Controllo che i campi della classe figlio siano sottotipo della classe padre
 			for(int i = 0; i < superFields.size(); i++) {
-				if (!FOOLLib.isSubtype(((FieldNode)fields.get(i)).getSymType(),((FieldNode)superFields.get(i)).getSymType())){
-					System.out.println("Error subtyping field " + ((FieldNode)fields.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
+				if (!FOOLLib.isSubtype(((FieldNode)localFields.get(i)).getSymType(),((FieldNode)superFields.get(i)).getSymType())){
+					System.out.println("Error subtyping field " + ((FieldNode)localFields.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
 					System.exit(0);
 				}
 			}
 			
 			//Controllo che i metodi della classe figlio siano sottotipo della classe padre
 			for(int i = 0; i < superMethods.size(); i++) {
-				if (!FOOLLib.isSubtype(((MethodNode)methods.get(i)).getSymType(),((MethodNode)superMethods.get(i)).getSymType())){
-					System.out.println("Error subtyping method " + ((MethodNode)methods.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
+				if (!FOOLLib.isSubtype(((MethodNode)localMethods.get(i)).getSymType(),((MethodNode)superMethods.get(i)).getSymType())){
+					System.out.println("Error subtyping method " + ((MethodNode)localMethods.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
 					System.exit(0);
 				}
 			}
@@ -112,11 +128,19 @@ public class ClassNode implements DecNode {
 		String methodLabel;
 		for (int i = 0; i < this.methods.size(); i++) {
 			MethodNode mn = (MethodNode) this.methods.get(i);
-			methodLabel = FOOLLib.freshMethodLabel();
-			mn.setLabel(methodLabel);
-			dispatchTable.remove(mn.getMethodOffset());
-			dispatchTable.add(mn.getMethodOffset(), methodLabel);
-			mn.codeGeneration();
+			//Ottimizzazione, generazione di codice effettuata solo in caso di metodo nuovo o riscritto
+			if (mn.getMit() == MethodInheritanceType.INHERIT) {
+				//prelevo la label del metodo nella dispatch table della classe padre, cosi da saltare allo stesso indirizzo del metodo padre
+				methodLabel = FOOLLib.getDispatchTable().get(-this.superEntry.getOffset()-2).get(mn.getMethodOffset());
+				mn.setLabel(methodLabel);
+				dispatchTable.set(mn.getMethodOffset(), methodLabel);
+			} else {
+				//Metodo nuovo o riscritto, procedo normalmente alla generazione di label e codice
+				methodLabel = FOOLLib.freshMethodLabel();
+				mn.setLabel(methodLabel);
+				dispatchTable.set(mn.getMethodOffset(), methodLabel);
+				mn.codeGeneration();
+			}
 		}
 		// creo sullo heap la Dispatch Table che ho costruito: per ciascuna etichetta, la memorizzo a indirizzo in $hp ed incremento $hp
 		String dispatchTableCode = "";

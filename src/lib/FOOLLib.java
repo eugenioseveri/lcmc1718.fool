@@ -11,6 +11,18 @@ import ast.*;
 public class FOOLLib {
 	
 	public static final int MEMSIZE = 10000;
+	
+	/**
+	 * Stato di ereditarietà un metodo:
+	 * NEW Metodo nuovo (mai dichiarato);
+	 * INHERIT Metodo ereditato (dichiarato nella classe padre);
+	 * OVERRIDE Metodo riscritto (ridefinito nella classe figlio).
+	 */
+	public static enum MethodInheritanceType {
+		NEW,
+		INHERIT,
+		OVERRIDE 
+	}
 	private static int labCount = 0; // Contatore utilizzato per generare etichette fresh
 	private static int funLabCount = 0; //Come labCount, ma per le funzioni
 	private static int methodLabCount = 0; //Come labCount, ma peeìr le funzioni
@@ -184,5 +196,6 @@ public class FOOLLib {
 	public static List<List<String>> getDispatchTable() {
 		return dispatchTables;
 	}
+	
 
 }
