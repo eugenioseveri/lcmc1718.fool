@@ -8,6 +8,7 @@ grammar FOOL;
 	import java.util.HashSet;
 	import ast.*;
 	import lib.FOOLLib;
+	import lib.FOOLLib.MethodInheritanceType;
 }
 
 @parser::members {
@@ -63,6 +64,7 @@ cllist returns [List<Node> astlist]:
 				System.out.println("Class id: " + $i.text + " at line " + $i.line + " already declared.");
 				System.exit(0);
  			}
+ 			
  			List<Node> fieldsList = new ArrayList<>(); // Lista dei campi vuota
  			List<Node> methodsList = new ArrayList<>(); // Lista dei metodi vuota
  			
@@ -136,7 +138,7 @@ cllist returns [List<Node> astlist]:
  				
  				//aggiunto il campo nella lista che di conseguenza viene aggiornata la ClassTypeNode per riferimento
  				if(virtualTable.get($c1.text) == null) { 
- 					// Caso senza override
+ 					// Caso nuovo campo
  					fieldsList.add(-fieldOffset-1, new FieldNode($c1.text,$ct1.ast,fieldOffset));
  					virtualTable.put($c1.text, new STEntry(nestingLevel,$ct1.ast,fieldOffset--));
  				} else {
@@ -154,7 +156,7 @@ cllist returns [List<Node> astlist]:
  				
  				//aggiunto il campo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
  				if(virtualTable.get($c2.text) == null) { // Caso con o senza override
- 					// Caso senza override
+ 					// Caso nuovo campo
  					fieldsList.add(-fieldOffset-1, new FieldNode($c2.text,$ct2.ast,fieldOffset));
  					virtualTable.put($c2.text, new STEntry(nestingLevel,$ct2.ast,fieldOffset--));
  				} else {
@@ -177,16 +179,18 @@ cllist returns [List<Node> astlist]:
                  	List<Node> parList = new ArrayList<>();
             		List<Node> decList = new ArrayList<>();
                  	//aggiunto il metodo nella lista e di conseguenza viene aggiornata la ClassTypeNode per riferimento
-                 	MethodNode methodNode = new MethodNode($m1.text,$mt1.ast,parList,decList);
+                 	MethodNode methodNode;
                  	
                  	STEntry methodEntry = null;
                  	if(virtualTable.get($m1.text) == null) {
-                 		// Caso senza ereditarietà
+                 		// Caso nuovo metodo, si tratta di un metodo mai dichiarato
+                 		methodNode = new MethodNode($m1.text,$mt1.ast,parList,decList,MethodInheritanceType.NEW);
                  		methodNode.setMethodOffset(methodOffset);
                  		methodsList.add(methodOffset, methodNode);
                  		methodEntry = new STEntry(nestingLevel,methodOffset++,true);
                  	} else {
-                 		// Caso con ereditarietà (preservando l'offset - OVERLOAD NON SUPPORTATO)
+                 		// Caso override (preservando l'offset - overload non supportato), 
+                 		methodNode = new MethodNode($m1.text,$mt1.ast,parList,decList,MethodInheritanceType.OVERRIDE);
                  		methodNode.setMethodOffset(virtualTable.get($m1.text).getOffset());
                  		methodsList.set(virtualTable.get($m1.text).getOffset(), methodNode);
                  		methodEntry = new STEntry(nestingLevel,virtualTable.get($m1.text).getOffset(),true);
