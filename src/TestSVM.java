@@ -1,9 +1,11 @@
-import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 
 public class TestSVM {
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
-		String fileName = "quicksort.fool.asm";
+		String fileName = "test/bankloan_loro.fool.asm";
 
 		CharStream charsSVM = CharStreams.fromFileName(fileName);
 		SVMLexer lexerSVM = new SVMLexer(charsSVM);

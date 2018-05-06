@@ -4,8 +4,8 @@ public interface DecNode extends Node {
 
 	/**
 	 * Restituisce il tipo in symbol table.
-	 * @return
+	 * @return symtype
 	 */
-	public Node getSymType();
-	
+	Node getSymType();
+
 }

@@ -1,13 +1,16 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+
 import ast.Node;
 
 public class TestAll {
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
-		String fileName = "prova.fool";
+		String fileName = "test/bankloan.fool";
 
 		CharStream chars = CharStreams.fromFileName(fileName);
 		FOOLLexer lexer = new FOOLLexer(chars);
@@ -16,17 +19,16 @@ public class TestAll {
 
 		Node ast = parser.prog().ast; // Generazione AST con Id associate a relative entry symbol table.
 
-		System.out.println("You had: " + lexer.lexicalErrors + " lexical errors and "
-							+ parser.getNumberOfSyntaxErrors() + " syntax errors.");
+		System.out.println("You had: " + lexer.lexicalErrors + " lexical errors and " + parser.getNumberOfSyntaxErrors() + " syntax errors.");
 
 		System.out.println("Visualizing AST...");
 		System.out.print(ast.toPrint(""));
-		
+
 		Node type = ast.typeCheck(); // Type-checking bottom-up
 		System.out.println(type.toPrint("Type checking ok! Type of the program is: "));
 
-		// Code generation (prova.fool.asm)
-		String code=ast.codeGeneration(); // Genero il codice assembly che poi la SVM utilizzerà
+		// Code generation
+		String code = ast.codeGeneration(); // Genero il codice assembly che poi la SVM utilizzerà
 		BufferedWriter out = new BufferedWriter(new FileWriter(fileName + ".asm"));
 		out.write(code);
 		out.close();

@@ -3,14 +3,14 @@ package ast;
 public class ProgNode implements Node {
 
 	private Node exp;
-	
-	public ProgNode(Node exp) {
+
+	public ProgNode(final Node exp) {
 		super();
 		this.exp = exp;
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		return indent + "Prog\n" + this.exp.toPrint("  ");
 	}
 
@@ -24,7 +24,7 @@ public class ProgNode implements Node {
 		return this.exp.codeGeneration()
 				+ "halt\n";
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		throw new UnsupportedOperationException("Metodo cloneNode() in ProgNode richiamato erroneamente.");

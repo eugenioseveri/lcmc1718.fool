@@ -7,35 +7,35 @@ public class STEntry {
 	private Node type;
 	private int offset; // Serve per identificare la posizione della variabile dentro l'AR (activation record)
 	private boolean isMethod = false;
-	
-	public STEntry(int nestingLevel, int offset) {
+
+	public STEntry(final int nestingLevel, final int offset) {
 		super();
 		this.nestingLevel = nestingLevel;
 		this.offset = offset;
 	}
 
-	public STEntry(int nestingLevel, Node type) {
+	public STEntry(final int nestingLevel, final Node type) {
 		super();
 		this.nestingLevel = nestingLevel;
 		this.type = type;
 	}
-	
-	public STEntry(int nestingLevel, Node type, int offset) {
+
+	public STEntry(final int nestingLevel, final Node type, final int offset) {
 		super();
 		this.nestingLevel = nestingLevel;
 		this.type = type;
 		this.offset = offset;
 	}
-	
-	public STEntry(int nestingLevel, int offset, boolean isMethod) {
+
+	public STEntry(final int nestingLevel, final int offset, final boolean isMethod) {
 		super();
 		this.nestingLevel = nestingLevel;
 		this.type = null;
 		this.offset = offset;
 		this.isMethod = isMethod;
 	}
-	
-	public STEntry(int nestingLevel, Node type, int offset, boolean isMethod) {
+
+	public STEntry(final int nestingLevel, final Node type, final int offset, final boolean isMethod) {
 		super();
 		this.nestingLevel = nestingLevel;
 		this.type = type;
@@ -46,7 +46,7 @@ public class STEntry {
 	public void addType(final Node type) {
 		this.type = type;
 	}
-	
+
 	public int getNestingLevel() {
 		return this.nestingLevel;
 	}
@@ -58,18 +58,18 @@ public class STEntry {
 	public int getOffset() {
 		return this.offset;
 	}
-	
+
 	public boolean isMethod() {
 		return this.isMethod;
 	}
 
-	public String toPrint(final String indent) { 
+	public String toPrint(final String indent) {
 		return indent + "STEntry: nestingLevel " + this.nestingLevel + "\n"
 				+ indent + "STEntry: type\n" + this.type.toPrint(indent + "  ")
 				+ indent + "STEntry: offset " + this.offset + ("\n")
 				+ indent + "STEntry: isMethod " + this.isMethod + ("\n");
 	}
-	
+
 	public STEntry cloneEntry() {
 		return new STEntry(this.nestingLevel, this.type.cloneNode(), this.offset, this.isMethod);
 	}

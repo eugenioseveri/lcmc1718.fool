@@ -7,14 +7,14 @@ public class OrNode implements Node {
 	private Node left;
 	private Node right;
 
-	public OrNode(Node left, Node right) {
+	public OrNode(final Node left, final Node right) {
 		super();
 		this.left = left;
 		this.right = right;
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		return indent + "Or\n"
 				+ this.left.toPrint(indent + "  ")
 				+ this.right.toPrint(indent + "  ");
@@ -23,10 +23,10 @@ public class OrNode implements Node {
 	@Override
 	public Node typeCheck() {
 		// Controllare che l'operazione "||" sia tra booleani
-		if(!(FOOLLib.isSubtype(this.left.typeCheck(), new BoolTypeNode()) && FOOLLib.isSubtype(this.right.typeCheck(), new BoolTypeNode()))) {
+		if (!(FOOLLib.isSubtype(this.left.typeCheck(), new BoolTypeNode()) && FOOLLib.isSubtype(this.right.typeCheck(), new BoolTypeNode()))) {
 			System.out.println("Non boolean in or!");
 			System.exit(0);
-		};
+		}
 		return new BoolTypeNode();
 	}
 
@@ -50,7 +50,7 @@ public class OrNode implements Node {
 				+ "push 1\n"
 				+ l2 + ": \n";
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		return new OrNode(this.left.cloneNode(), this.right.cloneNode());

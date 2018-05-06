@@ -5,6 +5,7 @@ public interface Node {
 	/**
 	 * Fornisce una rappresentazione testuale del "Node" specificato, comprensiva di indentazione.
 	 * @param indent L'indentazione da aggiungere all'elemento corrente.
+	 * @return stringa che rappresenta
 	 */
 	String toPrint(String indent);
 
@@ -19,7 +20,7 @@ public interface Node {
 	 * @return Stringa contenente il codice assembly generato.
 	 */
 	String codeGeneration();
-	
+
 	/**
 	 * Ritorna una DeepCopy del nodo.
 	 * @return Clone del nodo.

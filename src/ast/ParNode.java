@@ -5,16 +5,16 @@ public class ParNode implements DecNode {
 	private String id;
 	private Node type;
 
-	public ParNode(String id, Node type) {
+	public ParNode(final String id, final Node type) {
 		super();
 		this.id = id;
 		this.type = type;
 	}
 
 	@Override
-	public String toPrint(String indent) {
-		return indent + "Par:" + this.id + "\n" +
-				this.type.toPrint(indent + "  ");
+	public String toPrint(final String indent) {
+		return indent + "Par:" + this.id + "\n"
+				+ this.type.toPrint(indent + "  ");
 	}
 
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
@@ -33,7 +33,7 @@ public class ParNode implements DecNode {
 	public Node getSymType() {
 		return this.type;
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		return new ParNode(this.id, this.type.cloneNode());

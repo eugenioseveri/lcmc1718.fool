@@ -17,7 +17,7 @@ public class MethodNode implements DecNode {
 	private String label;
 	private int offset; // Informazione ridondante perchè già presente nella class table come indice della lista dei metodi
 	private MethodInheritanceType mit; // Aggiunto per ulteriore ottimizzazione di typecheck e di code generation
-	
+
 	public MethodNode(final String id, final Node type, final List<Node> parlist, final List<Node> decList, final MethodInheritanceType mit) {
 		super();
 		this.id = id;
@@ -26,56 +26,56 @@ public class MethodNode implements DecNode {
 		this.decList = decList;
 		this.mit = mit;
 	}
-	
-	public void addBody (final Node exp) {
+
+	public void addBody(final Node exp) {
 		this.exp = exp;
 	}
-	
+
 	public void setLabel(final String label) {
 		this.label = label;
 	}
-	
+
 	public String getId() {
 		return this.id;
 	}
-	
+
 	public int getMethodOffset() {
 		return this.offset;
 	}
-	
+
 	public void setMethodOffset(final int offset) {
 		this.offset = offset;
 	}
-	
+
 	public MethodInheritanceType getMit() {
 		return this.mit;
 	}
-	
+
 	@Override
 	public String toPrint(final String indent) {
-		String declrStr= "";
+		String declrStr = "";
 		String parStr = "";
-		for(Node dec:this.decList) {
+		for (Node dec:this.decList) {
 			declrStr += dec.toPrint(indent + "  ");
 		}
-		for(Node par:this.parlist) {
+		for (Node par:this.parlist) {
 			parStr += par.toPrint(indent + "  ");
 		}
-		return indent + "Method:" + this.id + "\n" +
-				this.type.toPrint(indent + "  ") +
-				parStr +
-				declrStr +
-				this.exp.toPrint(indent + "  ");
+		return indent + "Method:" + this.id + "\n"
+				+ this.type.toPrint(indent + "  ")
+				+ parStr
+				+ declrStr
+				+ this.exp.toPrint(indent + "  ");
 	}
 
 	@Override
 	public Node typeCheck() {
 		// Chiamare il type check delle la lista delle dichiarazioni interne al metodo
-		for(Node dec:decList) {
+		for (Node dec:decList) {
 			dec.typeCheck();
 		}
 		// Controlliamo che il corpo della funzione sia sottotipo del tipo del metodo
-		if(!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
+		if (!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
 			System.out.println("Incompatible value for variable!");
 			System.exit(0);
 		}
@@ -85,19 +85,19 @@ public class MethodNode implements DecNode {
 	@Override
 	public String codeGeneration() {
 		/* Passi:
-		 * - generare indirizzo (label) dove mettere il codice del metodo 
+		 * - generare indirizzo (label) dove mettere il codice del metodo
 		 * - creare realmente il codice del metodo
 		 */
 		String declCode = "";
-		for(Node dec:this.decList) {
+		for (Node dec:this.decList) {
 			declCode += dec.codeGeneration();
 		}
 		String popDecl = "";
-		for(int i=0; i<this.decList.size(); i++) {
+		for (int i = 0; i < this.decList.size(); i++) {
 			popDecl += "pop\n";
 		}
 		String popParList = "";
-		for(int i=0; i<this.parlist.size(); i++) {
+		for (int i = 0; i < this.parlist.size(); i++) {
 			popParList += "pop\n";
 		}
 		// Crea realmente il codice della funzione (compreso di dichiarazioni interne e corpo (exp))

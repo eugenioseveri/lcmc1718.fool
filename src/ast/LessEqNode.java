@@ -6,15 +6,15 @@ public class LessEqNode implements Node {
 
 	private Node left;
 	private Node right;
-	
-	public LessEqNode(Node left, Node right) {
+
+	public LessEqNode(final Node left, final Node right) {
 		super();
 		this.left = left;
 		this.right = right;
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		return indent + "LessOrEqual\n"
 				+ this.left.toPrint(indent + "  ")
 				+ this.right.toPrint(indent + "  ");
@@ -25,7 +25,7 @@ public class LessEqNode implements Node {
 		// Serve tenere conto dell'ereditarietà (singola)
 		Node l = this.left.typeCheck();
 		Node r = this.right.typeCheck();
-		if(!(FOOLLib.isSubtype(l, r) || FOOLLib.isSubtype(r, l))) {
+		if (!(FOOLLib.isSubtype(l, r) || FOOLLib.isSubtype(r, l))) {
 			System.out.println("Incompatible types in less or equal!");
 			System.exit(0);
 		}
@@ -42,14 +42,14 @@ public class LessEqNode implements Node {
 		 */
 		return this.left.codeGeneration()
 				+ this.right.codeGeneration()
-				+ "bleq " + l1 + "\n" // Se la condizione è vera salto alla label1 e push 1 (true) altrimenti push 0 (false) e salto a label2 
+				+ "bleq " + l1 + "\n" // Se la condizione è vera salto alla label1 e push 1 (true) altrimenti push 0 (false) e salto a label2
 				+ "push 0\n"
 				+ "b " + l2 + "\n"
 				+ l1 + ": \n"
 				+ "push 1\n"
 				+ l2 + ": \n";
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		return new LessEqNode(this.left.cloneNode(), this.right.cloneNode());
