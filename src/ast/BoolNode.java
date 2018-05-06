@@ -3,14 +3,14 @@ package ast;
 public class BoolNode implements Node {
 
 	private boolean bool;
-	
-	public BoolNode(boolean bool) {
+
+	public BoolNode(final boolean bool) {
 		super();
 		this.bool = bool;
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		return this.bool ? indent + "Bool:true\n" : indent + "Bool:false\n";
 	}
 

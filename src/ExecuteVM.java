@@ -6,23 +6,23 @@ public class ExecuteVM {
 	private int[] code;
 	private int[] memory = new int[MEMSIZE];
 
-	private int ip = 0; // Instruction Pointer 
+	private int ip = 0; // Instruction Pointer
 	private int sp = MEMSIZE; // Stack Pointer (memoria dall'alto verso il basso) (N.B. se durante l'esecuzione SP è uguale a MEMSIZE allora lo stack è vuoto)
 	private int hp = 0; // Heap Pointer (memoria dal basso verso l'alto)
 	private int fp = MEMSIZE; // Frame Pointer
 	private int ra; // Return Address
 	private int rv; // Return Value
 
-	public ExecuteVM(int[] code) {
+	public ExecuteVM(final int[] code) {
 		this.code = code;
 	}
 
-	public void cpu() { // Ciclo fetch-execute
-		while ( true ) { // Si interrompe solo con l'istruzione halt
+	public final void cpu() { // Ciclo fetch-execute
+		while (true) { // Si interrompe solo con l'istruzione halt
 			int bytecode = code[ip++]; // Fetch
-			int v1,v2;
+			int v1, v2;
 			int address;
-			switch ( bytecode ) { // Execute
+			switch (bytecode) { // Execute
 			case SVMParser.PUSH:
 				push(code[ip++]);
 				break;
@@ -32,22 +32,22 @@ public class ExecuteVM {
 			case SVMParser.ADD:
 				v1 = pop();
 				v2 = pop();
-				push(v2+v1);
+				push(v2 + v1);
 				break;
 			case SVMParser.SUB:
 				v1 = pop();
 				v2 = pop();
-				push (v2-v1); // è importante l'ordine della sottrazione perchè il primo valore sullo stack è in realtà il secondo operando
+				push(v2 - v1); // è importante l'ordine della sottrazione perchè il primo valore sullo stack è in realtà il secondo operando
 				break;
 			case SVMParser.MULT:
 				v1 = pop();
 				v2 = pop();
-				push (v2*v1);
+				push(v2 * v1);
 				break;
 			case SVMParser.DIV:
 				v1 = pop();
 				v2 = pop();
-				push (v2/v1);
+				push(v2 / v1);
 				break;
 			case SVMParser.STOREW:
 				v1 = pop();
@@ -65,7 +65,7 @@ public class ExecuteVM {
 				address = code[ip++];
 				v1 = pop();
 				v2 = pop();
-				if(v2 == v1) {
+				if (v2 == v1) {
 					ip = address;
 				}
 				break;
@@ -73,7 +73,7 @@ public class ExecuteVM {
 				address = code[ip++];
 				v1 = pop();
 				v2 = pop();
-				if(v2 <= v1) {
+				if (v2 <= v1) {
 					ip = address;
 				}
 				break;
@@ -110,19 +110,19 @@ public class ExecuteVM {
 				hp = pop();
 				break;
 			case SVMParser.PRINT: // Controllare che lo stack non sia vuoto, altrimenti dà eccezione.
-			System.out.println((sp<MEMSIZE) ? memory[sp] : "Empty stack!");
-			break;
+				System.out.println((sp < MEMSIZE) ? memory[sp] : "Empty stack!");
+				break;
 			case SVMParser.HALT:
 				return;
 			}
 		}
-	} 
+	}
 
 	private int pop() {
 		return this.memory[this.sp++];
 	}
 
-	private void push(int v) {
+	private void push(final int v) {
 		this.memory[--this.sp] = v;
 	}
 

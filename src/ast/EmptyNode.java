@@ -3,7 +3,7 @@ package ast;
 public class EmptyNode implements Node {
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		return indent + "Null\n";
 	}
 
@@ -16,7 +16,7 @@ public class EmptyNode implements Node {
 	public String codeGeneration() {
 		return "push -1\n";
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		return new EmptyNode();

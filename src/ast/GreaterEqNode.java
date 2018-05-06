@@ -6,15 +6,15 @@ public class GreaterEqNode implements Node {
 
 	private Node left;
 	private Node right;
-	
-	public GreaterEqNode(Node left, Node right) {
+
+	public GreaterEqNode(final Node left, final Node right) {
 		super();
 		this.left = left;
 		this.right = right;
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		return indent + "GreaterOrEqual\n"
 				+ this.left.toPrint(indent + "  ")
 				+ this.right.toPrint(indent + "  ");
@@ -25,7 +25,7 @@ public class GreaterEqNode implements Node {
 		// Serve tenere conto dell'ereditarietà (singola)
 		Node l = this.left.typeCheck();
 		Node r = this.right.typeCheck();
-		if(!(FOOLLib.isSubtype(l, r) || FOOLLib.isSubtype(r, l))) {
+		if (!(FOOLLib.isSubtype(l, r) || FOOLLib.isSubtype(r, l))) {
 			System.out.println("Incompatible types in greater or equal!");
 			System.exit(0);
 		}
@@ -42,14 +42,14 @@ public class GreaterEqNode implements Node {
 		 * altrimenti pusho 0 (FALSE) salto a l2. */
 		return this.right.codeGeneration()
 				+ this.left.codeGeneration()
-				+ "bleq " + l1 + "\n" 
+				+ "bleq " + l1 + "\n"
 				+ "push 0\n"
 				+ "b " + l2 + "\n"
 				+ l1 + ": \n"
 				+ "push 1\n"
 				+ l2 + ": \n";
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		return new GreaterEqNode(this.left.cloneNode(), this.right.cloneNode());

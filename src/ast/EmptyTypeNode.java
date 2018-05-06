@@ -2,10 +2,10 @@ package ast;
 
 public class EmptyTypeNode implements Node {
 
-	public EmptyTypeNode() {}
-	
+	public EmptyTypeNode() { }
+
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		return indent + "EmptyType\n";
 	}
 
@@ -20,7 +20,7 @@ public class EmptyTypeNode implements Node {
 	public String codeGeneration() {
 		throw new UnsupportedOperationException("Metodo codeGeneration() in EmptyTypeNode richiamato erroneamente.");
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		return new EmptyTypeNode();

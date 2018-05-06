@@ -12,7 +12,7 @@ public class CallNode implements Node {
 	private STEntry entry;
 	private List<Node> parlist = new ArrayList<>();
 
-	public CallNode(String id, STEntry entry, ArrayList<Node> parlist, int nestingLevel) {
+	public CallNode(final String id, final STEntry entry, final ArrayList<Node> parlist, final int nestingLevel) {
 		super();
 		this.id = id;
 		this.entry = entry;
@@ -21,23 +21,23 @@ public class CallNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		String parStr = "";
-		for(Node par:this.parlist) {
+		for (Node par:this.parlist) {
 			parStr += par.toPrint(indent + "  ");
 		}
-		return indent + "Call:" + this.id + " at nestingLevel " + this.nestingLevel + "\n" +
-				this.entry.toPrint(indent +  "  ") +
-				parStr;
+		return indent + "Call:" + this.id + " at nestingLevel " + this.nestingLevel + "\n"
+				+ this.entry.toPrint(indent +  "  ")
+				+ parStr;
 	}
 
 	@Override
 	public Node typeCheck() {
 		ArrowTypeNode atn = null;
 		// Controllo che l'identificatore faccia riferiemento ad una funzione
-		if(this.entry.getType() instanceof ArrowTypeNode) {
-			atn = (ArrowTypeNode) entry.getType(); 
-		}/* else { // Rimosso perché con l'estensione higher-order l'identificatore di una variabile può essere una funzione
+		if (this.entry.getType() instanceof ArrowTypeNode) {
+			atn = (ArrowTypeNode) entry.getType();
+		} /* else { // Rimosso perché con l'estensione higher-order l'identificatore di una variabile può essere una funzione
 			// Errore perché sto usando l'identificatore di una variabile come se fosse una funzione
 			System.out.println("Invocation of a non-function " + this.id);
 			System.exit(0);
@@ -51,9 +51,9 @@ public class CallNode implements Node {
 		}
 
 		// Controllo che il tipo di ogni parametro attuale dentro parlist sia sottotipo dei parametri della dichiarazione
-		for(int i=0; i<this.parlist.size(); i++) {
-			if(!(FOOLLib.isSubtype((this.parlist.get(i)).typeCheck(), atnParList.get(i)))) {
-				System.out.println("Wrong type for " + (i+1) + "-th parameter in the invocation of " + this.id);
+		for (int i = 0; i < this.parlist.size(); i++) {
+			if (!(FOOLLib.isSubtype((this.parlist.get(i)).typeCheck(), atnParList.get(i)))) {
+				System.out.println("Wrong type for " + (i + 1) + "-th parameter in the invocation of " + this.id);
 				System.exit(0);
 			}
 		}
@@ -63,15 +63,15 @@ public class CallNode implements Node {
 	@Override
 	public String codeGeneration() {
 		String parCode = ""; // Stringa per allocare i parametri (si parte dall'ultimo, come da struttura della memoria)
-		for(int i=this.parlist.size()-1; i>=0; i--) {
+		for (int i = (this.parlist.size() - 1); i >= 0; i--) {
 			parCode += this.parlist.get(i).codeGeneration();
 		}
-		
+
 		String getAR = "";
-		for(int i=0; i<this.nestingLevel-this.entry.getNestingLevel(); i++) {
+		for (int i = 0; i < this.nestingLevel - this.entry.getNestingLevel(); i++) {
 			getAR += "lw\n";
 		}
-		
+
 		// Se non è un metodo, ritorno codice di estensione Higher Order; se lo è, ritorno codice di estensione Object Oriented
 		if (this.entry.isMethod()) {
 			System.out.println("Code generation: CallNode: " + this.id + " nesting level: " + this.nestingLevel + " offset: " + this.entry.getOffset());
@@ -109,7 +109,7 @@ public class CallNode implements Node {
 					+ "js\n";
 		}
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		throw new UnsupportedOperationException("Metodo cloneNode() in CallNode richiamato erroneamente.");

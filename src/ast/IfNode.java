@@ -7,8 +7,8 @@ public class IfNode implements Node {
 	private Node condition;
 	private Node thenStatement;
 	private Node elseStatement;
-	
-	public IfNode(Node condition, Node thenStatement, Node elseStatement) {
+
+	public IfNode(final Node condition, final Node thenStatement, final Node elseStatement) {
 		super();
 		this.condition = condition;
 		this.thenStatement = thenStatement;
@@ -16,7 +16,7 @@ public class IfNode implements Node {
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		return indent + "If\n"
 				+ this.condition.toPrint(indent + "  ")
 				+ this.thenStatement.toPrint(indent + "  ")
@@ -26,7 +26,7 @@ public class IfNode implements Node {
 	@Override
 	public Node typeCheck() {
 		// La condizione è bool, lo then è "circle" e l'else "square". Avendo una biforcazione tra then ed else, in teoria si dovrebbe richiedere "shape" (il "lowest common ancestor").
-		if(!(FOOLLib.isSubtype(this.condition.typeCheck(), new BoolTypeNode()))) {
+		if (!(FOOLLib.isSubtype(this.condition.typeCheck(), new BoolTypeNode()))) {
 			System.out.println("Non boolean condition in 'if'!");
 			System.exit(0);
 		}
@@ -38,7 +38,7 @@ public class IfNode implements Node {
 		System.exit(0);
 		return null; // Irraggiungibile, ma è un problema non decidibile
 	}
-	
+
 	@Override
 	public String codeGeneration() {
 		final String l1 = FOOLLib.freshLabel();
@@ -52,7 +52,7 @@ public class IfNode implements Node {
 				+ this.thenStatement.codeGeneration()
 				+ l2 + ": \n";
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		return new IfNode(this.condition.cloneNode(), this.thenStatement.cloneNode(), this.elseStatement.cloneNode());

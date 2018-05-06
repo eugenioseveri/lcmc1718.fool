@@ -2,15 +2,15 @@ package ast;
 
 public class IntNode implements Node {
 
-	public int integer;
-	
-	public IntNode(int integer) {
+	private int integer;
+
+	public IntNode(final int integer) {
 		super();
 		this.integer = integer;
 	}
 
 	@Override
-	public String toPrint(String indent) { // "indent" è una stringa di spazi corrispondenti all'indentazione corrente 
+	public String toPrint(final String indent) { // "indent" è una stringa di spazi corrispondenti all'indentazione corrente
 		return indent + "Int:" + this.integer + "\n";
 	}
 
@@ -23,7 +23,7 @@ public class IntNode implements Node {
 	public String codeGeneration() {
 		return "push " + this.integer + "\n";
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		return new IntNode(this.integer);

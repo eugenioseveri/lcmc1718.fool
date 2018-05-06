@@ -1,10 +1,13 @@
-import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+
 import ast.Node;
 
 public class TestFOOL {
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 
-		String fileName = "prova.fool";
+		String fileName = "test/bankloan.fool";
 
 		CharStream chars = CharStreams.fromFileName(fileName);
 		FOOLLexer lexer = new FOOLLexer(chars);
@@ -18,7 +21,7 @@ public class TestFOOL {
 
 		System.out.println("Visualizing AST...");
 		System.out.print(ast.toPrint(""));
-		
+
 		Node type = ast.typeCheck(); // Type-checking bottom-up
 		System.out.println(type.toPrint("Type checking ok! Type of the program is: "));
 

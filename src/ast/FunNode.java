@@ -13,50 +13,50 @@ public class FunNode implements DecNode {
 	private List<Node> decList = new ArrayList<Node>();
 	private Node exp;
 	private Node symType;
-	
+
 	public FunNode(final String id, final Node type) {
 		super();
 		this.id = id;
 		this.type = type;
 	}
-	
-	public void addPar(Node par) {
+
+	public void addPar(final Node par) {
 		this.parlist.add(par);
 	}
-	
-	public void addDec(ArrayList<Node> declist) {
+
+	public void addDec(final ArrayList<Node> declist) {
 		this.decList = declist;
 	}
-	
-	public void addBody (Node exp) {
+
+	public void addBody(final Node exp) {
 		this.exp = exp;
 	}
 
 	@Override
-	public String toPrint(String indent) {
-		String declrStr= "";
+	public String toPrint(final String indent) {
+		String declrStr = "";
 		String parStr = "";
-		for(Node dec:this.decList) {
+		for (Node dec:this.decList) {
 			declrStr += dec.toPrint(indent + "  ");
 		}
-		for(Node par:this.parlist) {
+		for (Node par:this.parlist) {
 			parStr += par.toPrint(indent + "  ");
 		}
-		return indent + "Fun:" + this.id + "\n" +
-				this.type.toPrint(indent + "  ") +
-				parStr +
-				declrStr +
-				this.exp.toPrint(indent + "  ");
+		return indent + "Fun:" + this.id + "\n"
+				+ this.type.toPrint(indent + "  ")
+				+ parStr
+				+ declrStr
+				+ this.exp.toPrint(indent + "  ");
 	}
 
 	@Override
 	public Node typeCheck() {
 		// Chiamare il type check delle la lista delle dichiarazioni interne alla funzione
-		for(Node dec:decList) {
+		for (Node dec:decList) {
 			dec.typeCheck();
 		}
 		// Controlliamo che il corpo della funzione sia sottotipo del tipo della funzione
-		if(!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
+		if (!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
 			System.out.println("Incompatible value for variable!");
 			System.exit(0);
 		}
@@ -66,24 +66,24 @@ public class FunNode implements DecNode {
 	@Override
 	public String codeGeneration() {
 		/* Passi:
-		 * - generare indirizzo (label) dove mettere il codice della funzione 
+		 * - generare indirizzo (label) dove mettere il codice della funzione
 		 * - creare realmente il codice della funzione
 		 */
 		final String funl = FOOLLib.freshFunLabel();
 		String declCode = "";
-		for(Node dec:this.decList) {
+		for (Node dec:this.decList) {
 			declCode += dec.codeGeneration();
 		}
 		String popDecl = "";
-		for(Node dec:this.decList) {
-			if (((DecNode)dec).getSymType() instanceof ArrowTypeNode) {
+		for (Node dec:this.decList) {
+			if (((DecNode) dec).getSymType() instanceof ArrowTypeNode) {
 				popDecl += "pop\n";
 			}
 			popDecl += "pop\n";
 		}
 		String popParList = "";
-		for(Node par:this.parlist) {
-			if (((DecNode)par).getSymType() instanceof ArrowTypeNode) {
+		for (Node par:this.parlist) {
+			if (((DecNode) par).getSymType() instanceof ArrowTypeNode) {
 				popParList += "pop\n";
 			}
 			popParList += "pop\n";
@@ -114,10 +114,10 @@ public class FunNode implements DecNode {
 		return this.symType;
 	}
 
-	public void setSymType(Node symType) {
+	public void setSymType(final Node symType) {
 		this.symType = symType;
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		throw new UnsupportedOperationException("Metodo cloneNode() in FunNode richiamato erroneamente.");

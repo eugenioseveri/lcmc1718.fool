@@ -7,25 +7,25 @@ public class ArrowTypeNode implements Node {
 
 	private List<Node> parlist; // Lista con i tipi dei parametri
 	private Node ret; // Tipo di ritorno della funzione
-	
-	public ArrowTypeNode(List<Node> parlist, Node ret) {
+
+	public ArrowTypeNode(final List<Node> parlist, final Node ret) {
 		super();
 		this.parlist = parlist;
 		this.ret = ret;
 	}
 
 	public List<Node> getParlist() {
-		return parlist;
+		return this.parlist;
 	}
 
 	public Node getRet() {
-		return ret;
+		return this.ret;
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		String parlStr = "";
-		for (Node par:parlist) {
+		for (Node par: this.parlist) {
 			parlStr += par.toPrint(indent + "  ");
 		}
 		return indent + "ArrowType\n"

@@ -3,14 +3,14 @@ package ast;
 public class PrintNode implements Node {
 
 	private Node exp;
-	
-	public PrintNode(Node exp) {
+
+	public PrintNode(final Node exp) {
 		super();
 		this.exp = exp;
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		return indent + "Print\n" + exp.toPrint(indent + "  ");
 	}
 
@@ -24,7 +24,7 @@ public class PrintNode implements Node {
 		return this.exp.codeGeneration()
 				+ "print\n";
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		throw new UnsupportedOperationException("Metodo cloneNode() in PrintNode richiamato erroneamente.");

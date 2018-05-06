@@ -5,14 +5,14 @@ import lib.FOOLLib;
 public class NotNode implements Node {
 
 	private Node exp;
-	
-	public NotNode(Node exp) {
+
+	public NotNode(final Node exp) {
 		super();
 		this.exp = exp;
 	}
 
 	@Override
-	public String toPrint(String indent) {
+	public String toPrint(final String indent) {
 		return indent + "Not\n"
 				+ this.exp.toPrint(indent + "  ");
 	}
@@ -20,10 +20,10 @@ public class NotNode implements Node {
 	@Override
 	public Node typeCheck() {
 		// Controllo che l'operazione "!" (not) sia tra booleani
-		if(!(FOOLLib.isSubtype(this.exp.typeCheck(), new BoolTypeNode()))) {
+		if (!(FOOLLib.isSubtype(this.exp.typeCheck(), new BoolTypeNode()))) {
 			System.out.println("Non boolean in not!");
 			System.exit(0);
-		};
+		}
 		return new BoolTypeNode();
 	}
 
@@ -43,7 +43,7 @@ public class NotNode implements Node {
 				+ "push 0\n"
 				+ l2 + ": \n";
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		return new NotNode(this.exp.cloneNode());

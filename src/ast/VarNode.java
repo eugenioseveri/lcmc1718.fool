@@ -8,7 +8,7 @@ public class VarNode implements DecNode {
 	private Node type;
 	private Node exp;
 
-	public VarNode(String id, Node type, Node exp) {
+	public VarNode(final String id, final Node type, final Node exp) {
 		super();
 		this.id = id;
 		this.type = type;
@@ -16,16 +16,16 @@ public class VarNode implements DecNode {
 	}
 
 	@Override
-	public String toPrint(String indent) {
-		return indent + "Var:" + this.id + "\n" +
-				this.type.toPrint(indent + "  ") +
-				this.exp.toPrint(indent + "  ");
+	public String toPrint(final String indent) {
+		return indent + "Var:" + this.id + "\n"
+				+ this.type.toPrint(indent + "  ")
+				+ this.exp.toPrint(indent + "  ");
 	}
 
 	@Override
 	public Node typeCheck() {
 		// Controlliamo che il tipo della espressione sia sottotipo del tipo della var (variabile)
-		if(!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
+		if (!(FOOLLib.isSubtype(this.exp.typeCheck(), this.type))) {
 			System.out.println("Incompatible value for variable " + this.id + "!");
 			System.exit(0);
 		}
@@ -42,7 +42,7 @@ public class VarNode implements DecNode {
 	public Node getSymType() {
 		return this.type;
 	}
-	
+
 	@Override
 	public Node cloneNode() {
 		return new VarNode(this.id, this.type.cloneNode(), this.exp.cloneNode());
