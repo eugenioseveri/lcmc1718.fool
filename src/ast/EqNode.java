@@ -55,5 +55,4 @@ public class EqNode implements Node {
 	public Node cloneNode() {
 		return new EqNode(this.left.cloneNode(), this.right.cloneNode());
 	}
-
 }

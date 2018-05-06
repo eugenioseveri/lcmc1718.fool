@@ -31,11 +31,9 @@ public class NotNode implements Node {
 	public String codeGeneration() {
 		final String l1 = FOOLLib.freshLabel();
 		final String l2 = FOOLLib.freshLabel();
-		/* 
-		 * Verifico se l'espressione è TRUE confrontadola tramite 'beq' (precedentemente pusho 1 (TRUE))
-		 * Se uguale a 1 salto e restituisco l'opposto facendo push 0 (FALSE)
-		 * altrimenti se diverso da 1, quindi l'espressione è FALSE, restituisco l'opposto facendo push 1 (TRUE)
-		 */
+		/* Verifico se l'espressione è TRUE confrontadola tramite 'beq' (precedentemente pusho 1 (TRUE)):
+		 * Se uguale a 1 salto e restituisco l'opposto facendo push 0 (FALSE),
+		 * altrimenti se diverso da 1, quindi l'espressione è FALSE, restituisco l'opposto facendo push 1 (TRUE) */
 		return this.exp.codeGeneration()
 				+ "push 1\n"
 				+ "beq " + l1 + "\n"
@@ -50,5 +48,4 @@ public class NotNode implements Node {
 	public Node cloneNode() {
 		return new NotNode(this.exp.cloneNode());
 	}
-
 }

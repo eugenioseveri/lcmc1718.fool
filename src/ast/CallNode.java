@@ -10,7 +10,7 @@ public class CallNode implements Node {
 	private String id;
 	private int nestingLevel;
 	private STEntry entry;
-	private ArrayList<Node> parlist = new ArrayList<Node>();
+	private List<Node> parlist = new ArrayList<>();
 
 	public CallNode(String id, STEntry entry, ArrayList<Node> parlist, int nestingLevel) {
 		super();
@@ -37,7 +37,7 @@ public class CallNode implements Node {
 		// Controllo che l'identificatore faccia riferiemento ad una funzione
 		if(this.entry.getType() instanceof ArrowTypeNode) {
 			atn = (ArrowTypeNode) entry.getType(); 
-		}/* else { // Lo abbiamo rimosso perché con l'estensione higher-order l'identificatore di una variabile può essere una funzione
+		}/* else { // Rimosso perché con l'estensione higher-order l'identificatore di una variabile può essere una funzione
 			// Errore perché sto usando l'identificatore di una variabile come se fosse una funzione
 			System.out.println("Invocation of a non-function " + this.id);
 			System.exit(0);
@@ -72,11 +72,10 @@ public class CallNode implements Node {
 			getAR += "lw\n";
 		}
 		
-		//se non è un metodo, ritorno codice di estensione Higher Order
-		//se lo è: ritorno codice di estensione Object Oriented
+		// Se non è un metodo, ritorno codice di estensione Higher Order; se lo è, ritorno codice di estensione Object Oriented
 		if (this.entry.isMethod()) {
 			System.out.println("Code generation: CallNode: " + this.id + " nesting level: " + this.nestingLevel + " offset: " + this.entry.getOffset());
-			// quando si recupera indirizzo a cui saltare si aggiunge 1 alla differenza di nesting level per raggiungere la dispatch table
+			// Quando si recupera indirizzo a cui saltare si aggiunge 1 alla differenza di nesting level per raggiungere la dispatch table
 			getAR += "lw\n";
 			return // Allocazione della parte corrente dell'AR della funzione che sta venendo chiamata
 					"lfp\n" // Control Link
@@ -113,7 +112,7 @@ public class CallNode implements Node {
 	
 	@Override
 	public Node cloneNode() {
-		return null;
+		throw new UnsupportedOperationException("Metodo cloneNode() in CallNode richiamato erroneamente.");
 	}
 
 }

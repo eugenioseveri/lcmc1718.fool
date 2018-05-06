@@ -15,8 +15,8 @@ public class MethodNode implements DecNode {
 	private Node exp;
 	private Node symType;
 	private String label;
-	private int offset; //informazione ridondante perchè già presente nella class table come indice della lista dei metodi
-	private MethodInheritanceType mit; //Aggiunto per ulteriore ottimizzazione di typecheck e di code generation
+	private int offset; // Informazione ridondante perchè già presente nella class table come indice della lista dei metodi
+	private MethodInheritanceType mit; // Aggiunto per ulteriore ottimizzazione di typecheck e di code generation
 	
 	public MethodNode(final String id, final Node type, final List<Node> parlist, final List<Node> decList, final MethodInheritanceType mit) {
 		super();
@@ -84,8 +84,7 @@ public class MethodNode implements DecNode {
 
 	@Override
 	public String codeGeneration() {
-		/*
-		 * Passi:
+		/* Passi:
 		 * - generare indirizzo (label) dove mettere il codice del metodo 
 		 * - creare realmente il codice del metodo
 		 */
@@ -94,15 +93,14 @@ public class MethodNode implements DecNode {
 			declCode += dec.codeGeneration();
 		}
 		String popDecl = "";
-		for(Node dec:this.decList) {
+		for(int i=0; i<this.decList.size(); i++) {
 			popDecl += "pop\n";
 		}
 		String popParList = "";
-		for(Node par:this.parlist) {
+		for(int i=0; i<this.parlist.size(); i++) {
 			popParList += "pop\n";
 		}
-		
-		//crea realmente il codice della funzione (compreso di dichiarazioni interne e corpo (exp))
+		// Crea realmente il codice della funzione (compreso di dichiarazioni interne e corpo (exp))
 		FOOLLib.putCode(this.label + ":\n"
 				+ "cfp\n" // Setta FP allo SP
 				+ "lra\n" // Prende il valore del Return Address e lo mette sullo stack
@@ -141,7 +139,7 @@ public class MethodNode implements DecNode {
 		for (Node n: this.decList) {
 			decs.add(n.cloneNode());
 		}
-		//MethodInheritanceType.INHERIT = perché rientra nel caso di un metodo ereditato da una classe figlio
+		// MethodInheritanceType.INHERIT = perché rientra nel caso di un metodo ereditato da una classe figlio
 		MethodNode tmp = new MethodNode(this.id, this.type.cloneNode(), params, decs, MethodInheritanceType.INHERIT);
 		tmp.setSymType(this.symType.cloneNode());
 		tmp.addBody(this.exp);

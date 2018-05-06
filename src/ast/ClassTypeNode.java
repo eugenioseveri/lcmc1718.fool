@@ -5,11 +5,8 @@ import java.util.List;
 
 public class ClassTypeNode implements Node {
 
-	//(tipi dei campi, inclusi quelli ereditati)
-	private List<Node> allFields;
-	
-	//(tipi funzionali dei metodi, inclusi quelli ereditati)
-	private List<Node> allMethods;
+	private List<Node> allFields; // Tipi dei campi, inclusi quelli ereditati
+	private List<Node> allMethods; // Tipi funzionali dei metodi, inclusi quelli ereditati
 
 	public ClassTypeNode(List<Node> fieldsList, List<Node> methodsList) {
 		super();
@@ -42,12 +39,12 @@ public class ClassTypeNode implements Node {
 
 	@Override
 	public Node typeCheck() {
-		return null;
+		throw new UnsupportedOperationException("Metodo typeCheck() in ClassTypeNode richiamato erroneamente.");
 	}
 
 	@Override
 	public String codeGeneration() {
-		return null;
+		throw new UnsupportedOperationException("Metodo codeGeneration() in ClassTypeNode richiamato erroneamente.");
 	}
 	
 	@Override

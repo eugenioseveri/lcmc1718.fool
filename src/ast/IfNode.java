@@ -30,14 +30,10 @@ public class IfNode implements Node {
 			System.out.println("Non boolean condition in 'if'!");
 			System.exit(0);
 		}
-		Node thenNode = this.thenStatement.typeCheck();
-		Node elseNode = this.elseStatement.typeCheck();
-		
-		Node lca = FOOLLib.lowestCommonAncestor(thenNode, elseNode);
+		Node lca = FOOLLib.lowestCommonAncestor(this.thenStatement.typeCheck(), this.elseStatement.typeCheck());
 		if (lca != null) {
 			return lca;
 		}
-		
 		System.out.println("Incompatible types in then-else branches!");
 		System.exit(0);
 		return null; // Irraggiungibile, ma è un problema non decidibile
@@ -61,5 +57,4 @@ public class IfNode implements Node {
 	public Node cloneNode() {
 		return new IfNode(this.condition.cloneNode(), this.thenStatement.cloneNode(), this.elseStatement.cloneNode());
 	}
-
 }

@@ -37,7 +37,6 @@ public class NewNode implements Node {
 			System.out.println("Wrong number of parameters in the instantiation of " + this.classId);
 			System.exit(0);
 		}
-		
 		// Controllo che il tipo di ogni parametro attuale dentro parlist sia sottotipo dei parametri della dichiarazione del costruttore
 		for(int i=0; i<this.parList.size(); i++) {
 			if(!(FOOLLib.isSubtype(this.parList.get(i).typeCheck(), ((FieldNode) fields.get(i)).getSymType()))) {
@@ -51,12 +50,11 @@ public class NewNode implements Node {
 	@Override
 	public String codeGeneration() {
 		String parCode = "";
-		//Generazione di codice per i parametri
+		// Generazione di codice per i parametri
 		for (Node par: this.parList) {
 			parCode += par.codeGeneration();
 		}
-		
-		// alloco un nuovo oggetto nello heap, come prima cosa allora pusho i parametri mettendoli nello heap dall'ultimo al primo
+		// Alloco un nuovo oggetto nello heap, come prima cosa allora pusho i parametri mettendoli nello heap dall'ultimo al primo
 		String parCodeHeap = "";
 		for (int i = 0; i < this.parList.size(); i++) {
 			/* Parto salvando sullo heap il (parList.size()-1)-i = (n-1-i)-esimo campo */
@@ -69,17 +67,16 @@ public class NewNode implements Node {
 			// salvo il valore
 			parCodeHeap += "shp\n";
 		}
-		
 		return parCode 
 				+ parCodeHeap
-				// scrive a indirizzo $hp il dispatch pointer recuperandolo da contenuto indirizzo MEMSIZE + offset classe ID
+				// Scrive a indirizzo $hp il dispatch pointer recuperandolo da contenuto indirizzo MEMSIZE + offset classe ID
 				+ "push " + (FOOLLib.MEMSIZE + this.entry.getOffset()) + "\n"
 				+ "lw\n"
 				+ "lhp\n"
 				+ "sw\n"
-				//Aggiugno Object Pointer
-				+ "lhp\n" //carica sullo stack il valore di hp (indirizzo object pointer da ritornare)
-				+ "lhp\n" //incrementa hp
+				// Aggiugno Object Pointer
+				+ "lhp\n" // Carica sullo stack il valore di hp (indirizzo object pointer da ritornare)
+				+ "lhp\n" // Incrementa hp
 				+ "push 1\n"
 				+ "add\n"
 				+ "shp\n";
@@ -93,5 +90,4 @@ public class NewNode implements Node {
 		}
 		return new NewNode(this.classId, this.entry.cloneEntry(), params);
 	}
-
 }

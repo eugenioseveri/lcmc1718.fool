@@ -2,7 +2,7 @@ package ast;
 
 public class RefTypeNode implements Node {
 
-	private String id; //contiene l'ID della classe
+	private String id; // Contiene l'ID della classe
 	
 	public RefTypeNode(final String id) {
 		super();
@@ -21,13 +21,13 @@ public class RefTypeNode implements Node {
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
 	@Override
 	public Node typeCheck() {
-		return null;
+		throw new UnsupportedOperationException("Metodo typeCheck() in RefTypeNode richiamato erroneamente.");
 	}
 
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
 	@Override
 	public String codeGeneration() {
-		return null;
+		throw new UnsupportedOperationException("Metodo codeGeneration() in RefTypeNode richiamato erroneamente.");
 	}
 	
 	@Override

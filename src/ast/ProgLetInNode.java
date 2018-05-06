@@ -43,16 +43,14 @@ public class ProgLetInNode implements Node {
 
 	@Override
 	public Node typeCheck() {
-		//bisogna lanciare il type checking anche sui figli che sono le dichiarazioni (che possono essere funzioni o variabili). 
-		//Il loro valore di ritorno lo ignoro ma l'importante è controllare che internamente siano consistenti
+		// Bisogna lanciare il type checking anche sui figli che sono le dichiarazioni (che possono essere funzioni o variabili). 
+		// Il loro valore di ritorno lo ignoro ma l'importante è controllare che internamente siano consistenti
 		for(Node dec:this.decList) {
 			dec.typeCheck();
 		}
-		
 		for(Node cl:this.cllist) {
 			cl.typeCheck();
 		}
-		
 		return this.exp.typeCheck();
 	}
 
@@ -71,12 +69,11 @@ public class ProgLetInNode implements Node {
 				+ declCode
 				+ this.exp.codeGeneration()
 				+ "halt\n"
-				+ FOOLLib.getCode(); //codice assembly dei metodi e delle funzioni
+				+ FOOLLib.getCode(); // Codice assembly dei metodi e delle funzioni
 	}
 	
 	@Override
 	public Node cloneNode() {
-		return null;
+		throw new UnsupportedOperationException("Metodo cloneNode() in ProgLetInNode richiamato erroneamente.");
 	}
-
 }
