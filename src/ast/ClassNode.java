@@ -34,10 +34,10 @@ public class ClassNode implements DecNode {
 		for(Node m:this.methods) {
 			methods += m.toPrint(indent + "  ");
 		}
-		String superEntryStr = "";
+		/*String superEntryStr = "";
 		if (this.superEntry != null) { 
 			superEntryStr = this.superEntry.toPrint(indent +  "  ");
-		}
+		}*/
 	
 		return indent + "Class " + this.id + "\n" +
 			//this.classEntry.toPrint(indent +  "  ");
@@ -48,25 +48,22 @@ public class ClassNode implements DecNode {
 
 	@Override
 	public Node typeCheck() {
-		//richiama sui figli che sono metodi
+		// Richiama sui figli che sono metodi
 		for(Node n: this.methods) {
-			//Ottimizzazione, effettuato il type check solo in caso di metodo nuovo o riscritto
+			// Ottimizzazione: effettuato il type check solo in caso di metodo nuovo o riscritto
 			if (((MethodNode)n).getMit() != MethodInheritanceType.INHERIT) {
 				n.typeCheck();
 			}
 		}
 		
 		if (this.superEntry != null) {
-			
-			//Campi e metodi della classe padre
+			// Campi e metodi della classe padre
 			List<Node> superFields = ((ClassTypeNode)this.superEntry.getType()).getAllFields();
 			List<Node> superMethods = ((ClassTypeNode)this.superEntry.getType()).getAllMethods();
-			
-			//Campi e metodi della classe figlio
+			// Campi e metodi della classe figlio
 			List<Node> localFields = ((ClassTypeNode)this.symType).getAllFields();
 			List<Node> localMethods = ((ClassTypeNode)this.symType).getAllMethods();
-			
-			//Ottimizzazione, effettuato il subtyping solo in caso di metodo riscritto
+			// Ottimizzazione: effettuato il subtyping solo in caso di metodo riscritto
 			for (int i = 0; i < localMethods.size(); i++) {
 				if (((MethodNode)localMethods.get(i)).getMit() == MethodInheritanceType.OVERRIDE) {
 					if (!FOOLLib.isSubtype(((MethodNode)localMethods.get(i)).getSymType(),((MethodNode)superMethods.get(i)).getSymType())){
@@ -76,7 +73,7 @@ public class ClassNode implements DecNode {
 				}
 			}
 			
-			//Type Checking più efficiente per ClassNode (Soluzione richiesta nella parte di ottimizzazione)
+			// Type Checking più efficiente per ClassNode (Soluzione richiesta nella parte di ottimizzazione)
 			for (int i = 0; i < localFields.size(); i++) {
 				int offset = ((FieldNode)localFields.get(i)).getOffset();
 				if ((-offset-1) < superFields.size()) {
@@ -99,9 +96,8 @@ public class ClassNode implements DecNode {
 			}
 			*/
 			
-			
 			/* Soluzione utilizzata prima dell'ottimizzazione 
-			//Controllo che i campi della classe figlio siano sottotipo della classe padre
+			// Controllo che i campi della classe figlio siano sottotipo della classe padre
 			for(int i = 0; i < superFields.size(); i++) {
 				if (!FOOLLib.isSubtype(((FieldNode)localFields.get(i)).getSymType(),((FieldNode)superFields.get(i)).getSymType())){
 					System.out.println("Error subtyping field " + ((FieldNode)localFields.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
@@ -109,7 +105,7 @@ public class ClassNode implements DecNode {
 				}
 			}
 			
-			//Controllo che i metodi della classe figlio siano sottotipo della classe padre
+			// Controllo che i metodi della classe figlio siano sottotipo della classe padre
 			for(int i = 0; i < superMethods.size(); i++) {
 				if (!FOOLLib.isSubtype(((MethodNode)localMethods.get(i)).getSymType(),((MethodNode)superMethods.get(i)).getSymType())){
 					System.out.println("Error subtyping method " + ((MethodNode)localMethods.get(i)).getId() + " on Class: " + this.id + " at index " + i + " !");
@@ -123,26 +119,26 @@ public class ClassNode implements DecNode {
 
 	@Override
 	public String codeGeneration() {
-		// aggiorno la Dispatch Table creata settando la posizione data dall’offset del metodo alla sua etichetta
+		// Aggiorno la Dispatch Table creata settando la posizione data dall’offset del metodo alla sua etichetta
 		List<String> dispatchTable = FOOLLib.getDispatchTable().get(-this.classEntry.getOffset()-2);
 		String methodLabel;
 		for (int i = 0; i < this.methods.size(); i++) {
 			MethodNode mn = (MethodNode) this.methods.get(i);
-			//Ottimizzazione, generazione di codice effettuata solo in caso di metodo nuovo o riscritto
+			// Ottimizzazione: generazione di codice effettuata solo in caso di metodo nuovo o riscritto
 			if (mn.getMit() == MethodInheritanceType.INHERIT) {
-				//prelevo la label del metodo nella dispatch table della classe padre, cosi da saltare allo stesso indirizzo del metodo padre
+				// Prelevo la label del metodo nella dispatch table della classe padre, cosi da saltare allo stesso indirizzo del metodo padre
 				methodLabel = FOOLLib.getDispatchTable().get(-this.superEntry.getOffset()-2).get(mn.getMethodOffset());
 				mn.setLabel(methodLabel);
 				dispatchTable.set(mn.getMethodOffset(), methodLabel);
 			} else {
-				//Metodo nuovo o riscritto, procedo normalmente alla generazione di label e codice
+				// Metodo nuovo o riscritto, procedo normalmente alla generazione di label e codice
 				methodLabel = FOOLLib.freshMethodLabel();
 				mn.setLabel(methodLabel);
 				dispatchTable.set(mn.getMethodOffset(), methodLabel);
 				mn.codeGeneration();
 			}
 		}
-		// creo sullo heap la Dispatch Table che ho costruito: per ciascuna etichetta, la memorizzo a indirizzo in $hp ed incremento $hp
+		// Creo sullo heap la Dispatch Table che ho costruito: per ciascuna etichetta, la memorizzo a indirizzo in $hp ed incremento $hp
 		String dispatchTableCode = "";
 		for (String label: dispatchTable) {
 			dispatchTableCode +=	"push " + label + "\n"+
@@ -153,7 +149,7 @@ public class ClassNode implements DecNode {
 									"add\n"+
 									"shp\n";
 		}
-		// metto valore di $hp sullo stack: sarà il dispatch pointer da ritornare alla fine
+		// Metto valore di $hp sullo stack: sarà il dispatch pointer da ritornare alla fine
 		return "lhp\n"+
 				dispatchTableCode;
 	}
@@ -169,6 +165,6 @@ public class ClassNode implements DecNode {
 	
 	@Override
 	public Node cloneNode() {
-		return null;
+		throw new UnsupportedOperationException("Metodo cloneNode() in ClassNode richiamato erroneamente.");
 	}
 }

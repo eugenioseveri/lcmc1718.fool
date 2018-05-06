@@ -6,7 +6,7 @@ public class PlusNode implements Node {
 
 	public Node left;
 	public Node right;
-	
+
 	public PlusNode(Node left, Node right) {
 		super();
 		this.left = left;

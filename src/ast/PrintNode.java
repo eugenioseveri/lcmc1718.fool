@@ -27,7 +27,7 @@ public class PrintNode implements Node {
 	
 	@Override
 	public Node cloneNode() {
-		return null;
+		throw new UnsupportedOperationException("Metodo cloneNode() in PrintNode richiamato erroneamente.");
 	}
 
 }

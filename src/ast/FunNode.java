@@ -1,6 +1,7 @@
 package ast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import lib.FOOLLib;
 
@@ -8,8 +9,8 @@ public class FunNode implements DecNode {
 
 	private String id;
 	private Node type;
-	private ArrayList<Node> parlist = new ArrayList<Node>();
-	private ArrayList<Node> decList = new ArrayList<Node>();
+	private List<Node> parlist = new ArrayList<Node>();
+	private List<Node> decList = new ArrayList<Node>();
 	private Node exp;
 	private Node symType;
 	
@@ -64,8 +65,7 @@ public class FunNode implements DecNode {
 
 	@Override
 	public String codeGeneration() {
-		/*
-		 * Passi:
+		/* Passi:
 		 * - generare indirizzo (label) dove mettere il codice della funzione 
 		 * - creare realmente il codice della funzione
 		 */
@@ -88,12 +88,12 @@ public class FunNode implements DecNode {
 			}
 			popParList += "pop\n";
 		}
-		//crea realmente il codice della funzione (compreso di dichiarazioni interne e corpo (exp))
+		// Crea realmente il codice della funzione (compreso di dichiarazioni interne e corpo (exp))
 		FOOLLib.putCode(funl + ":\n"
 				+ "cfp\n" // Setta FP allo SP
 				+ "lra\n" // Prende il valore del Return Address e lo mette sullo stack
 				+ declCode
-				+ this.exp.codeGeneration() //codice del corpo della funzione
+				+ this.exp.codeGeneration() // Codice del corpo della funzione
 				// Da qui, deallocazione AR (activation record)
 				+ "srv\n" // Pop del return value della funzione precedente e memorizzazione in RV (registro temporaneo per il valore di ritorno)
 				+ popDecl // Aggiunge 'n' "pop" per ogni dichiarazione
@@ -120,6 +120,6 @@ public class FunNode implements DecNode {
 	
 	@Override
 	public Node cloneNode() {
-		return null;
+		throw new UnsupportedOperationException("Metodo cloneNode() in FunNode richiamato erroneamente.");
 	}
 }

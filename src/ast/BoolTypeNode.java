@@ -13,13 +13,13 @@ public class BoolTypeNode implements Node {
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
 	@Override
 	public Node typeCheck() {
-		return null;
+		throw new UnsupportedOperationException("Metodo typeCheck() in BoolTypeNode richiamato erroneamente.");
 	}
 
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
 	@Override
 	public String codeGeneration() {
-		return null;
+		throw new UnsupportedOperationException("Metodo codeGeneration() in BoolTypeNode richiamato erroneamente.");
 	}
 
 	@Override

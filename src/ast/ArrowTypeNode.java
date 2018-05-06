@@ -36,13 +36,13 @@ public class ArrowTypeNode implements Node {
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
 	@Override
 	public Node typeCheck() {
-		return null;
+		throw new UnsupportedOperationException("Metodo typeCheck() in ArrowTypeNode richiamato erroneamente.");
 	}
 
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
 	@Override
 	public String codeGeneration() {
-		return null;
+		throw new UnsupportedOperationException("Metodo codeGeneration() in ArrowTypeNode richiamato erroneamente.");
 	}
 
 	@Override

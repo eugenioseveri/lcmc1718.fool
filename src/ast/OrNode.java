@@ -6,8 +6,7 @@ public class OrNode implements Node {
 
 	private Node left;
 	private Node right;
-	
-	
+
 	public OrNode(Node left, Node right) {
 		super();
 		this.left = left;
@@ -56,5 +55,4 @@ public class OrNode implements Node {
 	public Node cloneNode() {
 		return new OrNode(this.left.cloneNode(), this.right.cloneNode());
 	}
-
 }

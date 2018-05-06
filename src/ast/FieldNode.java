@@ -4,7 +4,7 @@ public class FieldNode implements DecNode {
 
 	private String id;
 	private Node type;
-	private int offset; //aggiunto per l'ottimizzazione OO
+	private int offset; // Aggiunto per l'ottimizzazione OO
 	
 	public FieldNode(final String id, final Node type, final int offset) {
 		super();
@@ -22,7 +22,7 @@ public class FieldNode implements DecNode {
 	}
 
 	@Override
-	public String toPrint(final String indent) {
+	public String toPrint(String indent) {
 		return indent + "Field: " + this.id + "\n"
 				+ this.type.toPrint(indent + "  ");
 	}
@@ -30,13 +30,13 @@ public class FieldNode implements DecNode {
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
 	@Override
 	public Node typeCheck() {
-		return null;
+		throw new UnsupportedOperationException("Metodo typeCheck() in FieldNode richiamato erroneamente.");
 	}
 
 	// Non utilizzato. Serve implementarlo solo per via dell'interfaccia
 	@Override
 	public String codeGeneration() {
-		return null;
+		throw new UnsupportedOperationException("Metodo codeGeneration() in FieldNode richiamato erroneamente.");
 	}
 
 	@Override
@@ -48,5 +48,4 @@ public class FieldNode implements DecNode {
 	public Node cloneNode() {
 		return new FieldNode(this.id, this.type.cloneNode(),this.offset);
 	}
-
 }

@@ -47,5 +47,4 @@ public class VarNode implements DecNode {
 	public Node cloneNode() {
 		return new VarNode(this.id, this.type.cloneNode(), this.exp.cloneNode());
 	}
-
 }

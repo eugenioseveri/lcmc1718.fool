@@ -36,11 +36,9 @@ public class LessEqNode implements Node {
 	public String codeGeneration() {
 		final String l1 = FOOLLib.freshLabel();
 		final String l2 = FOOLLib.freshLabel();
-		// Codice generato dal figlio di sinistra seguito dal codice generato dal sottoalbero di destra + operazione di "confronto"
-		/*
-		 * Verifico l'ugualianza tra i due valori utilizzando 'bleq'
-		 * se il secondo valore è maggiore o uguale al primo allora salto a l1 e pusho 1 (TRUE)
-		 * altrimenti non salto e pusho 0 (FALSE)
+		/* Codice generato dal figlio di sinistra seguito dal codice generato dal sottoalbero di destra + operazione di "confronto".
+		 * Verifico l'ugualianza tra i due valori utilizzando 'bleq':
+		 * se il secondo valore è maggiore o uguale al primo allora salto a l1 e pusho 1 (TRUE), altrimenti non salto e pusho 0 (FALSE).
 		 */
 		return this.left.codeGeneration()
 				+ this.right.codeGeneration()
@@ -56,5 +54,4 @@ public class LessEqNode implements Node {
 	public Node cloneNode() {
 		return new LessEqNode(this.left.cloneNode(), this.right.cloneNode());
 	}
-
 }

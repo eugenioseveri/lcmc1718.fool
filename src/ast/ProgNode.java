@@ -27,7 +27,6 @@ public class ProgNode implements Node {
 	
 	@Override
 	public Node cloneNode() {
-		return null;
+		throw new UnsupportedOperationException("Metodo cloneNode() in ProgNode richiamato erroneamente.");
 	}
-
 }

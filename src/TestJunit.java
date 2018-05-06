@@ -84,10 +84,10 @@ public class TestJunit {
 		System.out.flush();
 		String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
 		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.")==0);
-		assertTrue(lines[275].compareTo("Type checking ok! Type of the program is: IntType")==0);
-		assertTrue(lines[277].compareTo("Code generated! Assembling and running generated code.")==0);
-		assertTrue(lines[278].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
-		assertTrue(lines[280].compareTo("0")==0);
+		assertTrue(lines[301].compareTo("Type checking ok! Type of the program is: IntType")==0);
+		assertTrue(lines[303].compareTo("Code generated! Assembling and running generated code.")==0);
+		assertTrue(lines[304].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[306].compareTo("0")==0);
 	}
 	
 	@Test
@@ -102,28 +102,74 @@ public class TestJunit {
 		System.out.flush();
 		String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
 		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.")==0);
-		assertTrue(lines[74].compareTo("Type checking ok! Type of the program is: IntType")==0);
-		assertTrue(lines[76].compareTo("Code generated! Assembling and running generated code.")==0);
-		assertTrue(lines[77].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
-		assertTrue(lines[79].compareTo("24")==0);
+		assertTrue(lines[81].compareTo("Type checking ok! Type of the program is: IntType")==0);
+		assertTrue(lines[83].compareTo("Code generated! Assembling and running generated code.")==0);
+		assertTrue(lines[84].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[86].compareTo("24")==0);
 	}
 	
 	@Test
 	public void testFoolObjectOrientedNoInheritance() {
 		/* Test dell'estensione object-oriented senza ereditarietà ("quicksort.fool"). */
-		fail("TODO");
+		try {
+			runAll("test/quicksort.fool");
+		} catch (Exception e) {
+			fail("Exception in runSvm()");
+			e.printStackTrace();
+		}
+		System.out.flush();
+		String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
+		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[476].compareTo("Type checking ok! Type of the program is: RefType List")==0);
+		assertTrue(lines[478].compareTo("Code generated! Assembling and running generated code.")==0);
+		assertTrue(lines[479].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[481].compareTo("1")==0);
+		assertTrue(lines[482].compareTo("2")==0);
+		assertTrue(lines[483].compareTo("2")==0);
+		assertTrue(lines[484].compareTo("3")==0);
+		assertTrue(lines[485].compareTo("4")==0);
+		assertTrue(lines[486].compareTo("5")==0);
 	}
 	
 	@Test
 	public void testFoolObjectOrientedWithInheritance() {
 		/* Test dell'estensione object-oriented con ereditarietà ("bankloan.fool"). */
-		fail("TODO");
+		try {
+			runAll("test/bankloan.fool");
+		} catch (Exception e) {
+			fail("Exception in runSvm()");
+			e.printStackTrace();
+		}
+		System.out.flush();
+		String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
+		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[203].compareTo("Type checking ok! Type of the program is: IntType")==0);
+		assertTrue(lines[205].compareTo("Code generated! Assembling and running generated code.")==0);
+		assertTrue(lines[206].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[208].compareTo("50000")==0);
 	}
 	
 	@Test
 	public void testFoolHigherOrderAndObjectOrientedNoInheritance() {
 		/* Test dell'estensione higher-order e object-oriented senza ereditarietà integrate ("quicksort_ho.fool"). */
-		fail("TODO");
+		try {
+			runAll("test/quicksort_ho.fool");
+		} catch (Exception e) {
+			fail("Exception in runSvm()");
+			e.printStackTrace();
+		}
+		System.out.flush();
+		String[] lines = this.lpsOut.buffer.toString().replace("\r","").split("\\n");
+		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[576].compareTo("Type checking ok! Type of the program is: RefType List")==0);
+		assertTrue(lines[578].compareTo("Code generated! Assembling and running generated code.")==0);
+		assertTrue(lines[579].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.")==0);
+		assertTrue(lines[581].compareTo("5")==0);
+		assertTrue(lines[582].compareTo("4")==0);
+		assertTrue(lines[583].compareTo("3")==0);
+		assertTrue(lines[584].compareTo("2")==0);
+		assertTrue(lines[585].compareTo("2")==0);
+		assertTrue(lines[586].compareTo("1")==0);
 	}
 	
 	/**
