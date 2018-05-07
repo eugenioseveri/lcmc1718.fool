@@ -5,8 +5,8 @@ import java.util.List;
 
 public class ClassTypeNode implements Node {
 
-	private List<Node> allFields; // Tipi dei campi, inclusi quelli ereditati
-	private List<Node> allMethods; // Tipi funzionali dei metodi, inclusi quelli ereditati
+	private final List<Node> allFields; // Tipi dei campi, inclusi quelli ereditati
+	private final List<Node> allMethods; // Tipi funzionali dei metodi, inclusi quelli ereditati
 
 	public ClassTypeNode(final List<Node> fieldsList, final List<Node> methodsList) {
 		super();
@@ -26,10 +26,10 @@ public class ClassTypeNode implements Node {
 	public String toPrint(final String indent) {
 		String fields = "";
 		String methods = "";
-		for (Node f:this.allFields) {
+		for (final Node f:this.allFields) {
 			fields += f.toPrint(indent + "  ");
 		}
-		for (Node m:this.allMethods) {
+		for (final Node m:this.allMethods) {
 			methods += m.toPrint(indent + "  ");
 		}
 		return indent + "ClassType\n"
@@ -49,12 +49,12 @@ public class ClassTypeNode implements Node {
 
 	@Override
 	public Node cloneNode() {
-		List<Node> fields = new ArrayList<>();
-		for (Node n: this.allFields) {
+		final List<Node> fields = new ArrayList<>();
+		for (final Node n: this.allFields) {
 			fields.add(n.cloneNode());
 		}
-		List<Node> methods = new ArrayList<>();
-		for (Node n: this.allMethods) {
+		final List<Node> methods = new ArrayList<>();
+		for (final Node n: this.allMethods) {
 			methods.add(n.cloneNode());
 		}
 		return new ClassTypeNode(fields, methods);

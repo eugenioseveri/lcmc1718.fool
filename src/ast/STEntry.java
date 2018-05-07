@@ -3,7 +3,7 @@ package ast;
 public class STEntry {
 
 	// "Pallina" dell'albero che contiene il livello dell'albero e il tipo dell'identificatore
-	private int nestingLevel;
+	private final int nestingLevel;
 	private Node type;
 	private int offset; // Serve per identificare la posizione della variabile dentro l'AR (activation record)
 	private boolean isMethod = false;

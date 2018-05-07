@@ -4,8 +4,8 @@ import lib.FOOLLib;
 
 public class MinusNode implements Node {
 
-	private Node left;
-	private Node right;
+	private final Node left;
+	private final Node right;
 
 	public MinusNode(final Node left, final Node right) {
 		super();

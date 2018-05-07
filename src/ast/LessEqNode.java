@@ -4,8 +4,8 @@ import lib.FOOLLib;
 
 public class LessEqNode implements Node {
 
-	private Node left;
-	private Node right;
+	private final Node left;
+	private final Node right;
 
 	public LessEqNode(final Node left, final Node right) {
 		super();
@@ -23,8 +23,8 @@ public class LessEqNode implements Node {
 	@Override
 	public Node typeCheck() {
 		// Serve tenere conto dell'ereditarietà (singola)
-		Node l = this.left.typeCheck();
-		Node r = this.right.typeCheck();
+		final Node l = this.left.typeCheck();
+		final Node r = this.right.typeCheck();
 		if (!(FOOLLib.isSubtype(l, r) || FOOLLib.isSubtype(r, l))) {
 			System.out.println("Incompatible types in less or equal!");
 			System.exit(0);

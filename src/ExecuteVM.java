@@ -3,7 +3,7 @@ public class ExecuteVM {
 	public static final int CODESIZE = 10000;
 	public static final int MEMSIZE = 10000;
 
-	private int[] code;
+	private final int[] code;
 	private int[] memory = new int[MEMSIZE];
 
 	private int ip = 0; // Instruction Pointer
@@ -19,12 +19,12 @@ public class ExecuteVM {
 
 	public final void cpu() { // Ciclo fetch-execute
 		while (true) { // Si interrompe solo con l'istruzione halt
-			int bytecode = code[ip++]; // Fetch
+			final int bytecode = this.code[this.ip++]; // Fetch
 			int v1, v2;
 			int address;
 			switch (bytecode) { // Execute
 			case SVMParser.PUSH:
-				push(code[ip++]);
+				push(this.code[this.ip++]);
 				break;
 			case SVMParser.POP:
 				pop();
@@ -52,65 +52,65 @@ public class ExecuteVM {
 			case SVMParser.STOREW:
 				v1 = pop();
 				v2 = pop();
-				memory[v1] = v2;
+				this.memory[v1] = v2;
 				break;
 			case SVMParser.LOADW:
-				push(memory[pop()]);
+				push(this.memory[pop()]);
 				break;
 			case SVMParser.BRANCH:
-				address = code[ip];
-				ip = address; // Assegno address all'instruction pointer così salto all'istruzione desiderata
+				address = this.code[this.ip];
+				this.ip = address; // Assegno address all'instruction pointer così salto all'istruzione desiderata
 				break;
 			case SVMParser.BRANCHEQ:
-				address = code[ip++];
+				address = this.code[this.ip++];
 				v1 = pop();
 				v2 = pop();
 				if (v2 == v1) {
-					ip = address;
+					this.ip = address;
 				}
 				break;
 			case SVMParser.BRANCHLESSEQ:
-				address = code[ip++];
+				address = this.code[this.ip++];
 				v1 = pop();
 				v2 = pop();
 				if (v2 <= v1) {
-					ip = address;
+					this.ip = address;
 				}
 				break;
 			case SVMParser.JS:
 				v1 = pop();
-				ra = ip;
-				ip = v1;
+				this.ra = this.ip;
+				this.ip = v1;
 				break;
 			case SVMParser.LOADRA:
-				push(ra);
+				push(this.ra);
 				break;
 			case SVMParser.STORERA:
-				ra = pop();
+				this.ra = pop();
 				break;
 			case SVMParser.LOADRV:
-				push(rv);
+				push(this.rv);
 				break;
 			case SVMParser.STORERV:
-				rv = pop();
+				this.rv = pop();
 				break;
 			case SVMParser.LOADFP:
-				push(fp);
+				push(this.fp);
 				break;
 			case SVMParser.STOREFP:
-				fp = pop();
+				this.fp = pop();
 				break;
 			case SVMParser.COPYFP:
-				fp = sp;
+				this.fp = this.sp;
 				break;
 			case SVMParser.LOADHP:
-				push(hp);
+				push(this.hp);
 				break;
 			case SVMParser.STOREHP:
-				hp = pop();
+				this.hp = pop();
 				break;
 			case SVMParser.PRINT: // Controllare che lo stack non sia vuoto, altrimenti dà eccezione.
-				System.out.println((sp < MEMSIZE) ? memory[sp] : "Empty stack!");
+				System.out.println(this.sp < MEMSIZE ? this.memory[this.sp] : "Empty stack!");
 				break;
 			case SVMParser.HALT:
 				return;

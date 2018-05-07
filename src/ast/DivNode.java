@@ -4,8 +4,8 @@ import lib.FOOLLib;
 
 public class DivNode implements Node {
 
-	private Node left;
-	private Node right;
+	private final Node left;
+	private final Node right;
 
 	public DivNode(final Node left, final Node right) {
 		super();

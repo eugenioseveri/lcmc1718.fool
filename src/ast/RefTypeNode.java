@@ -2,7 +2,7 @@ package ast;
 
 public class RefTypeNode implements Node {
 
-	private String id; // Contiene l'ID della classe
+	private final String id; // Contiene l'ID della classe
 
 	public RefTypeNode(final String id) {
 		super();

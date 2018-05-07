@@ -7,9 +7,9 @@ import lib.FOOLLib;
 
 public class CallNode implements Node {
 
-	private String id;
-	private int nestingLevel;
-	private STEntry entry;
+	private final String id;
+	private final int nestingLevel;
+	private final STEntry entry;
 	private List<Node> parlist = new ArrayList<>();
 
 	public CallNode(final String id, final STEntry entry, final ArrayList<Node> parlist, final int nestingLevel) {
@@ -23,7 +23,7 @@ public class CallNode implements Node {
 	@Override
 	public String toPrint(final String indent) {
 		String parStr = "";
-		for (Node par:this.parlist) {
+		for (final Node par:this.parlist) {
 			parStr += par.toPrint(indent + "  ");
 		}
 		return indent + "Call:" + this.id + " at nestingLevel " + this.nestingLevel + "\n"
@@ -44,7 +44,7 @@ public class CallNode implements Node {
 		}*/
 
 		// Controllo che il numero dei parametri sia uguale alla dichiarazione
-		List<Node> atnParList = atn.getParlist();
+		final List<Node> atnParList = atn.getParlist();
 		if (atnParList.size() != this.parlist.size()) {
 			System.out.println("Wrong number of parameters in the invocation of " + this.id);
 			System.exit(0);
@@ -52,7 +52,7 @@ public class CallNode implements Node {
 
 		// Controllo che il tipo di ogni parametro attuale dentro parlist sia sottotipo dei parametri della dichiarazione
 		for (int i = 0; i < this.parlist.size(); i++) {
-			if (!(FOOLLib.isSubtype((this.parlist.get(i)).typeCheck(), atnParList.get(i)))) {
+			if (!(FOOLLib.isSubtype(this.parlist.get(i).typeCheck(), atnParList.get(i)))) {
 				System.out.println("Wrong type for " + (i + 1) + "-th parameter in the invocation of " + this.id);
 				System.exit(0);
 			}

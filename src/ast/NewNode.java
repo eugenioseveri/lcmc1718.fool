@@ -7,9 +7,9 @@ import lib.FOOLLib;
 
 public class NewNode implements Node {
 
-	private String classId; // Id della classe che sto istanziando
+	private final String classId; // Id della classe che sto istanziando
 	private List<Node> parList; // Field che vengono passati alla new
-	private STEntry entry; // STEntry che descrive la classe istanziata (sia campi che metodi tramite classTypeNode)
+	private final STEntry entry; // STEntry che descrive la classe istanziata (sia campi che metodi tramite classTypeNode)
 
 	public NewNode(final String classId, final STEntry entry, final List<Node> parList) {
 		super();
@@ -21,7 +21,7 @@ public class NewNode implements Node {
 	@Override
 	public String toPrint(final String indent) {
 		String parStr = "";
-		for (Node par:this.parList) {
+		for (final Node par:this.parList) {
 			parStr += par.toPrint(indent + "  ");
 		}
 		return indent + "New: " + this.classId + "\n"
@@ -31,7 +31,7 @@ public class NewNode implements Node {
 
 	@Override
 	public Node typeCheck() {
-		List<Node> fields = ((ClassTypeNode) this.entry.getType()).getAllFields();
+		final List<Node> fields = ((ClassTypeNode) this.entry.getType()).getAllFields();
 		// Controllo che il numero dei parametri sia uguale alla dichiarazione del costruttore
 		if (fields.size() != this.parList.size()) {
 			System.out.println("Wrong number of parameters in the instantiation of " + this.classId);
@@ -51,7 +51,7 @@ public class NewNode implements Node {
 	public String codeGeneration() {
 		String parCode = "";
 		// Generazione di codice per i parametri
-		for (Node par: this.parList) {
+		for (final Node par: this.parList) {
 			parCode += par.codeGeneration();
 		}
 		// Alloco un nuovo oggetto nello heap, come prima cosa allora pusho i parametri mettendoli nello heap dall'ultimo al primo
@@ -84,8 +84,8 @@ public class NewNode implements Node {
 
 	@Override
 	public Node cloneNode() {
-		List<Node> params = new ArrayList<>();
-		for (Node n: this.parList) {
+		final List<Node> params = new ArrayList<>();
+		for (final Node n: this.parList) {
 			params.add(n.cloneNode());
 		}
 		return new NewNode(this.classId, this.entry.cloneEntry(), params);

@@ -2,7 +2,7 @@ package ast;
 
 public class ProgNode implements Node {
 
-	private Node exp;
+	private final Node exp;
 
 	public ProgNode(final Node exp) {
 		super();

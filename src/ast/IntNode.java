@@ -2,7 +2,7 @@ package ast;
 
 public class IntNode implements Node {
 
-	private int integer;
+	private final int integer;
 
 	public IntNode(final int integer) {
 		super();

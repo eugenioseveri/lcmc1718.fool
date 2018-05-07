@@ -5,12 +5,12 @@ import org.antlr.v4.runtime.CommonTokenStream;
 public class TestSVM {
 	public static void main(final String[] args) throws Exception {
 
-		String fileName = "test/bankloan_loro.fool.asm";
+		final String fileName = "test/bankloan_loro.fool.asm";
 
-		CharStream charsSVM = CharStreams.fromFileName(fileName);
-		SVMLexer lexerSVM = new SVMLexer(charsSVM);
-		CommonTokenStream tokensSVM = new CommonTokenStream(lexerSVM);
-		SVMParser parserSVM = new SVMParser(tokensSVM);
+		final CharStream charsSVM = CharStreams.fromFileName(fileName);
+		final SVMLexer lexerSVM = new SVMLexer(charsSVM);
+		final CommonTokenStream tokensSVM = new CommonTokenStream(lexerSVM);
+		final SVMParser parserSVM = new SVMParser(tokensSVM);
 
 		parserSVM.assembly();
 
@@ -20,7 +20,7 @@ public class TestSVM {
 		}
 
 		System.out.println("Starting Virtual Machine...");
-		ExecuteVM vm = new ExecuteVM(parserSVM.code);
+		final ExecuteVM vm = new ExecuteVM(parserSVM.code);
 		vm.cpu();
 	}
 }
