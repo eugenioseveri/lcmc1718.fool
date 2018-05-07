@@ -4,9 +4,9 @@ import lib.FOOLLib;
 
 public class IfNode implements Node {
 
-	private Node condition;
-	private Node thenStatement;
-	private Node elseStatement;
+	private final Node condition;
+	private final Node thenStatement;
+	private final Node elseStatement;
 
 	public IfNode(final Node condition, final Node thenStatement, final Node elseStatement) {
 		super();
@@ -30,7 +30,7 @@ public class IfNode implements Node {
 			System.out.println("Non boolean condition in 'if'!");
 			System.exit(0);
 		}
-		Node lca = FOOLLib.lowestCommonAncestor(this.thenStatement.typeCheck(), this.elseStatement.typeCheck());
+		final Node lca = FOOLLib.lowestCommonAncestor(this.thenStatement.typeCheck(), this.elseStatement.typeCheck());
 		if (lca != null) {
 			return lca;
 		}

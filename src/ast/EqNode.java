@@ -4,8 +4,8 @@ import lib.FOOLLib;
 
 public class EqNode implements Node {
 
-	private Node left;
-	private Node right;
+	private final Node left;
+	private final Node right;
 
 	public EqNode(final Node left, final Node right) {
 		super();
@@ -23,8 +23,8 @@ public class EqNode implements Node {
 	@Override
 	public Node typeCheck() {
 		// Serve tenere conto dell'ereditarietà (singola)
-		Node l = this.left.typeCheck();
-		Node r = this.right.typeCheck();
+		final Node l = this.left.typeCheck();
+		final Node r = this.right.typeCheck();
 		if (l instanceof ArrowTypeNode || r instanceof ArrowTypeNode) {
 			System.out.println("Cannot compare functions!");
 			System.exit(0);

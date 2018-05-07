@@ -2,8 +2,7 @@ package ast;
 
 public class BoolTypeNode implements Node {
 
-	public BoolTypeNode() {
-	}
+	public BoolTypeNode() { }
 
 	@Override
 	public String toPrint(final String indent) {

@@ -63,7 +63,7 @@ public class TestJunit {
 			e.printStackTrace();
 		}
 		System.out.flush();
-		String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
+		final String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
 		assertTrue(lines[0].compareTo("[SVM] You had: 0 lexical errors and 0 syntax errors.") == 0);
 		assertTrue(lines[2].compareTo("1") == 0);
 		assertTrue(lines[3].compareTo("2") == 0);
@@ -83,7 +83,7 @@ public class TestJunit {
 			e.printStackTrace();
 		}
 		System.out.flush();
-		String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
+		final String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
 		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.") == 0);
 		assertTrue(lines[301].compareTo("Type checking ok! Type of the program is: IntType") == 0);
 		assertTrue(lines[303].compareTo("Code generated! Assembling and running generated code.") == 0);
@@ -101,7 +101,7 @@ public class TestJunit {
 			e.printStackTrace();
 		}
 		System.out.flush();
-		String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
+		final String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
 		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.") == 0);
 		assertTrue(lines[81].compareTo("Type checking ok! Type of the program is: IntType") == 0);
 		assertTrue(lines[83].compareTo("Code generated! Assembling and running generated code.") == 0);
@@ -119,7 +119,7 @@ public class TestJunit {
 			e.printStackTrace();
 		}
 		System.out.flush();
-		String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
+		final String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
 		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.") == 0);
 		assertTrue(lines[476].compareTo("Type checking ok! Type of the program is: RefType List") == 0);
 		assertTrue(lines[478].compareTo("Code generated! Assembling and running generated code.") == 0);
@@ -142,7 +142,7 @@ public class TestJunit {
 			e.printStackTrace();
 		}
 		System.out.flush();
-		String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
+		final String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
 		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.") == 0);
 		assertTrue(lines[203].compareTo("Type checking ok! Type of the program is: IntType") == 0);
 		assertTrue(lines[205].compareTo("Code generated! Assembling and running generated code.") == 0);
@@ -160,7 +160,7 @@ public class TestJunit {
 			e.printStackTrace();
 		}
 		System.out.flush();
-		String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
+		final String[] lines = this.lpsOut.buffer.toString().replace("\r", "").split("\\n");
 		assertTrue(lines[0].compareTo("[FOOL] You had: 0 lexical errors and 0 syntax errors.") == 0);
 		assertTrue(lines[576].compareTo("Type checking ok! Type of the program is: RefType List") == 0);
 		assertTrue(lines[578].compareTo("Code generated! Assembling and running generated code.") == 0);
@@ -186,10 +186,10 @@ public class TestJunit {
 
 	/* Esegue la SVM con il file assembly specificato. */
 	private void runSvm(final String fileName) throws IOException {
-		CharStream charsSVM = CharStreams.fromFileName(fileName + ".asm");
-		SVMLexer lexerSVM = new SVMLexer(charsSVM);
-		CommonTokenStream tokensSVM = new CommonTokenStream(lexerSVM);
-		SVMParser parserSVM = new SVMParser(tokensSVM);
+		final CharStream charsSVM = CharStreams.fromFileName(fileName + ".asm");
+		final SVMLexer lexerSVM = new SVMLexer(charsSVM);
+		final CommonTokenStream tokensSVM = new CommonTokenStream(lexerSVM);
+		final SVMParser parserSVM = new SVMParser(tokensSVM);
 
 		parserSVM.assembly();
 
@@ -199,16 +199,16 @@ public class TestJunit {
 		}
 
 		System.out.println("Starting Virtual Machine...");
-		ExecuteVM vm = new ExecuteVM(parserSVM.code);
+		final ExecuteVM vm = new ExecuteVM(parserSVM.code);
 		vm.cpu();
 	}
 
 	/* Esegue il parsing di un file sorgente FOOL specificato e ne esegue il type-checking. */
 	private void runFool(final String fileName) throws IOException {
-		CharStream chars = CharStreams.fromFileName(fileName);
-		FOOLLexer lexer = new FOOLLexer(chars);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		FOOLParser parser = new FOOLParser(tokens);
+		final CharStream chars = CharStreams.fromFileName(fileName);
+		final FOOLLexer lexer = new FOOLLexer(chars);
+		final CommonTokenStream tokens = new CommonTokenStream(lexer);
+		final FOOLParser parser = new FOOLParser(tokens);
 
 		this.ast = parser.prog().ast; // Generazione AST con Id associate a relative entry symbol table.
 
@@ -218,15 +218,15 @@ public class TestJunit {
 		System.out.println("Visualizing AST...");
 		System.out.print(this.ast.toPrint(""));
 
-		Node type = this.ast.typeCheck(); // Type-checking bottom-up
+		final Node type = this.ast.typeCheck(); // Type-checking bottom-up
 		System.out.println(type.toPrint("Type checking ok! Type of the program is: "));
 	}
 
 	/* Compila un file sorgente FOOL di cui è stato eseguito il parsing. */
 	private void generateCode(final String fileName) throws IOException {
 		// Code generation (prova.fool.asm)
-		String code = this.ast.codeGeneration(); // Genero il codice assembly che poi la SVM utilizzerà
-		BufferedWriter out = new BufferedWriter(new FileWriter(fileName + ".asm"));
+		final String code = this.ast.codeGeneration(); // Genero il codice assembly che poi la SVM utilizzerà
+		final BufferedWriter out = new BufferedWriter(new FileWriter(fileName + ".asm"));
 		out.write(code);
 		out.close();
 		System.out.println("Code generated! Assembling and running generated code.");
@@ -248,9 +248,9 @@ public class TestJunit {
 		public static LoggedPrintStream create(final PrintStream toLog) {
 			try {
 				final StringBuilder sb = new StringBuilder();
-				Field f = FilterOutputStream.class.getDeclaredField("out");
+				final Field f = FilterOutputStream.class.getDeclaredField("out");
 				f.setAccessible(true);
-				OutputStream psout = (OutputStream) f.get(toLog);
+				final OutputStream psout = (OutputStream) f.get(toLog);
 				return new LoggedPrintStream(sb, new FilterOutputStream(psout) {
 					public void write(final int b) throws IOException {
 						super.write(b);

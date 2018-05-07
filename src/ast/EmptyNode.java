@@ -1,6 +1,8 @@
 package ast;
 
 public class EmptyNode implements Node {
+	
+	public EmptyNode() { }
 
 	@Override
 	public String toPrint(final String indent) {

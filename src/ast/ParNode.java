@@ -2,8 +2,8 @@ package ast;
 
 public class ParNode implements DecNode {
 
-	private String id;
-	private Node type;
+	private final String id;
+	private final Node type;
 
 	public ParNode(final String id, final Node type) {
 		super();

@@ -4,8 +4,8 @@ import lib.FOOLLib;
 
 public class TimesNode implements Node {
 
-	private Node left;
-	private Node right;
+	private final Node left;
+	private final Node right;
 
 	public TimesNode(final Node left, final Node right) {
 		super();

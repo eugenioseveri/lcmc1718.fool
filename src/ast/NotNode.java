@@ -4,7 +4,7 @@ import lib.FOOLLib;
 
 public class NotNode implements Node {
 
-	private Node exp;
+	private final Node exp;
 
 	public NotNode(final Node exp) {
 		super();

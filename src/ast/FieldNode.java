@@ -2,9 +2,9 @@ package ast;
 
 public class FieldNode implements DecNode {
 
-	private String id;
-	private Node type;
-	private int offset; // Aggiunto per l'ottimizzazione OO
+	private final String id;
+	private final Node type;
+	private final int offset; // Aggiunto per l'ottimizzazione OO
 
 	public FieldNode(final String id, final Node type, final int offset) {
 		super();

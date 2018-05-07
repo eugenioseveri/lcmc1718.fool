@@ -5,8 +5,8 @@ import java.util.List;
 
 public class ArrowTypeNode implements Node {
 
-	private List<Node> parlist; // Lista con i tipi dei parametri
-	private Node ret; // Tipo di ritorno della funzione
+	private final List<Node> parlist; // Lista con i tipi dei parametri
+	private final Node ret; // Tipo di ritorno della funzione
 
 	public ArrowTypeNode(final List<Node> parlist, final Node ret) {
 		super();
@@ -25,7 +25,7 @@ public class ArrowTypeNode implements Node {
 	@Override
 	public String toPrint(final String indent) {
 		String parlStr = "";
-		for (Node par: this.parlist) {
+		for (final Node par: this.parlist) {
 			parlStr += par.toPrint(indent + "  ");
 		}
 		return indent + "ArrowType\n"
@@ -47,8 +47,8 @@ public class ArrowTypeNode implements Node {
 
 	@Override
 	public Node cloneNode() {
-		List<Node> params = new ArrayList<>();
-		for (Node n: this.parlist) {
+		final List<Node> params = new ArrayList<>();
+		for (final Node n: this.parlist) {
 			params.add(n.cloneNode());
 		}
 		return new ArrowTypeNode(params, this.ret.cloneNode());

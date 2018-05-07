@@ -4,9 +4,9 @@ import lib.FOOLLib;
 
 public class VarNode implements DecNode {
 
-	private String id;
-	private Node type;
-	private Node exp;
+	private final String id;
+	private final Node type;
+	private final Node exp;
 
 	public VarNode(final String id, final Node type, final Node exp) {
 		super();

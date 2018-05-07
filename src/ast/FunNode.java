@@ -7,9 +7,9 @@ import lib.FOOLLib;
 
 public class FunNode implements DecNode {
 
-	private String id;
-	private Node type;
-	private List<Node> parlist = new ArrayList<Node>();
+	private final String id;
+	private final Node type;
+	private final List<Node> parlist = new ArrayList<Node>();
 	private List<Node> decList = new ArrayList<Node>();
 	private Node exp;
 	private Node symType;
@@ -36,10 +36,10 @@ public class FunNode implements DecNode {
 	public String toPrint(final String indent) {
 		String declrStr = "";
 		String parStr = "";
-		for (Node dec:this.decList) {
+		for (final Node dec:this.decList) {
 			declrStr += dec.toPrint(indent + "  ");
 		}
-		for (Node par:this.parlist) {
+		for (final Node par:this.parlist) {
 			parStr += par.toPrint(indent + "  ");
 		}
 		return indent + "Fun:" + this.id + "\n"
@@ -52,7 +52,7 @@ public class FunNode implements DecNode {
 	@Override
 	public Node typeCheck() {
 		// Chiamare il type check delle la lista delle dichiarazioni interne alla funzione
-		for (Node dec:decList) {
+		for (final Node dec:decList) {
 			dec.typeCheck();
 		}
 		// Controlliamo che il corpo della funzione sia sottotipo del tipo della funzione
@@ -71,18 +71,18 @@ public class FunNode implements DecNode {
 		 */
 		final String funl = FOOLLib.freshFunLabel();
 		String declCode = "";
-		for (Node dec:this.decList) {
+		for (final Node dec:this.decList) {
 			declCode += dec.codeGeneration();
 		}
 		String popDecl = "";
-		for (Node dec:this.decList) {
+		for (final Node dec:this.decList) {
 			if (((DecNode) dec).getSymType() instanceof ArrowTypeNode) {
 				popDecl += "pop\n";
 			}
 			popDecl += "pop\n";
 		}
 		String popParList = "";
-		for (Node par:this.parlist) {
+		for (final Node par:this.parlist) {
 			if (((DecNode) par).getSymType() instanceof ArrowTypeNode) {
 				popParList += "pop\n";
 			}

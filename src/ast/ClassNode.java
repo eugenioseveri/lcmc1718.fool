@@ -1,6 +1,5 @@
 package ast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lib.FOOLLib;
@@ -8,11 +7,11 @@ import lib.FOOLLib.MethodInheritanceType;
 
 public class ClassNode implements DecNode {
 
-	private String id;
-	private List<Node> fields = new ArrayList<>();
-	private List<Node> methods = new ArrayList<>();
-	private STEntry classEntry;
-	private STEntry superEntry;
+	private final String id;
+	private final List<Node> fields;
+	private final List<Node> methods;
+	private final STEntry classEntry;
+	private final STEntry superEntry;
 	private Node symType;
 
 	public ClassNode(final String id, final STEntry classEntry, final STEntry superEntry, final List<Node> fields, final List<Node> methods) {
@@ -28,10 +27,10 @@ public class ClassNode implements DecNode {
 	public String toPrint(final String indent) {
 		String fields = "";
 		String methods = "";
-		for (Node f:this.fields) {
+		for (final Node f:this.fields) {
 			fields += f.toPrint(indent + "  ");
 		}
-		for (Node m:this.methods) {
+		for (final Node m:this.methods) {
 			methods += m.toPrint(indent + "  ");
 		}
 		/*String superEntryStr = "";
@@ -49,7 +48,7 @@ public class ClassNode implements DecNode {
 	@Override
 	public Node typeCheck() {
 		// Richiama sui figli che sono metodi
-		for (Node n: this.methods) {
+		for (final Node n: this.methods) {
 			// Ottimizzazione: effettuato il type check solo in caso di metodo nuovo o riscritto
 			if (((MethodNode) n).getMit() != MethodInheritanceType.INHERIT) {
 				n.typeCheck();
@@ -58,11 +57,11 @@ public class ClassNode implements DecNode {
 
 		if (this.superEntry != null) {
 			// Campi e metodi della classe padre
-			List<Node> superFields = ((ClassTypeNode) this.superEntry.getType()).getAllFields();
-			List<Node> superMethods = ((ClassTypeNode) this.superEntry.getType()).getAllMethods();
+			final List<Node> superFields = ((ClassTypeNode) this.superEntry.getType()).getAllFields();
+			final List<Node> superMethods = ((ClassTypeNode) this.superEntry.getType()).getAllMethods();
 			// Campi e metodi della classe figlio
-			List<Node> localFields = ((ClassTypeNode) this.symType).getAllFields();
-			List<Node> localMethods = ((ClassTypeNode) this.symType).getAllMethods();
+			final List<Node> localFields = ((ClassTypeNode) this.symType).getAllFields();
+			final List<Node> localMethods = ((ClassTypeNode) this.symType).getAllMethods();
 			// Ottimizzazione: effettuato il subtyping solo in caso di metodo riscritto
 			for (int i = 0; i < localMethods.size(); i++) {
 				if (((MethodNode) localMethods.get(i)).getMit() == MethodInheritanceType.OVERRIDE) {
@@ -75,7 +74,7 @@ public class ClassNode implements DecNode {
 
 			// Type Checking più efficiente per ClassNode (Soluzione richiesta nella parte di ottimizzazione)
 			for (int i = 0; i < localFields.size(); i++) {
-				int offset = ((FieldNode) localFields.get(i)).getOffset();
+				final int offset = ((FieldNode) localFields.get(i)).getOffset();
 				if ((-offset - 1) < superFields.size()) {
 					if (!FOOLLib.isSubtype(((FieldNode) localFields.get((-offset - 1))).getSymType(), ((FieldNode) superFields.get((-offset - 1))).getSymType())) {
 						System.out.println("Error subtyping field " + ((FieldNode) localFields.get((-offset - 1))).getId() + " on Class: " + this.id + " at index " + (-offset - 1) + " !");
@@ -120,10 +119,10 @@ public class ClassNode implements DecNode {
 	@Override
 	public String codeGeneration() {
 		// Aggiorno la Dispatch Table creata settando la posizione data dall’offset del metodo alla sua etichetta
-		List<String> dispatchTable = FOOLLib.getDispatchTable().get(-this.classEntry.getOffset() - 2);
+		final List<String> dispatchTable = FOOLLib.getDispatchTable().get(-this.classEntry.getOffset() - 2);
 		String methodLabel;
 		for (int i = 0; i < this.methods.size(); i++) {
-			MethodNode mn = (MethodNode) this.methods.get(i);
+			final MethodNode mn = (MethodNode) this.methods.get(i);
 			// Ottimizzazione: generazione di codice effettuata solo in caso di metodo nuovo o riscritto
 			if (mn.getMit() == MethodInheritanceType.INHERIT) {
 				// Prelevo la label del metodo nella dispatch table della classe padre, cosi da saltare allo stesso indirizzo del metodo padre
@@ -140,7 +139,7 @@ public class ClassNode implements DecNode {
 		}
 		// Creo sullo heap la Dispatch Table che ho costruito: per ciascuna etichetta, la memorizzo a indirizzo in $hp ed incremento $hp
 		String dispatchTableCode = "";
-		for (String label: dispatchTable) {
+		for (final String label: dispatchTable) {
 			dispatchTableCode +=	"push " + label + "\n"
 									+ "lhp\n"
 									+ "sw\n"

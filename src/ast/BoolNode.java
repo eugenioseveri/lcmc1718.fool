@@ -2,7 +2,7 @@ package ast;
 
 public class BoolNode implements Node {
 
-	private boolean bool;
+	private final boolean bool;
 
 	public BoolNode(final boolean bool) {
 		super();

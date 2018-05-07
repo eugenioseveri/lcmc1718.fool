@@ -2,9 +2,9 @@ package ast;
 
 public class IdNode implements Node {
 
-	private String id;
-	private STEntry entry;
-	private int nestingLevel;
+	private final String id;
+	private final STEntry entry;
+	private final int nestingLevel;
 
 	public IdNode(final String id, final STEntry entry, final int nestingLevel) {
 		super();

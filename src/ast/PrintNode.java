@@ -2,7 +2,7 @@ package ast;
 
 public class PrintNode implements Node {
 
-	private Node exp;
+	private final Node exp;
 
 	public PrintNode(final Node exp) {
 		super();

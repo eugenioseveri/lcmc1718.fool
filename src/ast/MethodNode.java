@@ -8,15 +8,15 @@ import lib.FOOLLib.MethodInheritanceType;
 
 public class MethodNode implements DecNode {
 
-	private String id;
-	private Node type;
-	private List<Node> parlist = new ArrayList<>();
-	private List<Node> decList = new ArrayList<>();
+	private final String id;
+	private final Node type;
+	private final List<Node> parlist;
+	private final List<Node> decList;
 	private Node exp;
 	private Node symType;
 	private String label;
 	private int offset; // Informazione ridondante perchè già presente nella class table come indice della lista dei metodi
-	private MethodInheritanceType mit; // Aggiunto per ulteriore ottimizzazione di typecheck e di code generation
+	private final MethodInheritanceType mit; // Aggiunto per ulteriore ottimizzazione di typecheck e di code generation
 
 	public MethodNode(final String id, final Node type, final List<Node> parlist, final List<Node> decList, final MethodInheritanceType mit) {
 		super();
@@ -55,10 +55,10 @@ public class MethodNode implements DecNode {
 	public String toPrint(final String indent) {
 		String declrStr = "";
 		String parStr = "";
-		for (Node dec:this.decList) {
+		for (final Node dec:this.decList) {
 			declrStr += dec.toPrint(indent + "  ");
 		}
-		for (Node par:this.parlist) {
+		for (final Node par:this.parlist) {
 			parStr += par.toPrint(indent + "  ");
 		}
 		return indent + "Method:" + this.id + "\n"
@@ -71,7 +71,7 @@ public class MethodNode implements DecNode {
 	@Override
 	public Node typeCheck() {
 		// Chiamare il type check delle la lista delle dichiarazioni interne al metodo
-		for (Node dec:decList) {
+		for (final Node dec:decList) {
 			dec.typeCheck();
 		}
 		// Controlliamo che il corpo della funzione sia sottotipo del tipo del metodo
@@ -89,7 +89,7 @@ public class MethodNode implements DecNode {
 		 * - creare realmente il codice del metodo
 		 */
 		String declCode = "";
-		for (Node dec:this.decList) {
+		for (final Node dec:this.decList) {
 			declCode += dec.codeGeneration();
 		}
 		String popDecl = "";
@@ -131,16 +131,16 @@ public class MethodNode implements DecNode {
 
 	@Override
 	public Node cloneNode() {
-		List<Node> params = new ArrayList<>();
-		for (Node n: this.parlist) {
+		final List<Node> params = new ArrayList<>();
+		for (final Node n: this.parlist) {
 			params.add(n.cloneNode());
 		}
-		List<Node> decs = new ArrayList<>();
-		for (Node n: this.decList) {
+		final List<Node> decs = new ArrayList<>();
+		for (final Node n: this.decList) {
 			decs.add(n.cloneNode());
 		}
 		// MethodInheritanceType.INHERIT = perché rientra nel caso di un metodo ereditato da una classe figlio
-		MethodNode tmp = new MethodNode(this.id, this.type.cloneNode(), params, decs, MethodInheritanceType.INHERIT);
+		final MethodNode tmp = new MethodNode(this.id, this.type.cloneNode(), params, decs, MethodInheritanceType.INHERIT);
 		tmp.setSymType(this.symType.cloneNode());
 		tmp.addBody(this.exp);
 		return tmp;
